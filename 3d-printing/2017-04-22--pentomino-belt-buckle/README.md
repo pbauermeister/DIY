@@ -12,3 +12,6 @@ https://www.instructables.com/id/Pentomino-Belt-Buckle/.
 
 Source files are maintained on Github:
 https://github.com/pbauermeister/DIY/tree/master/3d-printing/2017-04-22--pentomino-belt-buckle/
+
+
+![Belt buckle befor and after](belt-buckle.png?raw=true "Pentomino belt buckle")
