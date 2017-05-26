@@ -7,8 +7,11 @@ PENTOMINO BLOCKS GENERATOR
 Pentomino pieces. It can however be used standalone. The other parts, not in this
 file, include: frame, belt clip.)
 
-This OpenSCAD script generates Pentomino blocks, with tabs and cavities to
+This OpenSCAD script generates blocks, with tabs and cavities to
 allow them to hold together.
+
+Do not run this script directly, as it is the common part for pentomino.scad
+and frame.scad.
 
 Being completely parametric allows individual control such as:
 - size and thickness,
@@ -18,44 +21,31 @@ Being completely parametric allows individual control such as:
 This is freeware. Enjoy and modify freely. You may kindly mention this project.
 */
 
-IS_FRAME = true;
-SCALE_FACTOR = IS_FRAME ? (60 - 1.3) / 60 : 1; // makes frame a bit smaller, compensating pentominos tolerance
-//SCALE_FACTOR = IS_FRAME ? (60 - 1.8 + 0.5) / 60 : 1; // makes frame a bit smaller, compensating pentominos tolerance
-echo("SCALE_FACTOR=", SCALE_FACTOR);
+echo("H_SCALE_FACTOR=", H_SCALE_FACTOR);
+$fn = 16; // facets for spheres (grips)
 
-IS_INV = 1;
-
-$fn = 24; // 24: high quality; 8: draft
-//$fn = 8;
-$fn = 16;
-
-// BASE ETCHING
-// this etches the first layer, to compensate for being wider due to being squished down
-BASE_HEIGHT = 0.3;
-BASE_TOLERANCE = 0.3;
+// TOLERANCES
+BLOCK_TOLERANCE = 0.15/2; // in mm - recession of each block's lateral sides
+GRIP_TOLERANCE = 0.15/2;  // in mm - radial recession of each grips
+DH = 0.1; // in mm - Displacement of grip/cavity above/below block middle
 
 // BLOCK
-BLOCK_TOLERANCE = 0.15/2; // in mm
-GRIP_TOLERANCE = 0.15/2; // in mm
-
 BLOCK_SIDE = 6.5 *6/7;       // in mm
 BLOCK_HEIGHT = 3;     // in mm
-echo("BLOCK_SIDE=", BLOCK_SIDE);
+echo("BLOCK_SIDE=", BLOCK_SIDE*H_SCALE_FACTOR);
 
-DH = 0.1;
 // GRIP
 GRIP_RADIUS = BLOCK_HEIGHT/4 - GRIP_TOLERANCE; // in mm
-GRIP_V_OFFSET = 0.2; //IS_INV ? 0.25 : -0.25;
 //echo(GRIP_RADIUS*2);
 
 // CAVITY
 CAVITY_RADIUS = BLOCK_HEIGHT/4; // in mm
 //echo(CAVITY_RADIUS*2);
 
-// CHAMFER
+// CHAMFER - adds layers on top+bottom of blocks
 SLICES = 5;
-SLICE_THIKHNESS = 0.3/SLICES;
-SLICE_RECESSION = 0.4/SLICES;
+SLICE_THIKHNESS = 0.3/SLICES; // in mm
+SLICE_RECESSION = 0.4/SLICES; // in mm - how each slice will be horizontally reccessed from its predecessor
 
 // MISC
 ATOM = 0.0001; // a tiny value just to produce some offsets, making the 
@@ -63,51 +53,6 @@ ATOM = 0.0001; // a tiny value just to produce some offsets, making the
                // boolean operations, but meant to not affect the end result
                // noticeably
 _ = 0;
-
-///////////////////////////////////////////////////////////////////////////////
-// Bitmap defining the Pentomino shapes
-GRID_P = [
-    [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    [_, 1, 1, 1, 1, _, _, 1, _, 1, 1, 1, _, _, _, _, _],
-    [_, _, _, 1, _, _, _, 1, _, 1, _, _, _, 1, _, _, _],
-    [_, _, _, _, _, _, _, 1, _, 1, _, 1, 1, 1, _, _, _], 
-    [_, 1, 1, _, _, _, _, 1, _, _, _, _, 1, _, _, 1, _],
-    [_, 1, _, _, _, 1, _, 1, _, _, _, _, _, _, _, 1, _],
-    [_, 1, _, 1, 1, 1, _, _, _, 1, _, _, _, _, 1, 1, _],
-    [_, 1, _, 1, _, _, _, _, 1, 1, 1, _, _, _, 1, _, _],
-    [_, _, _, _, _, _, _, _, _, 1, _, _, _, _, _, _, _],
-    [_, _, _, 1, _, _, 1, _, _, _, _, _, _, _, 1, _, _],
-    [_, _, 1, 1, _, _, 1, _, _, 1, _, 1, _, 1, 1, _, _],
-    [_, 1, 1, _, _, 1, 1, 1, _, 1, 1, 1, _, 1, 1, _, _],
-    [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-];
-
-// Rename as GRID_P to have a single block, for tests
-GRID_P_ = [
-    [_, _, _, _, _, _, _],
-    [_, _, _, _, 1, _, _],
-    [_, _, _, 1, 1, _, _],
-    [_, 1, _, _, _, _, _],
-    [_, 1, 1, _, _, _, _],
-    [_, _, _, _, _, _, _],
-];
-
-GRID_F = [
-    // grips+ cavities:
-    // 2:none 3:north 4:south 5:east 6:west
-    [_, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    [_, 9, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 10, _],
-    [_, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6, _],
-    [_, 5, 2, 2, 1, 2, 1, 1, 1, 1, 2, 2, 6, _],
-    [_, 5, 1, 2, 1, 2, 1, 1, 1, 2, 2, 2, 6, _],
-    [_, 5, 2, 2, 1, 2, 2, 1, 1, 1, 1, 1, 6, _],
-    [_, 5, 2, 1, 1, 2, 2, 1, 1, 2, 2, 2, 6, _],
-    [_, 5, 2, 2, 1, 1, 2, 1, 1, 2, 2, 2, 6, _],
-    [_, 7, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 8, _],
-    [_, _, _, _, _, _, _, _, _, _, _, _, _, _],
-];
-
-GRID = IS_FRAME ? GRID_F : GRID_P;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Side-level primitives
@@ -241,7 +186,6 @@ module make_etch_side(x, y, side, etch) {
 /* Generate a given grid block */
 module make_block(x, y) {
     if (GRID[y][x]) {
-        color(GRID[y][x]==2 ? "orange" : "black")
         translate([x*BLOCK_SIDE, y*BLOCK_SIDE, 0])
         cube([BLOCK_SIDE, BLOCK_SIDE, BLOCK_HEIGHT]);
     }
@@ -276,7 +220,6 @@ module make_grip(x, y) {
 module make_border(x, y) {
     val = GRID[y][x];
     if (val) {
-        color(GRID[y][x]==2 ? "orange" : "black")
         translate([x*BLOCK_SIDE, y*BLOCK_SIDE, 0]) {
             if (!GRID[y-1][x]) make_border_side(val, x, y, "s");
             if (!GRID[y+1][x]) make_border_side(val, x, y, "n");
@@ -295,9 +238,6 @@ module make_cavity(x, y) {
             if (!GRID[y+1][x]) make_cavity_side(val, x, y, "n");
             if (!GRID[y][x+1]) make_cavity_side(val, x, y, "e");
             if (!GRID[y][x-1]) make_cavity_side(val, x, y, "w");
-                
-//            translate([ 0.5 * BLOCK_SIDE, 0.5 * BLOCK_SIDE, BLOCK_HEIGHT*IS_INV])
-//            sphere(r=CAVITY_RADIUS3);
         }
     }
 }
@@ -354,6 +294,7 @@ module make_chamfer() {
 
 /* Generate all objects by combining additive and substractive elements */
 module make_all() {
+    scale([H_SCALE_FACTOR, H_SCALE_FACTOR, 1])
     difference()
     {
         union() {
@@ -364,17 +305,8 @@ module make_all() {
             }
             make_grips();
             make_borders();
-//            make_chamfer();
+            make_chamfer();
         }
         make_cavities();
     }
 }
-
-/* Go for it and fix orientation */
-scale([SCALE_FACTOR, SCALE_FACTOR, 1])
-rotate([0, 180*1, 180*1]) {
-    make_all();
-}
-
-
-// End
