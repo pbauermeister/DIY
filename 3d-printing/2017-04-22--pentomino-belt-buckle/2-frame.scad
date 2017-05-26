@@ -14,7 +14,7 @@ This is freeware. Enjoy and modify freely. You may kindly mention this project.
 */
 
 // GENERAL
-H_SCALE_FACTOR =  (60 - 1.3) / 60; // makes frame a bit smaller, compensating pentominos tolerance
+H_SCALE_FACTOR =  (60 - 1.3) / 60; // ROBOX black as night filament
 echo("H_SCALE_FACTOR=", H_SCALE_FACTOR);
 
 include <common.scad>
