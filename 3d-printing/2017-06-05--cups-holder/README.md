@@ -8,8 +8,10 @@
 
 Designed for cups with an outer diameter smaller then 60 mm with 2 mm spacing.
 
-For other diameters, load the weyland-yutani-cup-holder.scad file in OpenSCAD, and set `RATIO` to fit your cups, with 
-    ```RATIO = D/65, where D = diameter + spacing (typically 2)```
+For other diameters, load the weyland-yutani-cup-holder.scad file in OpenSCAD, and set `RATIO` to fit your cups, with
+```
+RATIO = D/65, where D = diameter + spacing (typically 2)
+```
 all in mm.
 
 ## Printing instructions
