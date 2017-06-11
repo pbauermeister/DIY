@@ -4,7 +4,7 @@
 
 This project is a mechanical iris to dim LED lamps.
 
-![Lamp dimmer before and after](before-after.png?raw=true "Mechanical Iris Dimmer")
+![Lamp dimmer before and after](before-after-med.png?raw=true "Mechanical Iris Dimmer")
 
 ## Instructions
 
