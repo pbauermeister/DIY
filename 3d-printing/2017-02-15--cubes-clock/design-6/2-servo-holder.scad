@@ -1,179 +1,224 @@
+include <definitions.scad>
 
 
-$fn=90;
-
-TABS = [
-    // top plate
-    [1, 2, 3, 3, 2, 4, 4, 3, 1, 1],
-    
-    // middle plate
-    [1, 2, 3, 3, 3, 3, 3, 2, 3, 3],
-    
-    // bottom plate
-    [1, 2, 3, 4, 2, 4, 1, 2, 1, 2],
-];
-
-F = 0.5;
-
-ROTATION_STEP = 15; // degree
-
-ENCODER_RADIUS = 25;
-ENCODER_HEIGHT = 80 *F;
-ENCODER_THICKNESS = 1.5;
-
-ENCODER_ROTATION = -ROTATION_STEP * 10 * abs(sin($t*360));
-ENCODER_ROTATION = -ROTATION_STEP * 0;
-
-TAB_VSIZE = 3 *F;
-TAB_HSIZE = 4;
-TAB_SPACING = 4 *F;
-
-PLAY = 0.3;
-BODY_RADIUS = 30;
-BODY_THICKNESS = 1;
-BODY_WINDOW_MARGIN = 4;
-BODY_MARGIN = 5;
-BODY_GUIDE = 5;
-BODY_HEIGHT = ENCODER_HEIGHT + BODY_MARGIN;
-
-SERVO_HEIGHT = 26;
-SERVO_BODY_HEIGHT = 20;
-SERVO_BODY_WIDTH = 28;
-SERVO_BODY_THICKNESS = 9;
-//SERVO_AXIS_SHIFT = 4 -SERVO_BODY_WIDTH/2;
-SERVO_AXIS_SHIFT = 4;
-SERVO_AXIS_RADIUS = 2;
-
-SERVO_CLEARANCE = 10;
-SERVO_HOLDER_HEIGHT = BODY_HEIGHT - SERVO_CLEARANCE;
-SERVO_HOLDER_THICKNESS = 2;
-
-ENCODER_DISPLACEMENT = BODY_RADIUS-ENCODER_RADIUS-BODY_THICKNESS;
-ATOM = 0.01;
-
-module body() {
-    difference() {
-        union() {
-            // body
-            scale([1, 1, BODY_HEIGHT])
-            cylinder(r=BODY_RADIUS, h=1, true);
-            translate([0, ENCODER_DISPLACEMENT, 0])
-            servo_holder();
-        }
-        
-        // encoder cavity
-        translate([0, ENCODER_DISPLACEMENT, BODY_MARGIN])
-        scale([1, 1, BODY_HEIGHT])
-        cylinder(r=ENCODER_RADIUS+PLAY, h=1, true);
-
-        // window
-        translate([0, 0, BODY_WINDOW_MARGIN + BODY_MARGIN])
-        scale([1, 1, ENCODER_HEIGHT-BODY_WINDOW_MARGIN*2])
-        translate([0, BODY_RADIUS, 0])
-        cylinder(r=TAB_HSIZE/1.5, h=1, true);        
-    }    
+module servo1_hull() {
+    servo_hull(SERVO1_AXIS_RADIUS,
+               SERVO1_AXIS_SHIFT,
+               SERVO1_BODY_HEIGHT,
+               SERVO1_BODY_THICKNESS, //SERVO1_BODY_THICKNESS_CLEARANCE,
+               SERVO1_BODY_WIDTH, //SERVO1_BODY_WIDTH_CLEARANCE,
+               SERVO1_BOTTOM_BODY_HEIGHT,
+               SERVO1_BOTTOM_BODY_WIDTH,
+               SERVO1_HEIGHT,
+               SERVO_HOLDER_THICKNESS,
+               SERVO1_BOTTOM_CLEARANCE_HEIGHT,
+               //SERVO1_BOTTOM_HOLE_X, 
+               SERVO1_BOTTOM_HOLE_Z,
+               false);
 }
-    
-    
-module encoder() {
-    rotate([0, 0, ENCODER_ROTATION])
-    difference() {
-        // body
-        scale([1, 1, ENCODER_HEIGHT])
-        cylinder(r=ENCODER_RADIUS, h=1, true);
-        
-        // cavity
-        encoder_cavity();
-        
-        // servo axis
-        translate([0, 0, ENCODER_HEIGHT - SERVO_HEIGHT])
-        servo_hull();
 
-        // codes
-        for (i=[0:9]) {
-            top = TABS[0][i]+1;
-            mid = TABS[1][i]+1;
-            bot = TABS[2][i]+1;
+module servo1_hull2(extent) {
+    servo_hull2(extent,
+                SERVO1_AXIS_SHIFT,
+                SERVO1_BODY_THICKNESS,
+                SERVO1_BODY_WIDTH);
+}
 
-            rotate([0, 0, 90 + ROTATION_STEP*i]) {
-                translate([ENCODER_RADIUS, 0, ENCODER_HEIGHT/3*2 + TAB_SPACING*top])
-                cube([TAB_HSIZE, TAB_HSIZE, TAB_VSIZE], true);
+module servo2_hull() {
+    servo_hull(SERVO2_AXIS_RADIUS,
+               SERVO2_AXIS_SHIFT,
+               SERVO2_HEIGHT,
+               SERVO2_BODY_THICKNESS, //SERVO2_BODY_THICKNESS_CLEARANCE,
+               SERVO2_BODY_WIDTH, //SERVO2_BODY_WIDTH_CLEARANCE,
+               SERVO2_BOTTOM_BODY_HEIGHT,
+               SERVO2_BOTTOM_BODY_WIDTH,
+               SERVO2_HEIGHT,
+               SERVO_HOLDER_THICKNESS,
+               SERVO2_BOTTOM_CLEARANCE_HEIGHT,
+               //SERVO2_BOTTOM_HOLE_X, 
+               SERVO2_BOTTOM_HOLE_Z,
+               true);
+}
 
-                translate([ENCODER_RADIUS, 0, ENCODER_HEIGHT/3*1 + TAB_SPACING*mid])
-                cube([TAB_HSIZE, TAB_HSIZE, TAB_VSIZE], true);
+module servo2_axis() {
+    servo2_axis_(SERVO2_AXIS_RADIUS,
+                 SERVO2_AXIS_SHIFT,
+                 SERVO2_HEIGHT,
+                 SERVO2_BODY_THICKNESS, //SERVO2_BODY_THICKNESS_CLEARANCE,
+                 SERVO2_BODY_WIDTH, //SERVO2_BODY_WIDTH_CLEARANCE,
+                 SERVO2_BOTTOM_BODY_HEIGHT,
+                 SERVO2_BOTTOM_BODY_WIDTH,
+                 SERVO2_HEIGHT,
+                 SERVO_HOLDER_THICKNESS,
+                 SERVO2_BOTTOM_CLEARANCE_HEIGHT,
+                 true);
+}
 
-                translate([ENCODER_RADIUS, 0, ENCODER_HEIGHT/3*0 + TAB_SPACING*bot])
-                cube([TAB_HSIZE, TAB_HSIZE, TAB_VSIZE], true);
-            }
+module servo2_pillars() {
+    servo_pillars(SERVO2_AXIS_RADIUS,
+                  SERVO2_AXIS_SHIFT,
+                  SERVO2_HEIGHT,
+                  SERVO2_BODY_THICKNESS, //SERVO2_BODY_THICKNESS_CLEARANCE,
+                  SERVO2_BODY_WIDTH, //SERVO2_BODY_WIDTH_CLEARANCE,
+                  SERVO2_BOTTOM_BODY_HEIGHT,
+                  SERVO2_BOTTOM_BODY_WIDTH,
+                  SERVO2_HEIGHT,
+                  SERVO_HOLDER_THICKNESS);
+}
+
+module servo_hull(axis_radius,
+                  axis_shift,
+                  body_height,
+                  body_thickness,
+//                  body_thickness_clearance,
+                  body_width,
+//                  body_width_clearance,
+                  bottom_body_height,
+                  bottom_body_width,
+                  height,
+                  holder_thickness,
+                  bottom_clearance,
+                  //bottom_hole_x,
+                  bottom_hole_z,
+                  upside_down)
+{
+    // body
+    delta_h = body_height - bottom_body_height;
+
+    translate([0, axis_shift,
+               upside_down ? delta_h/2 : delta_h/2 + bottom_body_height])
+    cube([body_thickness, body_width, delta_h], true);
+
+    translate([0, axis_shift,
+               upside_down ? height - bottom_body_height/2 +bottom_clearance/2 : bottom_body_height/2 - bottom_clearance/2])
+    cube([body_thickness, bottom_body_width, bottom_body_height + bottom_clearance], true);
+
+//    // perpendicular clearance
+//    translate([0, axis_shift, height/2])
+//    cube([body_thickness+holder_thickness*5,
+//          body_width_clearance,
+//          height], true);
+//
+//    // clearance along width
+//    translate([0, axis_shift,
+//               upside_down ? height/2 + bottom_clearance/2 : height/2 - bottom_clearance/2])
+//    cube([body_thickness_clearance,
+//          body_width,
+//          height + bottom_clearance], true);
+
+    // lateral hole
+    translate([0, axis_shift,
+               upside_down ? height - bottom_hole_z/2 + bottom_clearance: +bottom_hole_z/2 - bottom_clearance])
+    scale([body_thickness*2, 1, 1])
+    cube([1, bottom_body_width/2.5, bottom_hole_z], true);
+
+    // axis
+    scale([1, 1, height + ATOM])
+    cylinder(r=axis_radius, h=1);
+}
+
+
+module servo_pillars(axis_radius,
+                     axis_shift,
+                     body_height,
+                     body_thickness,
+//                     body_thickness_clearance,
+                     body_width,
+//                     body_width_clearance,
+                     bottom_body_height,
+                     bottom_body_width,
+                     height,
+                     holder_thickness)
+{
+//    // body
+//    delta_h = body_height - bottom_body_height;
+//
+//    difference() {
+//        // support pillar
+//        translate([0, axis_shift, delta_h/2])        
+//        difference() {
+//            cube([body_thickness_clearance+SUPPORT_THICKNESS*2, 
+//                  bottom_body_width+SUPPORT_THICKNESS*2, delta_h], true);
+//            cube([body_thickness, bottom_body_width, delta_h], true);
+//        }
+//
+//        // clearance
+//        translate([0, axis_shift, height/2])
+//        cube([body_thickness_clearance,
+//              body_width + holder_thickness*2,
+//              height], true);
+//    }
+}
+
+module servo_hull2(extent,
+                   axis_shift,
+                   body_thickness,
+                   body_width,
+                   ) {
+                       if(0)
+    translate([0, axis_shift, extent/2])
+    cube([body_thickness, body_width, extent], true);
+}
+
+module servo2_axis_(axis_radius,
+                    axis_shift,
+                    body_height,
+                    body_thickness,
+                    body_thickness_clearance,
+                    body_width,
+                    body_width_clearance,
+                    bottom_body_height,
+                    bottom_body_width,
+                    height,
+                    holder_thickness,
+                    bottom_clearance,
+                    upside_down)
+{
+    // axis
+    scale([1, 1, height + ATOM])
+    cylinder(r=axis_radius, h=1);
+}
+
+
+module servo_holder(width, thickness) {
+    width = max(SERVO1_BODY_WIDTH, SERVO2_BODY_WIDTH);
+    thickness = max(SERVO1_BODY_THICKNESS, SERVO2_BODY_THICKNESS);
+
+    translate([0, ENCODER_DISPLACEMENT, 0])
+    union() {
+        // guiding disc
+        scale([1, 1, BODY_GUIDE + BODY_BASE])
+        cylinder(r=ENCODER_RADIUS-ENCODER_THICKNESS - PLAY, h=1, true);
+
+        // central column
+        difference() {
+            translate([0, SERVO1_AXIS_SHIFT, SERVO_HOLDER_HEIGHT/2])
+            cube([thickness + SERVO_HOLDER_THICKNESS*2,
+            width + SERVO_HOLDER_THICKNESS*5,
+            SERVO_HOLDER_HEIGHT], true);
         }
     }
+}
 
+module servo1_cavity() {
+    translate([0, ENCODER_DISPLACEMENT, BODY_HEIGHT - SERVO1_HEIGHT]) {
+        servo1_hull();
+        servo1_hull2(BODY_HEIGHT);
+    }
+}
+
+module servo2_cavity() {
+    translate([0, SERVO2_DISPLACEMENT, SERVO2_VERTICAL_OFFSET])
+    servo2_hull();
 }
 
 
-module encoder_cavity() {
-    // remove center
-    translate([0, 0, -ATOM])    
-    scale([1, 1, ENCODER_HEIGHT-ENCODER_THICKNESS + ATOM*2])
-    cylinder(r=ENCODER_RADIUS-ENCODER_THICKNESS, h=1, true);
-
-    // remove quarter 1
-    rotate([0, 0, -ROTATION_STEP*1.5])
-    translate([0, -ATOM, -ATOM])    
-    scale([ENCODER_RADIUS*2, ENCODER_RADIUS*2+ATOM, ENCODER_HEIGHT-ENCODER_THICKNESS+ATOM*2])
-    cube(1);
-
-    // remove quarter 2
-    rotate([0, 0, -ROTATION_STEP*7.5])
-    translate([0, 0, -ATOM])    
-    scale([ENCODER_RADIUS*2, ENCODER_RADIUS*2, ENCODER_HEIGHT-ENCODER_THICKNESS+ATOM*2])
-    cube(1);
-}
-
-module servo_holder() {
+module servo_all() {
     difference() {
-        union() {
-            // guiding disc
-            scale([1, 1, BODY_GUIDE + BODY_MARGIN])
-            cylinder(r=ENCODER_RADIUS-ENCODER_THICKNESS - PLAY, h=1, true);
-            
-//            // attachment column
-//            translate([0, -8-5, SERVO_HOLDER_HEIGHT/2])
-//            cube([12, 40, SERVO_HOLDER_HEIGHT], true);
-            
-            // central column
-            translate([0, SERVO_AXIS_SHIFT, SERVO_HOLDER_HEIGHT/2])
-            cube([SERVO_BODY_THICKNESS + SERVO_HOLDER_THICKNESS*2,
-                  SERVO_BODY_WIDTH + SERVO_HOLDER_THICKNESS*2,
-                  SERVO_HOLDER_HEIGHT], true);
-        }
-
-        translate([0, 0, BODY_HEIGHT - SERVO_HEIGHT])
-        servo_hull();
+        servo_holder();
+        servo1_cavity();
+        servo2_cavity();
     }
 }
 
-module servo_hull() {    
-    translate([0, SERVO_AXIS_SHIFT, SERVO_BODY_HEIGHT/2])
-    cube([SERVO_BODY_THICKNESS, SERVO_BODY_WIDTH, SERVO_BODY_HEIGHT], true);
-
-    scale([1, 1, SERVO_HEIGHT + ATOM])
-    cylinder(r=SERVO_AXIS_RADIUS, h=1);
-}
-
-module move_apart(upside_down, displacement, elevation) {    
-    translate([0, displacement, elevation])
-    rotate([upside_down ? 180 : 0, 0, 0])
-    children();
-    }
-
-body();
-
-translate([0, ENCODER_DISPLACEMENT, 0])
-servo_holder();
-
-    
-move_apart(true, 70, ENCODER_HEIGHT+BODY_MARGIN)
-translate([0, ENCODER_DISPLACEMENT, BODY_MARGIN])
-encoder();
-
+servo_all();
