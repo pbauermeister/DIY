@@ -37,6 +37,25 @@ module encoder_mask2(radius) {
     }
 }
 
+module encoder_mask3(thickness) {
+    spacing = (ENCODER_HEIGHT - TAB_SPACING * (4+3+4)) / 6;
+    for (i=[2.5:2.5]) {
+        translate([0, 0, spacing * 5 + TAB_SPACING * (7+i-1)])
+        scale([1, 1, thickness])
+        cylinder(r=BODY_RADIUS*1.5, h=1, true);
+
+        translate([0, 0, spacing * 1 + TAB_SPACING * (0+i-1)])
+        scale([1, 1, thickness])
+        cylinder(r=BODY_RADIUS*1.5, h=1, true);
+    }
+
+    for (i=[2:2]) {
+        translate([0, 0, spacing * 3 + TAB_SPACING * (4+i-1)])
+        scale([1, 1, thickness])
+        cylinder(r=BODY_RADIUS*1.5, h=1, true);
+    }
+}
+
 module encoder() {
     rotate([0, 0, ENCODER_ROTATION])
     difference() {

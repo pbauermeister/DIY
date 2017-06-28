@@ -93,19 +93,6 @@ module servo_hull(axis_radius,
                upside_down ? height - bottom_body_height/2 +bottom_clearance/2 : bottom_body_height/2 - bottom_clearance/2])
     cube([body_thickness, bottom_body_width, bottom_body_height + bottom_clearance], true);
 
-//    // perpendicular clearance
-//    translate([0, axis_shift, height/2])
-//    cube([body_thickness+holder_thickness*5,
-//          body_width_clearance,
-//          height], true);
-//
-//    // clearance along width
-//    translate([0, axis_shift,
-//               upside_down ? height/2 + bottom_clearance/2 : height/2 - bottom_clearance/2])
-//    cube([body_thickness_clearance,
-//          body_width,
-//          height + bottom_clearance], true);
-
     // lateral hole
     translate([0, axis_shift,
                upside_down ? height - bottom_hole_z/2 + bottom_clearance: +bottom_hole_z/2 - bottom_clearance])
@@ -115,39 +102,6 @@ module servo_hull(axis_radius,
     // axis
     scale([1, 1, height + ATOM])
     cylinder(r=axis_radius, h=1);
-}
-
-
-module servo_pillars(axis_radius,
-                     axis_shift,
-                     body_height,
-                     body_thickness,
-//                     body_thickness_clearance,
-                     body_width,
-//                     body_width_clearance,
-                     bottom_body_height,
-                     bottom_body_width,
-                     height,
-                     holder_thickness)
-{
-//    // body
-//    delta_h = body_height - bottom_body_height;
-//
-//    difference() {
-//        // support pillar
-//        translate([0, axis_shift, delta_h/2])        
-//        difference() {
-//            cube([body_thickness_clearance+SUPPORT_THICKNESS*2, 
-//                  bottom_body_width+SUPPORT_THICKNESS*2, delta_h], true);
-//            cube([body_thickness, bottom_body_width, delta_h], true);
-//        }
-//
-//        // clearance
-//        translate([0, axis_shift, height/2])
-//        cube([body_thickness_clearance,
-//              body_width + holder_thickness*2,
-//              height], true);
-//    }
 }
 
 module servo_hull2(extent,
