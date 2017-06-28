@@ -3,7 +3,7 @@ use <1-encoder.scad>
 use <2-servo-holder.scad>
 use <3-transmission.scad>
 
-CROSS_CUT = !false;
+CROSS_CUT = false;
 APART     = false;
 
 module body_rib() {
@@ -62,11 +62,17 @@ module body_transmission() {
         translate([0, dist, 0])
         import("3-transmission.stl");
     }
-}
-
-module body_servo2_pillars() {
-    translate([0, SERVO2_DISPLACEMENT, 0])
-    servo2_pillars();
+    
+    // attachments
+    if(!APART) {
+        color("yellow")
+        intersection() {
+            translate([TRANSMISSION_RADIUS_INNER + PLAY*2 + 0.5, dist-TRANSMISSION_RADIUS_INNER+1, BODY_HEIGHT/2])
+            scale([1, 1, BODY_HEIGHT])
+            cube([TRANSMISSION_RADIUS_OUTER, 0.5, 1], true);
+            encoder_mask3(1);
+        }
+    }
 }
 
 module body_servo2_axis() {
@@ -81,7 +87,7 @@ module body() {
                 union() {
 //                    %
                     difference() {
-                        // body
+                        // trunk
                         scale([1, 1, BODY_HEIGHT])
                         cylinder(r=BODY_RADIUS, h=1, true);
 
@@ -97,10 +103,9 @@ module body() {
         transmission_cavity();
         servo2_cavity();
     }
-    body_servo2_pillars();
     body_ribs();
 
-    if(1)
+    if(0)
         body_servo2_axis();
 
     body_transmission();
@@ -113,17 +118,22 @@ module move_apart(upside_down, displacement, elevation) {
     }
 
 module all() {
+    // trunk
     body();
 
+    // encoder
     move_apart(true, 70, ENCODER_HEIGHT + BODY_BASE)
     translate([0, ENCODER_DISPLACEMENT, BODY_BASE + PLAY])
     import("1-encoder.stl");
+
+    // bottom
+    %
+    translate([0, 0, -BOTTOM_WHEELS_THICKNESS -15])
+    import("4-bottom.stl");
 }
 
 
-
-scale([1, 1, 1/Z_SHRINK_FACTOR])
-{
+scale([1, 1, 1/Z_SHRINK_FACTOR]) {
     intersection() {
         all();
 
