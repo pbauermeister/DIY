@@ -12,7 +12,7 @@ module transmission_cavity() {
         }
         // axis
         scale([1, 1, BODY_HEIGHT])
-        cylinder(r=TRANSMISSION_RADIUS_INNER + PLAY, h=1, true);
+        cylinder(r=TRANSMISSION_RADIUS_INNER + TOLERANCE, h=1, true);
     }
 
     // window
@@ -28,11 +28,12 @@ module transmission_cavity() {
 
 module transmission_grip() {
     side = sqrt(2) * TRANSMISSION_RADIUS_OUTER;
-    translate([0, 0, 0.5]) {
-        rotate([0, 0,  0+15]) cube([side, side, 1], true);
-        rotate([0, 0, 30+15]) cube([side, side, 1], true);
-        rotate([0, 0, 60+15]) cube([side, side, 1], true);
-    }
+    squares = 2;
+    a = 360 / squares / 4;
+    r = 90 + a/2;
+    translate([0, 0, 0.5])
+    for(i=[0:squares-1])
+        rotate([0, 0, i*a + r]) cube([side, side, 1], true);
 }
 
 module transmission_bar() {
