@@ -1,6 +1,8 @@
 include <definitions.scad>
 use <Getriebe.scad>
 use <2-servo-holder.scad>
+use <5-body.scad>
+
 
 MODULE = 0.9;
 
@@ -70,6 +72,10 @@ module bottom_plate() {
             translate([0, SERVO2_DISPLACEMENT, 0])
             scale([1, 1, BOTTOM_WHEELS_THICKNESS + BOTTOM_SERVO_SNAP_THICKNESS + ATOM])
             cylinder(r=BOTTOM_SERVO_WHEELS_MAX_RADIUS+PLAY, h=1, true);
+            
+            // for the screws
+            translate([0, 0, BOTTOM_WHEELS_THICKNESS])
+            body_screws_cavity();
         }
     }
     

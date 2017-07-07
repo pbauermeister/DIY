@@ -66,6 +66,48 @@ module servo2_pillars() {
                   SERVO_HOLDER_THICKNESS);
 }
 
+module servo_pillars(servo_axis_radius,
+                     servo_axis_shift,
+                     servo_body_height,
+                     servo_body_thickness,
+//                     servo_body_thickness_clearance,
+                     servo_body_width,
+//                     servo_body_width_clearance,
+                     servo_bottom_body_height,
+                     servo_bottom_body_width,
+                     servo_height,
+                     bottom_clearance,
+                     servo_holder_thickness)
+{
+    d = 2;
+    d2 = 1;
+    dx = servo_body_thickness/4 + d/2;
+    dy = -servo_bottom_body_width/2;
+    delta_h = servo_body_height - servo_bottom_body_height + SERVO2_VERTICAL_OFFSET;
+
+    scale([1, 1, delta_h])
+    translate([dx, dy, 0])
+    cylinder(r=d/2, h=1);
+
+    scale([1, 1, delta_h])
+    translate([-dx, dy, 0])
+    cylinder(r=d/2, h=1);
+
+    scale([servo_body_thickness, 1, 0.5])
+    translate([0, dy, d2/2])
+    cube(d2, true);
+
+
+    scale([1, 1, delta_h])
+    translate([0, d2-dy, 0])
+    cylinder(r=d/2, h=1);
+
+    scale([servo_body_thickness, 1, 0.5])
+    translate([0, d2-dy, d2/2])
+    cube(d2, true);
+    
+}
+
 module servo_hull(axis_radius,
                   axis_shift,
                   body_height,
@@ -92,6 +134,13 @@ module servo_hull(axis_radius,
     translate([0, axis_shift,
                upside_down ? height - bottom_body_height/2 +bottom_clearance/2 : bottom_body_height/2 - bottom_clearance/2])
     cube([body_thickness, bottom_body_width, bottom_body_height + bottom_clearance], true);
+
+    // cable slit
+    d = (body_width - bottom_body_width) / 2 * (upside_down ? -1 : 1);
+    translate([0, axis_shift + d,
+               upside_down ? height - bottom_body_height/2 +bottom_clearance/2 : bottom_body_height/2 - bottom_clearance/2])
+
+    cube([body_thickness/2, bottom_body_width, bottom_body_height + bottom_clearance], true);
 
     // lateral hole
     translate([0, axis_shift,
@@ -173,6 +222,14 @@ module servo_all() {
         servo1_cavity();
         servo2_cavity();
     }
+    servo2_pillars();
 }
 
-servo_all();
+intersection() {
+    servo_all();
+
+    if(0) // cross-cut
+        scale(200)
+        translate([0.5, 0, 0])
+        cube(1, true);
+}
