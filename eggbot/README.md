@@ -32,7 +32,7 @@ Below are some of my designs (as SVG vector drawing files).
 
 ## EVE (of Wall-E)
 
-<img src="https://github.com/pbauermeister/DIY/blob/master/eggbot/photos/eves.jpg?raw=true" width="480">
+<img src="https://github.com/pbauermeister/DIY/blob/master/eggbot/photos/eves.jpg?raw=true" width="320">
 
 - [005--easter-1](005--easter-1/) / [eve-sleeping.svg](005--easter-1/eve-sleeping.svg) 3x EVEs in standby 
 - [005--easter-1](005--easter-1/) / [eve-3.svg](005--easter-1/eve-3.svg) EVE awake -- Colorize the eyes with a pencil
