@@ -44,5 +44,10 @@
 - [005--easter-1](005--easter-1/) / [knight.svg](005--easter-1/knight.svg) St Georges
 - [005--easter-1](005--easter-1/) / [dino.svg](005--easter-1/dino.svg) The Dragon (Dinosaur) -- Colorize eye with pencil
 
+## X-Mas Ornaments
 
+<img src="https://github.com/pbauermeister/DIY/blob/master/eggbot/photos/xmas.jpg?raw=true" width="320">
 
+- Left: [002--xmas-ornament](002--xmas-ornament/) / [002--flakes.svg](002--xmas-ornament/002--flakes.svg)
+- Top: [002--xmas-ornament](002--xmas-ornament/) / [003--floral.svg](002--xmas-ornament/003--floral.svg)
+- Bottom and right: [002--xmas-ornament](002--xmas-ornament/) / [001--flakes.svg](002--xmas-ornament/001--flakes.svg)
