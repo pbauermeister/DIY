@@ -29,4 +29,20 @@
 <img src="https://github.com/pbauermeister/DIY/blob/master/eggbot/photos/eves.jpg?raw=true" width="480">
 
 - [005--easter-1](005--easter-1/) / [eve-sleeping.svg](005--easter-1/eve-sleeping.svg) 3x EVEs in standby 
-- [005--easter-1](005--easter-1/) / [eve-3.svg](005--easter-1/eve-3.svg) EVE awake 
+- [005--easter-1](005--easter-1/) / [eve-3.svg](005--easter-1/eve-3.svg) EVE awake -- Colorize the eyes with a pencil
+
+## Labyrinth
+
+<img src="https://github.com/pbauermeister/DIY/blob/master/eggbot/photos/labyrinth.jpg?raw=true" width="320">
+
+- [004--maze](004--maze/) / [001--maze-ornament.svg](004--maze/001--maze-ornament.svg) A maze
+
+## Knight & Dragon
+
+<img src="https://github.com/pbauermeister/DIY/blob/master/eggbot/photos/st-georges+dragon.jpg?raw=true" width="320">
+
+- [005--easter-1](005--easter-1/) / [knight.svg](005--easter-1/knight.svg) St Georges
+- [005--easter-1](005--easter-1/) / [dino.svg](005--easter-1/dino.svg) The Dragon (Dinosaur) -- Colorize eye with pencil
+
+
+
