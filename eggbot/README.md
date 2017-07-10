@@ -23,3 +23,10 @@
 - [006--easter-2](006--easter-2/) / [pattern6.svg](006--easter-2/pattern6.svg) Big flower (Japanese), again
 - [006--easter-2](006--easter-2/) / [pattern2.svg](006--easter-2/pattern2.svg) Small flowers (Japanese), again
 - [006--easter-2](006--easter-2/) / [star-wars.svg](006--easter-2/star-wars.svg) Emblems (Star Wars), again
+
+## EVE (of Wall-E)
+
+<img src="https://github.com/pbauermeister/DIY/blob/master/eggbot/photos/eves.jpg?raw=true" width="480">
+
+- [005--easter-1](005--easter-1/) / [eve-sleeping.svg](005--easter-1/eve-sleeping.svg) 3x EVEs in standby 
+- [005--easter-1](005--easter-1/) / [eve-3.svg](005--easter-1/eve-3.svg) EVE awake 
