@@ -1,3 +1,11 @@
+/*
+ * (C) 2017 by Pascal Bauermeister.
+ * License: Creative Commons Attribution-NonCommercial-ShareAlike 2.5.
+ *
+ * Attempt at designing a spiral-shaped ventilation grid.
+ *
+ */
+
 SIZE   = 40; // in mm
 SPAN   = 180 * 0.5; // angular span
 PERIOD = 90/5; // angular increment

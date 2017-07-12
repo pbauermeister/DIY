@@ -1,9 +1,15 @@
 /*
-
-L = 480
-W = 60
-H = 40
-*/
+ * (C) 2017 by Pascal Bauermeister.
+ * License: Creative Commons Attribution-NonCommercial-ShareAlike 2.5.
+ *
+ *
+ * Unfinished attempt at designing a housing for a hanging lamp
+ * transformer.
+ *
+ *	L = 480
+ *	W = 60
+ *	H = 40
+ */
 
 
 LENGTH = 200/4;
@@ -24,8 +30,8 @@ module slice(j, offset, sink) {
 
         z00 = z(x0, y0);
         z10 = z(x1, y0);
-        z01 = z(x0, y0);
-        z11 = z(x1, y0);
+        z01 = z(x0, y1);
+        z11 = z(x1, y1);
         
         h00 = offset + z00 * AMPLITUDE;
         h10 = offset + z10 * AMPLITUDE;
@@ -33,7 +39,7 @@ module slice(j, offset, sink) {
         h11 = offset + z11 * AMPLITUDE;
         
         CubePoints = [
-          [ x0,  y0,  -sink ],   //0
+          [ x0,  y0,  -sink ],  //0
           [ x1,  y0,  -sink ],  //1
           [ x1,  y1,  -sink ],  //2
           [ x0,  y1,  -sink ],  //3
@@ -43,12 +49,13 @@ module slice(j, offset, sink) {
           [ x0,  y1,  h01 -sink]]; //7
       
         CubeFaces = [
-          [0,1,2,3],  // bottom
-          [4,5,1,0],  // front
-          [7,6,5,4],  // top
-          [5,6,2,1],  // right
-          [6,7,3,2],  // back
-          [7,4,0,3]]; // left
+          [0,1,2,3],  // bottom face
+          [4,5,1,0],  // front face
+          [7,5,4],    // top triangle 1
+          [7,6,5],    // top triangle 2
+          [5,6,2,1],  // right face
+          [6,7,3,2],  // back face
+          [7,4,0,3]]; // left face
 
         polyhedron( CubePoints, CubeFaces );
     }
@@ -64,7 +71,5 @@ difference() {
     }
 
     // clip
-    translate([-1, -1, -5]) cube([LENGTH+2, WIDTH+2, 5]);
+    translate([-1, -1, -5]) cube([LENGTH+20, WIDTH+2, 5]);
 }
-
-

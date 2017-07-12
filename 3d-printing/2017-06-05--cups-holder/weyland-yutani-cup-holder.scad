@@ -1,6 +1,9 @@
-/* WEYLAND-YUTANI CORP espresso cups holder
- * (C) 2017 by Pascal Bauermeister
+/* WEYLAND-YUTANI CORP ESPRESSO CUPS HOLDER
+ *
+ * (C) 2017 by Pascal Bauermeister.
+ * License: Creative Commons Attribution-NonCommercial-ShareAlike 2.5.
  */
+
 
 LENGTH = 220;
 HEIGHT = 83;

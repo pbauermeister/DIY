@@ -1,3 +1,8 @@
+/*
+ * (C) 2017 by Pascal Bauermeister.
+ * License: Creative Commons Attribution-NonCommercial-ShareAlike 2.5.
+ */
+
 include <definitions.scad>
 use <Getriebe.scad>
 use <2-servo-holder.scad>

@@ -1,3 +1,7 @@
+/*
+ * (C) 2017 by Pascal Bauermeister.
+ * License: Creative Commons Attribution-NonCommercial-ShareAlike 2.5.
+ */
 
 linear_extrude(height=0.22)
 scale([10, 10, 1])

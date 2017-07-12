@@ -1,3 +1,8 @@
+/*
+ * (C) 2017 by Pascal Bauermeister.
+ * License: Creative Commons Attribution-NonCommercial-ShareAlike 2.5.
+ */
+
 EXTRA_H = 0.5;
 
 linear_extrude(height=1 + EXTRA_H)

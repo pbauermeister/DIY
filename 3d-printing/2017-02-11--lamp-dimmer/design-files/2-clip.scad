@@ -1,3 +1,7 @@
+/*
+ * (C) 2017 by Pascal Bauermeister.
+ * License: Creative Commons Attribution-NonCommercial-ShareAlike 2.5.
+ */
 
 K1 = 54.1 / 54;
 K2 = 54.2 / 54;

@@ -1,21 +1,10 @@
 /*
-PENTOMINO BLOCKS GENERATOR
-==========================
+CALENDAR BELT BUCKLE
+====================
+
 (C) 2017 by Pascal Bauermeister.
+License: Creative Commons Attribution-NonCommercial-ShareAlike 2.5.
 
-(This is a part of the project "Pentomino Belt Buckle", focused on the
-Pentomino pieces. It can however be used standalone. The other parts, not in this
-file, include: frame, belt clip.)
-
-This OpenSCAD script generates Pentomino blocks, with tabs and cavities to
-allow them to hold together.
-
-Being completely parametric allows individual control such as:
-- size and thickness,
-- tolerances (important for 3D printing), and also
-- creating any kind of pieces, including 2D Polyminos of N cells for any N.
-
-This is freeware. Enjoy and modify freely. You may kindly mention this project.
 */
 
 // BLOCK
