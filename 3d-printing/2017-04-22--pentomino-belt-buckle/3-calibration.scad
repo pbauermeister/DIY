@@ -1,7 +1,9 @@
 /*
 PENTOMINO BLOCKS GENERATOR
 ==========================
+
 (C) 2017 by Pascal Bauermeister.
+License: Creative Commons Attribution-NonCommercial-ShareAlike 2.5.
 
 (This is a part of the project "Pentomino Belt Buckle", focused on the
 Pentomino pieces. It can however be used standalone. The other parts, not in this
@@ -9,8 +11,6 @@ file, include: frame, belt clip.)
 
 This OpenSCAD script generates Pentomino blocks, with tabs and cavities to
 allow them to hold together.
-
-This is freeware. Enjoy and modify freely. You may kindly mention this project.
 */
 
 // GENERAL

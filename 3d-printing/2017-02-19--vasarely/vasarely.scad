@@ -1,3 +1,11 @@
+/*
+ * (C) 2017 by Pascal Bauermeister.
+ * License: Creative Commons Attribution-NonCommercial-ShareAlike 2.5.
+ */
+
+/* Vasarely-inspired elevation map
+ */
+
 FACTOR = 0.1;
 
 module bar(x0, y0, x1, y1, z00, z10, z11, z01) {
@@ -46,6 +54,11 @@ module plot(x, y, radius, amplitude) {
         z(x1,  y1),
         z(x0,  y1));
 }
+
+/*
+ * (C) 2017 by Pascal Bauermeister
+ * License: Creative Commons Attribution-NonCommercial-ShareAlike 2.5
+ */
 
 SIZE = 360 * 1.5;
 PERIOD = 45/2;

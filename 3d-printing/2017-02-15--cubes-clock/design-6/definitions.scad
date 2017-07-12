@@ -1,4 +1,7 @@
-
+/*
+ * (C) 2017 by Pascal Bauermeister.
+ * License: Creative Commons Attribution-NonCommercial-ShareAlike 2.5.
+ */
 
 $fn=90;
 

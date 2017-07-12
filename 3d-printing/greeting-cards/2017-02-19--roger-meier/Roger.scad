@@ -1,3 +1,13 @@
+/*
+ * (C) 2017 by Pascal Bauermeister.
+ * License: Creative Commons Attribution-NonCommercial-ShareAlike 2.5.
+ *
+ * Greeting card.
+ *
+ * 2D vector files used as card base and bmp map.
+  */
+  
+
 $fn = 180;
 
 SIZE = 80;

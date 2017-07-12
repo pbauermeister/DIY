@@ -1,8 +1,10 @@
 # LAMP DIMMER
 
-(C) 2017 by Pascal Bauermeister.
+Copyright: (C) by Pascal Bauermeister, 2017-02-11.
 
-This project is a mechanical iris to dim LED lamps.
+License: Creative Commons Attribution-NonCommercial-ShareAlike 2.5 Generic (CC BY-NC-SA 2.5) https://creativecommons.org/licenses/by-nc-sa/2.5/legalcode
+
+Summary: 3D-printed mechanical iris, to dim LED lamps.
 
 ![Lamp dimmer before and after](before-after-med.png?raw=true "Mechanical Iris Dimmer")
 

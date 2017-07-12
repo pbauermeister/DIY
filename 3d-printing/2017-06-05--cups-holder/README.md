@@ -1,6 +1,10 @@
-# WEYLAND-YUTANI CORP espresso cups holder
+# "WEYLAND-YUTANI CORP" ESPRESSO CUPS HOLDER
 
-(C) 2017 by Pascal Bauermeister.
+Copyright: (C) by Pascal Bauermeister, 2017-06-05.
+
+License: Creative Commons Attribution-NonCommercial-ShareAlike 2.5 Generic (CC BY-NC-SA 2.5) https://creativecommons.org/licenses/by-nc-sa/2.5/legalcode
+
+Summary: 3D-printed cup holder for 6 espresso cups.
 
 ![Cups holder](cups-holder-med.jpg?raw=true "Cups holder")
 

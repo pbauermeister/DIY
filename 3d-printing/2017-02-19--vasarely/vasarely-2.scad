@@ -1,16 +1,24 @@
+/*
+ * (C) 2017 by Pascal Bauermeister.
+ * License: Creative Commons Attribution-NonCommercial-ShareAlike 2.5.
+ *
+ * Vasarely-inspired elevation map.
+ */
+
+$fn = 180;
 
 SIZE   = 65; // in mm
-SPAN   = 360 * 1.5; // angular span
+SPAN   = 360; // angular span
 PERIOD = 45/2; // angular increment
 AMPL   = 30; // distortion
-HEIGHT = 20;
+HEIGHT = 15;
 FLAT   = 4*0; // if 0: not flat; else, defines thicknes of raised layer
 BASE_THICKNESS = 1;
 
 SIZE = 80;
 BASE_THICKNESS = 0.5;
 
-BASE_SPAN = SPAN + PERIOD*2.5;
+BASE_SPAN = SPAN + PERIOD*3.2;
 FACTOR = SIZE / BASE_SPAN;
 PHASE  = 30;
 
@@ -40,16 +48,16 @@ module makeBar(x00, y00, z00,
 }
 
 // altitude
-function z(x, y) = FLAT ? FLAT : (1.2 - cos(x-PHASE) * cos(y-PHASE)) * HEIGHT;
+function z(x, y) = FLAT ? FLAT : (1.2 - cos(x-PHASE+y/3) * cos(y-PHASE)) * HEIGHT + 2;
 
 // lateral distortion
-function dx(x, y, a) = (1 - sin(x) * cos(y)) * a;
-function dy(x, y, a) = (1 - cos(x) * sin(y)) * a;
+function dx(x, y, a) = (1 - sin(x+y/3) * cos(y)*.75) * a;
+function dy(x, y, a) = (1 - cos(x+y/3) * sin(y)*.75) * a;
 
 // compute one bar
 module plotBar(x, y, radius, amplitude) { 
     // base thickness; the less distortion, the thicker
-    radius = radius * pow(2 - cos(x) * cos(y), 1.4);
+    radius = radius * pow(2 - cos(x) * cos(y), 0.29)*2.7;
 
     // base corners
     x0 = x-radius;
@@ -70,15 +78,23 @@ module plotBar(x, y, radius, amplitude) {
             x10, y10, z(x10, y10));
 }
 
-// create a base
-cube([SIZE, SIZE, BASE_THICKNESS + 0.001]);
+module base(thickness) {
+    difference() {
+        cube([SIZE, SIZE, thickness]);
+        translate([73, 73, 0]) cylinder( 20, 2.4, 2.4,true);
+    }
+}
 
-// raise matrix by 1 mm to sit on base
-translate([0, 0, BASE_THICKNESS])
+scale([6.5/8, 6.5/8, 1])
+{
+    base(BASE_THICKNESS + 0.001);
 
-// sweep matrix
-for(y = [0:PERIOD:SPAN]) {
-    for(x = [0:PERIOD:SPAN]) {
-        plotBar(x, y, PERIOD/10, AMPL);
+    // raise matrix by 1 mm to sit on base
+    translate([0, 0, BASE_THICKNESS])
+    // sweep matrix
+    for(y = [0:PERIOD:SPAN]) {
+        for(x = [0:PERIOD:SPAN]) {
+            plotBar(x, y, PERIOD/10, AMPL);
+        }
     }
 }

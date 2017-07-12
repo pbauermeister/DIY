@@ -1,5 +1,8 @@
-// Closed ring for shower curtain
-// P. Bauermeister, 2017-02-18
+/* Closed ring for shower curtain
+ *
+ * (C) 2017 by Pascal Bauermeister.
+ * License: Creative Commons Attribution-NonCommercial-ShareAlike 2.5.
+ */
 
 $fn = 45;
 
