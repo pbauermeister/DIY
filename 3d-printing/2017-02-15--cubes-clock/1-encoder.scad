@@ -91,6 +91,20 @@ module encoder() {
 
                 translate([ENCODER_RADIUS, 0, spacing * 1 + TAB_SPACING * (0+bot-1)])
                 cube([TAB_HSIZE, TAB_HSIZE, TAB_VSIZE], true);
+                
+                if(0) {
+                    for (t=[1:4])
+                        translate([ENCODER_RADIUS, 0, spacing * 5 + TAB_SPACING * (7+t-1)])
+                        cube([TAB_HSIZE, TAB_HSIZE, TAB_VSIZE], true);
+
+                    for (m=[1:3])
+                        translate([ENCODER_RADIUS, 0, spacing * 3 + TAB_SPACING * (4+m-1)])
+                        cube([TAB_HSIZE, TAB_HSIZE, TAB_VSIZE], true);
+
+                    for (b=[1:4])
+                        translate([ENCODER_RADIUS, 0, spacing * 1 + TAB_SPACING * (0+b-1)])
+                        cube([TAB_HSIZE, TAB_HSIZE, TAB_VSIZE], true);
+                }
             }
         }
     }
