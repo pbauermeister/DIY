@@ -55,16 +55,17 @@ module bottom_plate() {
     union() {
 
         difference() {
+            radius = BOTTOM_RADIUS;
             union() {
                 translate([0, 0, -BOTTOM_PLATE_THICKNESS])
                 scale([1, 1, BOTTOM_WHEELS_THICKNESS+BOTTOM_PLATE_THICKNESS])
-                cylinder(r=BODY_RADIUS, true);
+                cylinder(r=radius, true);
 
                 translate([0, 0, BOTTOM_WHEELS_THICKNESS])
                 intersection() {
                     servo2_cavity();
                     scale([1, 1, BOTTOM_SERVO_SNAP_THICKNESS])
-                    cylinder(r=BODY_RADIUS, true);
+                    cylinder(r=radius, true);
                 }
             }
             
