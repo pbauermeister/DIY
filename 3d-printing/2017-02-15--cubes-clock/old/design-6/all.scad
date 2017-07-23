@@ -43,6 +43,7 @@ module all() {
     transp_if_not_apart()
     move_if_apart(true, 70, ENCODER_HEIGHT + BODY_BASE)
     translate([0, ENCODER_DISPLACEMENT, BODY_BASE + PLAY])
+    rotate([180, 0, 0]) 
     import("1-encoder-test.stl");
 
     // bottom
@@ -53,19 +54,26 @@ module all() {
     import("4-bottom.stl");
 }
 
-all();
+{
+    all();
+    crown();
+}
 
-//translate([0, 0, 5]) crown_teeth();
-crown_ratchet();
+module crown() {
+    translate([0, 0, 8]) crown_teeth();
+
+    translate([0, 0, 6+PLAY])
+    crown_ratchet();
+}
 
 module crown_ratchet() {
     file_shift = -56/2;
     color("yellow")
     rotate([0, 0, -45])
     translate([file_shift, file_shift, 0])
-    scale([10, 10, 1/100 * TAB_VSIZE])
+    scale([10, 10, 1/100 * (TAB_VSIZE-PLAY*2)])
     linear_extrude(h=1)
-    import("crown-ratchet.dxf");
+    import("crown-ratchet2.dxf");
 }
 
 

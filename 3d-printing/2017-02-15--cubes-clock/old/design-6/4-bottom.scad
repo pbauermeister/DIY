@@ -30,22 +30,22 @@ module bottom_transmission_wheel() {
                 pfeilrad(modul=MODULE, zahnzahl=7, hoehe=BOTTOM_WHEELS_THICKNESS,
                          bohrung=0, eingriffswinkel=20, schraegungswinkel=-30);
                 
-                // ring
-                translate([0, 0, BOTTOM_WHEELS_THICKNESS])
-                scale([1, 1, TRANSMISSION_WHEEL_OVERLAP])
-                cylinder(r=TRANSMISSION_WHEEL_RADIUS, h=1, true);
+//                // ring
+//                translate([0, 0, BOTTOM_WHEELS_THICKNESS])
+//                scale([1, 1, TRANSMISSION_WHEEL_OVERLAP])
+//                cylinder(r=TRANSMISSION_WHEEL_RADIUS, h=1, true);
             }
             
-            // hole in ring
-            translate([0, 0, BOTTOM_WHEELS_THICKNESS])
-            scale([1, 1, TRANSMISSION_WHEEL_OVERLAP])
-            translate([0, 0, TOLERANCE])
-            cylinder(r=TRANSMISSION_RADIUS_INNER+TOLERANCE, h=1, true);
-
-            // hole in wheel
-            scale([1, 1, BOTTOM_WHEELS_THICKNESS*1.5])
-            translate([0, 0, -.125])
-            cylinder(r=TRANSMISSION_AXIAL_HOLE_RADIUS+TOLERANCE*2, h=1, true);
+//            // hole in ring
+//            translate([0, 0, BOTTOM_WHEELS_THICKNESS])
+//            scale([1, 1, TRANSMISSION_WHEEL_OVERLAP])
+//            translate([0, 0, TOLERANCE])
+//            cylinder(r=TRANSMISSION_RADIUS_INNER+TOLERANCE, h=1, true);
+//
+//            // hole in wheel
+//            scale([1, 1, BOTTOM_WHEELS_THICKNESS*1.5])
+//            translate([0, 0, -.125])
+//            cylinder(r=TRANSMISSION_AXIAL_HOLE_RADIUS+TOLERANCE*2, h=1, true);
         }
     }
 }

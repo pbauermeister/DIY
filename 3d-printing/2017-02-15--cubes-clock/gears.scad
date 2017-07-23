@@ -1,0 +1,79 @@
+include <lib/wheel-lib.scad>
+include <servo.scad>
+include <definitions.scad>
+
+//
+// NOTES:
+//
+// Printing resolution: Normal (not draft, not fine)
+// Fill: 10%
+//
+
+// Gear
+WHEEL_EXTERNAL_DIAMETER = 24.65;
+WHEEL_THICKNESS = 3.5;
+WHEEL_AXIS_TIGHTEN = TOLERANCE*0.5;
+WHEEL_HOLE_DIAMETER = SERVO_AXIS_RADIUS*2 - WHEEL_AXIS_TIGHTEN;
+PINION_THICKNESS = 5.3;
+
+GEAR_HUB_CUBE_WIDTH = 15.8 - PLAY*2;
+GEAR_HUB_CUBE_HEIGHT = 5.8 - PLAY*2;
+GEAR_HUB_CUBE_SHIFT = WHEEL_THICKNESS;
+
+
+//
+// PARTS
+//
+
+module make_gears(generate_what=GEAR_BEVEL_PAIR_TOGETHER) {
+    gear_bevel_pair(
+        gears_module=0.8,
+        wheel_teeth_nb=30,
+        wheel_hole_diameter=WHEEL_HOLE_DIAMETER,
+        pinion_teeth_nb=13,
+        pinion_hole_diameter=SCREW_THREAD_DIAMETER + TOLERANCE,
+        teeth_width=5,
+        axis_angle=90,
+        generate_what=generate_what
+        //                generate_what=GEAR_BEVEL_PAIR_ONLY_PINION
+    );
+}
+
+module make_gears_test_box() {
+    translate([0, 0, GEAR_HUB_CUBE_HEIGHT/2 + GEAR_HUB_CUBE_SHIFT])
+    cube([GEAR_HUB_CUBE_WIDTH, GEAR_HUB_CUBE_WIDTH, GEAR_HUB_CUBE_HEIGHT], true);
+
+    // markers
+    translate([0, 0, GEAR_HUB_CUBE_HEIGHT + GEAR_HUB_CUBE_SHIFT])
+    sphere(r=SERVO_AXIS_RADIUS-TOLERANCE);
+
+    translate([-GEAR_HUB_CUBE_WIDTH/2, 0, GEAR_HUB_CUBE_HEIGHT/2 + GEAR_HUB_CUBE_SHIFT])
+    sphere(r=SCREW_THREAD_DIAMETER/2 - TOLERANCE);
+}
+
+module make_gears_for_test(together=true) {
+    if (together) {
+        %make_gears();
+        %make_gears_test_box();
+    } else {
+        make_gears(GEAR_BEVEL_PAIR_SEPARATE_FLAT);    
+        translate([-WHEEL_EXTERNAL_DIAMETER/2 - 20, 0, -GEAR_HUB_CUBE_SHIFT])
+        make_gears_test_box();
+    }
+}
+
+module make_printabble_gears() {
+    make_gears(GEAR_BEVEL_PAIR_SEPARATE_FLAT);
+    
+    difference() {
+        union() {
+            difference() {
+                scale([1, 1, WHEEL_THICKNESS]) cylinder(r=WHEEL_EXTERNAL_DIAMETER/4);
+                scale([1, 1, WHEEL_THICKNESS+ATOM]) cylinder(r=WHEEL_HOLE_DIAMETER/2);
+            }
+            scale([1, 1, SCREW_PLATE_THICKNESS]) cylinder(r=SERVO_AXIS_RADIUS+1);
+        }
+        translate([0, 0, -ATOM])
+        scale([1, 1, WHEEL_THICKNESS+ATOM*2]) cylinder(r=SCREW_THREAD_DIAMETER/2 + TOLERANCE*2);
+    }
+}

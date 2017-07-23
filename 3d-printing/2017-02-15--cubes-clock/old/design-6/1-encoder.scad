@@ -129,5 +129,4 @@ module encoder_cavity() {
     cube(1);
 }
 
-encoder();
-
+rotate([180, 0, 0]) encoder();
