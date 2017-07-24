@@ -24,8 +24,8 @@ module servo_cut(thickness, shave_by=SERVO_AXIS_RADIUS) {
 }
 
 module servo_grips() {
-    radius = 0.45;
-    translate([0, 0, radius])
+    radius = 0.8;
+//    translate([0, 0, radius])
     rotate([0, 0, -90])
     minkowski() {
         scale([10, 10, 1])
