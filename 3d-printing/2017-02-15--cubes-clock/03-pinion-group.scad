@@ -41,29 +41,43 @@ module bar(radius, thickness) {
     cube([radius*2, thickness, crown_thickness], true);
 }
 
-// Gear
-translate([0, 0, (PINION_GROUP_H4 - PINION_THICKNESS)])
-make_gears(GEAR_BEVEL_PAIR_ONLY_PINION_FLAT);
-
-// Neck
-scale([1, 1, PINION_GROUP_H4 - PINION_THICKNESS + 0.5])
-cylinder(r=PINION_NECK_RADIUS);
-
-// Crown
-scale([1, 1, crown_thickness])
-difference() {
-    cylinder(r=PINION_GROUP_R4 - PLAY);
-
-    translate([0, 0, -0.5]) scale([1, 1, 2])
-    cylinder(r=PINION_GROUP_R1);
-
-    for (a=[-10:5:10])
-        rotate([0, 0, a])
-        bar(PINION_GROUP_R32+0.5, BAR_THICKNESS+1);
+module pgroup_gear() {
+    translate([0, 0, (PINION_GROUP_H4 - PINION_THICKNESS)])
+    make_gears(GEAR_BEVEL_PAIR_ONLY_PINION_FLAT);
 }
 
-// Spring
-arc(PINION_GROUP_R3, -45);
-arc(PINION_GROUP_R3, 180-45);
+module pgroup_neck() {
+    scale([1, 1, PINION_GROUP_H4 - PINION_THICKNESS + 0.5])
+    cylinder(r=PINION_NECK_RADIUS);
+}
 
-bar(PINION_GROUP_R32, BAR_THICKNESS);
+module pgroup_crown() {
+    scale([1, 1, crown_thickness])
+    difference() {
+        cylinder(r=PINION_GROUP_R4 - PLAY);
+
+        translate([0, 0, -0.5]) scale([1, 1, 2])
+        cylinder(r=PINION_GROUP_R1);
+
+        for (a=[-10:2:10])
+            rotate([0, 0, a])
+            bar(PINION_GROUP_R32+0.5, BAR_THICKNESS+1);
+    }
+}
+
+module pgroup_spring_bar() {
+    arc(PINION_GROUP_R3, -45);
+    arc(PINION_GROUP_R3, 180-45);
+    bar(PINION_GROUP_R32, BAR_THICKNESS);
+}
+
+pgroup_gear();
+difference() {
+    union() {
+       pgroup_neck();
+       pgroup_spring_bar();
+    }
+    scale([1, 1, PINION_GROUP_R1])
+    cylinder(r=3);
+}
+pgroup_crown();
