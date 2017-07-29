@@ -43,15 +43,8 @@ module make_center_screw_cavity(diameter) {
 
 module make_snap_cavities() {
     translate([0, 0, -ATOM])
-    scale([1, 1, PLATE_THICKNESS+ATOM*2]) {
-        r = PLATE_DIAMETER/2 - PLATE_SCREWS_BORDER_DISTANCE;
-        n = 4;
-        offset_angle = 50;
-        for(a=[0:n-1])
-            rotate([0, 0, a*360/n + offset_angle])
-            translate([0, r, 0])
-            cylinder(r=SNAP_HOLE_DIAMETER/2, true);        
-    }
+    scale([1, 1, PLATE_THICKNESS+ATOM*2])
+    alignment_columns(TOLERANCE);
 }
 
 module make_servo_extraction_cavity() {
