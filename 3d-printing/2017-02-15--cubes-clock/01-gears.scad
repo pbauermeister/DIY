@@ -5,4 +5,4 @@ if (false)
     make_gears_for_test(/*false*/);
 else
     // printable
-    make_printable_gears();
+    make_printable_wheel();

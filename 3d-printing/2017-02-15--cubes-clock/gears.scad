@@ -16,8 +16,6 @@ WHEEL_AXIS_TIGHTEN = TOLERANCE*0.5;
 WHEEL_HOLE_DIAMETER = SERVO_AXIS_RADIUS*2 - WHEEL_AXIS_TIGHTEN;
 WHEEL_PLATE_THICKNESS = 1;
 
-PINION_THICKNESS = 5.3;
-
 GEAR_HUB_CUBE_WIDTH = 15.8 - PLAY*2 + 0.3;
 GEAR_HUB_CUBE_HEIGHT = 5.8 - PLAY*2 + 1.3;
 GEAR_HUB_CUBE_SHIFT = WHEEL_THICKNESS;
@@ -79,11 +77,11 @@ module wheel_plate() {
     }
 }
     
-module make_printable_gears() {
+module make_printable_wheel() {
 
-    // Pinion
-    translate([WHEEL_EXTERNAL_DIAMETER/2 + 20, 0, 0])
-    make_gears(GEAR_BEVEL_PAIR_ONLY_PINION_FLAT);
+//    // Pinion
+//    translate([WHEEL_EXTERNAL_DIAMETER/2 + 20, 0, 0])
+//    make_gears(GEAR_BEVEL_PAIR_ONLY_PINION_FLAT);
     
     // Wheel
     translate([0, 0, WHEEL_PLATE_THICKNESS])
