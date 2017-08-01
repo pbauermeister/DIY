@@ -35,6 +35,15 @@ module servo_grips() {
     }
 }
 
+module servo_cover(thickness, shave_by=TOLERANCE) {
+    rotate([0, 0, -90])
+    linear_extrude(height=thickness)
+    offset(r=-shave_by)
+    scale([10, 10, 1])
+    import("servo-cover.dxf");
+   
+}
+
 
 //%servo_hull();
 //servo_grips();

@@ -18,7 +18,7 @@ module plate2_crown() {
     barrel(PLATE2_R4, PLATE2_R1, 1);
     
     // barrel
-    barrel(PLATE2_R5, PLATE2_R4, PLATE2_H4);
+    barrel(PLATE2_R5, PLATE2_R4, PLATE2_HEIGHT);
     
     // ring
     r = PLATE2_RING_THICKNESS/2;

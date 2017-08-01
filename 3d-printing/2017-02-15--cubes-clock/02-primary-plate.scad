@@ -1,9 +1,9 @@
 //TODO : - Design 2nd plate: 90° snappers crown, cross attached to pinion to transmit to crown with lotta play, crown-cross: axial guidance, vertical locking, pionon to plate with 4x shafts to next module
 
-include <lib/wheel-lib.scad>
-include <servo.scad>
 include <definitions.scad>
+include <lib/wheel-lib.scad>
 include <gears.scad>
+include <servo.scad>
 
 //
 // NOTES:
@@ -15,6 +15,7 @@ include <gears.scad>
 SERVO_X_ADJUSTMENT = 0.5;
 
 SERVO_X_POSITION = WHEEL_THICKNESS - SCREW_PLATE_THICKNESS + SERVO_X_ADJUSTMENT;
+echo("Servo X position =", SERVO_X_POSITION);
 
 //
 // PARTS
@@ -68,8 +69,8 @@ module make_servo_extraction_cavity() {
     }
 }
 
-module make_servo_hull(with_clearances=false) {
-    z = WHEEL_EXTERNAL_DIAMETER/2 - PINION_THICKNESS;
+module make_servo_hull(with_clearances=false,
+                       z=WHEEL_EXTERNAL_DIAMETER/2 - PINION_THICKNESS) {
     translate([SERVO_X_POSITION, 0, z])
     servo_hull(with_clearances);
 }
@@ -121,14 +122,14 @@ module plate(){
 //
 plate();
 
-
 if (1) {
     // servo ghost
     translate([GEAR_HUB_CUBE_HEIGHT/2 + WHEEL_THICKNESS, 0, 
                WHEEL_EXTERNAL_DIAMETER/2 - PINION_THICKNESS])
     rotate([0, -90, 0]) %make_gears();
     %make_servo_hull();
+    
+    // base barrel
+    translate([0, 0, -PLATE2_HEIGHT])
+    %barrel(PLATE2_R5, PLATE2_R4, PLATE2_HEIGHT);
 }
-
-
-
