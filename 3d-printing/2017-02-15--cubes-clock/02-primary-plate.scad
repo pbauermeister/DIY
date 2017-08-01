@@ -47,6 +47,16 @@ module make_snap_cavities() {
     alignment_columns(TOLERANCE);
 }
 
+module make_snap_pins() {
+    translate([0, 0, PLATE_THICKNESS-3])
+    scale([1, 1, 3+2])
+    alignment_columns(-TOLERANCE);
+
+    translate([0, 0, PLATE_THICKNESS-3])
+    scale([1, 1, 3])
+    alignment_columns(+TOLERANCE);
+}
+
 module make_servo_extraction_cavity() {
     translate([0, 0, -ATOM])
     scale([1, 1, PLATE_THICKNESS+ATOM*2]) {
@@ -99,6 +109,11 @@ module plate(){
         //make_servo_extraction_cut();
     }
     make_servo_grips();
+    
+    if(0) difference() {
+        make_snap_pins();
+        make_servo_cavity();
+    }
 }
 
 //
@@ -108,8 +123,12 @@ plate();
 
 
 if (1) {
+    // servo ghost
     translate([GEAR_HUB_CUBE_HEIGHT/2 + WHEEL_THICKNESS, 0, 
                WHEEL_EXTERNAL_DIAMETER/2 - PINION_THICKNESS])
     rotate([0, -90, 0]) %make_gears();
     %make_servo_hull();
 }
+
+
+
