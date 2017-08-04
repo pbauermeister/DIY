@@ -17,12 +17,16 @@ module plate2_crown() {
     // base crown
     barrel(PLATE2_R4, PLATE2_R1, 1);
     
-    // barrel
-    barrel(PLATE2_R5, PLATE2_R4, PLATE2_HEIGHT);
+    // screw barrel
+    SCREW_BARREL_THICKNESS = 1.7;
+    barrel(SCREW_THREAD_DIAMETER/2 + SCREW_BARREL_THICKNESS, SCREW_THREAD_DIAMETER/2, PLATE2_HEIGHT);
+    
+    // outer barrel
+    barrel(PLATE2_R5, PLATE2_R4, PLATE2_HEIGHT - PLAY);
     
     // ring
     r = PLATE2_RING_THICKNESS/2;
-    translate([0, 0, PLATE2_H4 - r])
+    translate([0, 0, PLATE2_H4 - r - PLAY])
     rotate_extrude(convexity = 10)
     translate([PLATE2_R4, 0, 0])
     circle(r=r);
@@ -39,11 +43,11 @@ module plate2() {
             plate2_gear();
             plate2_neck();
             plate2_bar();
+            plate2_crown();
         }
         translate([0, 0, PLATE2_NECK_HEIGHT-PINION_SCREW_HEAD_RADIUS+PLAY])
         sphere(r=PINION_SCREW_HEAD_RADIUS);
     }
-    plate2_crown();
 }
 
 difference() {

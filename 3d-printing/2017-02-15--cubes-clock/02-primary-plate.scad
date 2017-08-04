@@ -1,4 +1,4 @@
-//TODO : - Design 2nd plate: 90° snappers crown, cross attached to pinion to transmit to crown with lotta play, crown-cross: axial guidance, vertical locking, pionon to plate with 4x shafts to next module
+//TODO: Bumps to hold zip tie
 
 include <definitions.scad>
 include <lib/wheel-lib.scad>
