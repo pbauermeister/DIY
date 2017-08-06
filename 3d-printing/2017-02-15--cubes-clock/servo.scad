@@ -5,7 +5,7 @@ module servo_hull(with_clearances=false) {
     rotate([0, 0, -90])
     translate([0, 0, -SERVO_THICKNESS/2])
     linear_extrude(height=SERVO_THICKNESS)
-    offset(delta=TOLERANCE/2) // <== Loosen a bit the cavity
+    //offset(delta=TOLERANCE/2) // <== Loosen a bit the cavity
     scale([10, 10, 1]) {
         import("servo.dxf");
         if (with_clearances)
@@ -36,13 +36,22 @@ module servo_grips() {
 }
 
 module servo_cover(thickness, shave_by=0 /*TOLERANCE*/) {
-    SERVO_COVER_THICKNESS = 3;
     rotate([0, 0, -90])
     difference() {
         linear_extrude(height=thickness)
         offset(delta=-shave_by)
         scale([10, 10, 1])
         import("servo-cover.dxf");
+    }   
+}
+
+module servo_cover_clip(thickness, grow_by=0 /*TOLERANCE*/) {
+    rotate([0, 0, -90])
+    difference() {
+        linear_extrude(height=thickness)
+        offset(delta=grow_by)
+        scale([10, 10, 1])
+        import("servo-cover-clip.dxf");
     }   
 }
 

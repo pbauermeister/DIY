@@ -83,6 +83,12 @@ module make_servo_cavity() {
             make_servo_hull(true);
 }
 
+module make_servo_clip_cavity() {
+    z = WHEEL_EXTERNAL_DIAMETER/2 - PINION_THICKNESS;
+    translate([SERVO_X_POSITION, 0, z + SERVO_THICKNESS/2])
+    servo_cover_clip(PLATE_THICKNESS, TOLERANCE);
+}
+
 module make_servo_extraction_cut() {
     servo_cut(PLATE_THICKNESS*1.5, shave_by=8);
 }
@@ -99,17 +105,30 @@ module make_servo_grips() {
     }
 }
 
+module make_zip_tie_bumps() {
+    r = ZIP_TIE_BUMP_RADIUS;
+    h = PLATE_THICKNESS - servo_cover_height()/2;
+
+    translate([PLATE_DIAMETER/2, 0, h + ZIP_TIE_SLIT_WIDTH/2 + r])
+    sphere(r=r);
+
+    translate([PLATE_DIAMETER/2, 0, h - ZIP_TIE_SLIT_WIDTH/2 - r])
+    sphere(r=r);
+}
+
 module plate(){
     difference() {
         make_plate_base(PLATE_THICKNESS);
 
         make_center_screw_cavity(SCREW_SHAFT_DIAMETER);
-        make_snap_cavities();
+//        make_snap_cavities();
         make_servo_cavity();
+        make_servo_clip_cavity();
         make_servo_extraction_cavity();
         //make_servo_extraction_cut();
     }
-    make_servo_grips();
+//    make_servo_grips();
+//    make_zip_tie_bumps();
     
     if(0) difference() {
         make_snap_pins();
