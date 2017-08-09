@@ -89,8 +89,9 @@ module make_servo_clip_cavity() {
     servo_cover_clip(PLATE_THICKNESS, TOLERANCE);
 }
 
-module make_servo_extraction_cut() {
-    servo_cut(PLATE_THICKNESS*1.5, shave_by=8);
+module make_servo_screw_holes() {
+    translate([SERVO_X_POSITION, 0, 0])
+    servo_cover_screw_holes();
 }
 
 module make_servo_grips() {
@@ -125,8 +126,9 @@ module plate(){
         make_servo_cavity();
         make_servo_clip_cavity();
         make_servo_extraction_cavity();
-        //make_servo_extraction_cut();
+        make_servo_screw_holes();
     }
+
 //    make_servo_grips();
 //    make_zip_tie_bumps();
     

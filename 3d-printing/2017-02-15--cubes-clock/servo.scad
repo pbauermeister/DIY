@@ -13,6 +13,14 @@ module servo_hull(with_clearances=false) {
     }
 }
 
+module servo_cable_clearance(height) {
+    rotate([0, 0, -90])
+    translate([0, 0, -height/2])
+    linear_extrude(height=height)
+    scale([10, 10, 1]) {
+        import("servo-cable-clearance.dxf");
+    }
+}
 
 module servo_cut(thickness, shave_by=SERVO_AXIS_RADIUS) {
     rotate([0, 0, -90])
@@ -20,8 +28,7 @@ module servo_cut(thickness, shave_by=SERVO_AXIS_RADIUS) {
     linear_extrude(height=thickness)
     offset(r=-shave_by)
     scale([10, 10, 1])
-    import("servo.dxf");
-   
+    import("servo.dxf");  
 }
 
 module servo_grips() {
@@ -55,6 +62,33 @@ module servo_cover_clip(thickness, grow_by=0 /*TOLERANCE*/) {
     }   
 }
 
+
+module servo_cover_screw_hole_part(diameter, thickness) {
+    rotate([0, 0, -90])
+    difference() {
+        delta = (diameter - 1) /2;
+        linear_extrude(height=thickness)
+        offset(delta=delta)
+        scale([10, 10, 1])
+        import("servo-cover-screws.dxf");
+    }   
+}
+
+module servo_cover_screw_holes(bottom_aligned=true) {
+    // thread
+    servo_cover_screw_hole_part(SCREW2_DIAMETER-TOLERANCE*2, PLATE_THICKNESS);
+
+    // hole
+    z = WHEEL_EXTERNAL_DIAMETER/2 - PINION_THICKNESS + SERVO_THICKNESS/2;
+    translate([0, 0, bottom_aligned ? z : 0])
+    servo_cover_screw_hole_part(SCREW2_DIAMETER+TOLERANCE*3, SERVO_THICKNESS);
+
+    // head
+    translate([0, 0, bottom_aligned
+                     ? PLATE_THICKNESS -SCREW2_HEAD_THICKNESS -TOLERANCE
+                     : servo_cover_height() -SCREW2_HEAD_THICKNESS -TOLERANCE])
+    servo_cover_screw_hole_part(SCREW2_HEAD_DIAMETER+TOLERANCE*2, PLATE_THICKNESS);
+}
 
 //%servo_hull();
 //servo_grips();

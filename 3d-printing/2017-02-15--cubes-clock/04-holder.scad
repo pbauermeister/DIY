@@ -34,39 +34,49 @@ module one_holder_spine_cover(height, is_last_holder) {
     }
 
     // servo cover
-    difference() {
-        h = servo_cover_height();
-        z = height - h*2 + PLAY + TOLERANCE;
-        translate([SERVO_X_POSITION, 0, z]) {
-            servo_cover(h);
-            servo_cover_clip(h);
+    h = servo_cover_height();
+    z = height - h*2 + PLAY + TOLERANCE;
+    intersection() {
+        translate([SERVO_X_POSITION, 0, z])
+        difference() {
+            union() {
+                servo_cover(h);
+                servo_cover_clip(h);
+            }
+            servo_cover_screw_holes(false);
         }
+        cylinder(r=HOLDER_RADIUS, h=PLATE_THICKNESS*1.5);
     }
 }
 
 module one_holder(height, is_last_holder) {
     difference() {
+        // holder
         one_holder_spine_cover(height, is_last_holder);
+        
+        // Hole for servo cables
+        make_servo_cable_clearance();
 
         // file flat
         translate([0, 0, -PLATE2_HEIGHT])
         scale([1, 1, height])
         translate([-PLATE_DIAMETER*1.5 - HOLDER_SPINE_THICKNESS, -PLATE_DIAMETER/2, 0])
         cube([PLATE_DIAMETER, PLATE_DIAMETER, PLATE2_HEIGHT+PLATE_THICKNESS]);
+    }
 
-//        // slit for zip tie
-//        h = servo_cover_height();
-//        z = height - h*2 + PLAY + TOLERANCE ;
-//        r = (PLATE_DIAMETER/2+HOLDER_RADIUS)/2 + 3;
-//        translate([SERVO_X_POSITION, -1, z + h/2 -ZIP_TIE_SLIT_WIDTH/2])
-//        barrel(r+ZIP_TIE_SLIT_THICKNESS, r, ZIP_TIE_SLIT_WIDTH);
-    }    
+    %translate([0, 0, HOLDER_HEIGHT_EXTRA])
+    make_servo_hull();    
 }
 
 module make_servo_hull(with_clearances=false,
                        z=WHEEL_EXTERNAL_DIAMETER/2 - PINION_THICKNESS) {
     translate([SERVO_X_POSITION, 0, z])
     servo_hull(with_clearances);
+}
+
+module make_servo_cable_clearance(z=WHEEL_EXTERNAL_DIAMETER/2 - PINION_THICKNESS) {
+    translate([SERVO_X_POSITION, 0, z+HOLDER_HEIGHT_EXTRA])
+    servo_cable_clearance(4);
 }
 
 module holder() {
