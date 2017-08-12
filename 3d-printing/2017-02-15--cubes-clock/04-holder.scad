@@ -1,91 +1,51 @@
-//TODO: slits for zip ties
-
 include <definitions.scad>
-include <lib/wheel-lib.scad>
-include <gears.scad>
-include <servo.scad>
-use <02-primary-plate.scad>
 
-HOLDER_HEIGHT_EXTRA = PLAY*4; // <== ADJUST
-HOLDER_HEIGHT = PLATE_THICKNESS + PLATE2_HEIGHT + HOLDER_HEIGHT_EXTRA;
+module one_holder(height, upside_down) {
+    // tenon
+    tenon_z = upside_down ? height - HOLDER_ARM_HEIGHT : 0;
+    translate([-HOLDER_ARM_RADIUS_SHORTAGE, 0, tenon_z]) {
+        length = PLATE_DIAMETER/2-HOLDER_ARM_RADIUS_SHORTAGE;
+        xs = HOLDER_THICKNESS/2;        
+        cylinder(h=HOLDER_ARM_HEIGHT, r=HOLDER_ARM_RADIUS);
+        translate([-length-xs, -HOLDER_ARM_THICKNESS/2, 0])
+        cube([length+xs, HOLDER_ARM_THICKNESS, HOLDER_ARM_HEIGHT]);
+    }
 
-echo("height =", HOLDER_HEIGHT);
-
-module one_holder_spine_cover(height, is_last_holder) {
-    translate([0, 0, -PLATE2_HEIGHT])
-    scale([1, 1, height])
+    // spine
     difference() {
-        // pizza slice            
-//        angle_trimming_1 = 11.6 + 2+2;
-//        angle_trimming_2 = 4 -10;
-        angle_trimming_1 = 45/2  +6;
-        angle_trimming_2 = -45/2 +6;
-
-        rotate([0, 0, 45*3-angle_trimming_1])
+        rotate([0, 0, 180 - HOLDER_ANGLE/2])
         intersection() {
-            cylinder(r=HOLDER_RADIUS);
-            cube(HOLDER_RADIUS);
-            rotate([0, 0, 45+angle_trimming_1+angle_trimming_2]) cube(HOLDER_RADIUS);    
+            barrel(PLATE_DIAMETER/2+HOLDER_THICKNESS, PLATE_DIAMETER/2+TOLERANCE/2, height);
+            cube([PLATE_DIAMETER, PLATE_DIAMETER, height]);
+            rotate([0, 0, HOLDER_ANGLE-90])
+            cube([PLATE_DIAMETER, PLATE_DIAMETER, height]);
         }
-        // remove main plate
-        cylinder(r=PLATE_DIAMETER/2+TOLERANCE);
-        // remove servo
-        make_servo_hull(z=0);
-    }
-
-    // servo cover
-    h = servo_cover_height();
-    z = height - h*2 + PLAY + TOLERANCE;
-    intersection() {
-        translate([SERVO_X_POSITION, 0, z])
-        difference() {
-            union() {
-                servo_cover(h);
-                servo_cover_clip(h);
-            }
-            servo_cover_screw_holes(false);
-        }
-        cylinder(r=HOLDER_RADIUS, h=PLATE_THICKNESS*1.5);
-    }
-}
-
-module one_holder(height, is_last_holder) {
-    difference() {
-        // holder
-        one_holder_spine_cover(height, is_last_holder);
         
-        // Hole for servo cables
-        make_servo_cable_clearance();
-
         // file flat
-        translate([0, 0, -PLATE2_HEIGHT])
-        scale([1, 1, height])
-        translate([-PLATE_DIAMETER*1.5 - HOLDER_SPINE_THICKNESS, -PLATE_DIAMETER/2, 0])
-        cube([PLATE_DIAMETER, PLATE_DIAMETER, PLATE2_HEIGHT+PLATE_THICKNESS]);
+        r = (PLATE_DIAMETER/2 + HOLDER_THICKNESS) * cos(HOLDER_ANGLE/2);
+        translate([-(PLATE_DIAMETER + r), -PLATE_DIAMETER/2, 0])
+        cube([PLATE_DIAMETER, PLATE_DIAMETER, height]);
     }
-
-    %translate([0, 0, HOLDER_HEIGHT_EXTRA])
-    make_servo_hull();    
 }
 
-module make_servo_hull(with_clearances=false,
-                       z=WHEEL_EXTERNAL_DIAMETER/2 - PINION_THICKNESS) {
-    translate([SERVO_X_POSITION, 0, z])
-    servo_hull(with_clearances);
-}
+HOLDER_HEIGHT = 50;
 
-module make_servo_cable_clearance(z=WHEEL_EXTERNAL_DIAMETER/2 - PINION_THICKNESS) {
-    translate([SERVO_X_POSITION, 0, z+HOLDER_HEIGHT_EXTRA])
-    servo_cable_clearance(4);
-}
+function get_holder_heights() = 
+    let(module_height = PLATE_THICKNESS - PLATES_OVERLAP/2 + PLATE2_HEIGHT)
+    [HOLDER_ARM_HEIGHT, module_height, module_height + HOLDER_MODULES_SPACING, HOLDER_ARM_HEIGHT];
 
 module holder() {
-    n = 3;
-//    n = 1;
-    translate([0, 0, -HOLDER_HEIGHT_EXTRA])
-    for (i=[0:n-1])
-        translate([0, 0, HOLDER_HEIGHT*i])
-        one_holder(HOLDER_HEIGHT, i==2);
+    heights = get_holder_heights();
+    one_holder(heights[0], false);
+
+    translate([0, 0, heights[0]])
+    one_holder(heights[1], false);
+
+    translate([0, 0, heights[0]+heights[1]])
+    one_holder(heights[2], true);
+
+    translate([0, 0, heights[0]+heights[1]+heights[2]])
+    one_holder(heights[3], true);
 }
 
 rotate([0, -90, 0])
