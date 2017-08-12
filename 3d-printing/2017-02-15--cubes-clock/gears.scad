@@ -33,7 +33,7 @@ function gears_wheel_radius(inner=false, median=false) =
 
 module gears_pinion() {
     gears_check_distance() {}
-    _wheel(modul=GEARS_MODULE, zahnzahl=14, hoehe=GEARS_THICKNESS, bohrung=SCREW2_DIAMETER + TOLERANCE, eingriffswinkel=20, schraegungswinkel=-20);
+    _wheel(modul=GEARS_MODULE, zahnzahl=14, hoehe=GEARS_THICKNESS, bohrung=SCREW2_DIAMETER + TOLERANCE*2, eingriffswinkel=20, schraegungswinkel=-20);
 }
 
 function gears_pinion_radius(inner=false, median=false) =
@@ -42,7 +42,7 @@ function gears_pinion_radius(inner=false, median=false) =
                 eingriffswinkel=20, schraegungswinkel=-20);
 
 function gears_distance() = gears_wheel_radius(median=true) +
-                            gears_pinion_radius(median=true) + TOLERANCE;
+                            gears_pinion_radius(median=true) + TOLERANCE*0;
 
 module gears_test() {
     gears_wheel();
