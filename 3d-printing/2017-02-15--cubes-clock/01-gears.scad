@@ -1,3 +1,11 @@
+// ============================================================================
+// NOTES:
+//
+// Printing resolution: Fine
+// Fill: default (40%)
+//
+// ============================================================================
+
 include <definitions.scad>
 use <gears.scad>
 
@@ -10,7 +18,7 @@ module wheel_plate() {
 
         translate([0, 0, -ATOM])
         scale([1, 1, WHEEL_PLATE_THICKNESS+ATOM*2])
-        cylinder(r=SCREW_THREAD_DIAMETER/2 + TOLERANCE);
+        cylinder(r=SERVO_SCREW_THREAD_DIAMETER/2 + TOLERANCE);
     }
 }
 
