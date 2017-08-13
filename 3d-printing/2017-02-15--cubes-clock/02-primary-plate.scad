@@ -1,16 +1,14 @@
-// TODO: Screw holes to tighten two together
-// TODO: Clip cavity to clip to spine
+// ============================================================================
+// NOTES:
+//
+// Printing resolution: Normal (not draft, not fine)
+// Fill: 15%
+//
+// ============================================================================
 
 include <definitions.scad>
 use <gears.scad>
 use <servo.scad>
-
-//
-// NOTES:
-//
-// Printing resolution: Normal (not draft, not fine)
-// Fill: 10%
-//
 
 ghost = !true;
 
@@ -47,11 +45,11 @@ module make_plate_top_cavities() {
 module make_servo_hull(with_clearance=false,
                        with_cable_slot=false,
                        with_screw_cavities=false,
-                       radius_excess=0) {
+                       is_clearance_hole=false) {
     translate([GEARS_DISTANCE, 0, PLATE_THICKNESS + PLAY]) {
         servo_hull(with_clearance, with_cable_slot);
         if (with_screw_cavities)
-            servo_screw_cavity(radius_excess=radius_excess);
+            servo_screw_cavity(is_clearance_hole=is_clearance_hole);
     }
 }
 
@@ -62,18 +60,21 @@ module make_servo_cavity(upside_down=false) {
             with_clearance=i==0&&upside_down,
             with_cable_slot=i==0&&upside_down,
             with_screw_cavities=i==0,
-            radius_excess=upside_down?0:TOLERANCE*2);
+            is_clearance_hole=!upside_down);
 }
 
 module plate() {
     difference() {
         make_plate_base();        
+
         // remove overlap
         translate([0, 0, -ATOM])
         cylinder(h=PLATES_OVERLAP/2+ATOM, r=PLATE_DIAMETER*0.6);
+
         // screw hole
         translate([0, 0, PLATE_THICKNESS-SCREW2_HEIGHT+ATOM])
         cylinder(h=SCREW2_HEIGHT, r=SCREW2_DIAMETER/2-TOLERANCE);
+
     }
 
     make_plate_top();
@@ -96,14 +97,21 @@ module plate_cavities(upside_down) {
 }
 
 module holder_cavity() {
-    rotate([0, 0, 45])
-    translate([-HOLDER_ARM_RADIUS_SHORTAGE, 0, PLATES_OVERLAP/2]) {
-        length = PLATE_DIAMETER/2-HOLDER_ARM_RADIUS_SHORTAGE;
-        cylinder(h=HOLDER_ARM_HEIGHT+TOLERANCE, r=HOLDER_ARM_RADIUS+TOLERANCE);
-        translate([-length, -HOLDER_ARM_THICKNESS/2-TOLERANCE, 0])
-        cube([length,
-              HOLDER_ARM_THICKNESS+TOLERANCE*2,
-              HOLDER_ARM_HEIGHT+TOLERANCE]);
+    rotate([0, 0, 45]) {
+        // hole for holder arm
+        translate([-HOLDER_ARM_RADIUS_SHORTAGE, 0, PLATES_OVERLAP/2]) {
+            length = PLATE_DIAMETER/2-HOLDER_ARM_RADIUS_SHORTAGE;
+            cylinder(h=HOLDER_ARM_HEIGHT+TOLERANCE, r=HOLDER_ARM_RADIUS+TOLERANCE);
+            translate([-length, -HOLDER_ARM_THICKNESS/2-TOLERANCE, 0])
+            cube([length,
+                  HOLDER_ARM_THICKNESS+TOLERANCE*2,
+                  HOLDER_ARM_HEIGHT+TOLERANCE]);
+        }
+
+        // hole for screw to holder
+        translate([-HOLDER_ARM_RADIUS_SHORTAGE, 0,
+                   PLATES_OVERLAP/2+HOLDER_ARM_HEIGHT + WALL_THICKNESS*1.5])
+        screw(head_extent=PLATE_THICKNESS, is_clearance_hole=true);
     }
 }
 

@@ -30,26 +30,18 @@ module servo_hull(with_clearance=false, with_cable_slot=false, rotation=180+45) 
     }
 }
 
-module servo_screw_cavity(rotation=180+45, radius_excess=0) {
+module servo_screw_cavity(rotation=180+45, is_clearance_hole=false) {
     rotate([0, 0, rotation]) {
         servo_screw(SERVO_SCREW1_H_DISPLACEMENT,
                     SERVO_SCREW_V_DISPLACEMENT,
-                    SERVO_SCREW_HEAD_EXTENT, radius_excess);
+                    SERVO_SCREW_HEAD_EXTENT, is_clearance_hole);
         servo_screw(SERVO_SCREW2_H_DISPLACEMENT,
                     SERVO_SCREW_V_DISPLACEMENT,
-                    SERVO_SCREW_HEAD_EXTENT, radius_excess);
+                    SERVO_SCREW_HEAD_EXTENT, is_clearance_hole);
     }
 }
 
-module servo_screw(distance_to_axis, z, head_extent, radius_excess) {   
-    translate([distance_to_axis, 0, z]) {
-        // thread
-        translate([0, 0, -SCREW2_HEIGHT + SCREW2_HEAD_THICKNESS])
-        cylinder(h=SCREW2_HEIGHT, r=SCREW2_DIAMETER/2 - TOLERANCE + radius_excess);
-
-        // head
-        for (i=[0:head_extent])
-            translate([0, 0, i])
-            cylinder(h=SCREW2_HEAD_THICKNESS, r=SCREW2_HEAD_DIAMETER/2 + PLAY);
-    }
+module servo_screw(distance_to_axis, z, head_extent, is_clearance_hole) {   
+    translate([distance_to_axis, 0, z])
+    screw(head_extent, is_clearance_hole);
 }

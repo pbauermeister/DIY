@@ -1,9 +1,15 @@
-//TODO: slits for zip ties
+// ============================================================================
+// NOTES:
+//
+// Printing resolution: Normal (not draft, not fine)
+// Fill: 5%
+//
+// ============================================================================
 
 include <definitions.scad>
 include <lib/wheel-lib.scad>
-include <gears.scad>
-include <servo.scad>
+//use <gears.scad>
+//use <servo.scad>
 
 cylinder = PLATE_THICKNESS + PLATE2_HEIGHT;
 
