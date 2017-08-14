@@ -71,9 +71,10 @@ module plate() {
         translate([0, 0, -ATOM])
         cylinder(h=PLATES_OVERLAP/2+ATOM, r=PLATE_DIAMETER*0.6);
 
-        // screw hole
+        // pinion screw hole
         translate([0, 0, PLATE_THICKNESS-SCREW2_HEIGHT+ATOM])
-        cylinder(h=SCREW2_HEIGHT, r=SCREW2_DIAMETER/2-TOLERANCE);
+        cylinder(h=SCREW2_HEIGHT,
+                 r=SCREW2_DIAMETER/2 - TOLERANCE*2); // <== Adjust with tolerance
 
     }
 
@@ -119,7 +120,8 @@ module holder_cavity() {
 // ALL
 //
 
-module plate_all(is_short=false) {
+module primary_plate(is_short=false) {
+    translate([0, 0, -PLATES_OVERLAP/2])
     difference() {
         union() {
             // this plate
@@ -148,6 +150,6 @@ module plate_all(is_short=false) {
 }
 
 difference() {
-    plate_all();
+    primary_plate();
 //    translate([0,0,-50]) cube(100);
 }
