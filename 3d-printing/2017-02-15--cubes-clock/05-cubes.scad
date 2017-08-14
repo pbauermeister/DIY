@@ -11,12 +11,6 @@ include <lib/wheel-lib.scad>
 //use <gears.scad>
 //use <servo.scad>
 
-cylinder = PLATE_THICKNESS + PLATE2_HEIGHT;
-
-BLOCK1_HEIGHT = cylinder*2  + PLAY*2 - PLATE2_HEIGHT;
-BLOCK2_HEIGHT = PLATE2_HEIGHT + PLAY*2;
-BLOCK3_HEIGHT = cylinder*2  + PLAY*2 - PLATE2_HEIGHT;
-
 BLOCKS_WIDTH = BOX_SIDE;
 
 BLOCKS_R1 = PLATE2_BOX_INNER_HOLE_DIAMETER/2;
@@ -24,7 +18,9 @@ BLOCKS_R2 = BLOCKS_R1 + WALL_THICKNESS;
 BLOCKS_R3 = BLOCKS_R2 + PLAY;
 BLOCKS_R4 = (BLOCKS_R3+BLOCKS_WIDTH/2)/2;
 
-echo("Cylinder =", cylinder);
+show_texts = false;
+
+echo("Cylinder =", block_cylinder);
 echo("Block 1 =", BLOCK1_HEIGHT);
 echo("Block 2 =", BLOCK2_HEIGHT);
 echo("Block 3 =", BLOCK3_HEIGHT);
@@ -50,8 +46,9 @@ module make_block_segments(height, segments) {
     for (i=[0:3]) rotate([0, 0, 90*i]) {
         seg = segments[i];
 
-        %translate([0, y, mid])
-        text(str(seg));
+        if (show_texts)
+            %translate([0, y, mid])
+            text(str(seg));
          
         if (seg=="a" || seg=="c" || seg=="d" ||
             seg=="e" || seg=="g") // top-left
@@ -113,7 +110,7 @@ module make_block0(height, is_closed, has_crown, has_guide, has_marks, segments)
 
                 // ring to reduce friction
                 translate([0, 0, height])
-                barrel(BLOCKS_R4+CUBE_SNAP_BALLS_RADIUS, BLOCKS_R2, PLAY/2);
+                barrel(BLOCKS_R4+CUBE_SNAP_BALLS_RADIUS, BLOCKS_R2, BLOCKS_JOIN);
                 
                 // snap balls
                 pos = BLOCKS_R4;
@@ -167,6 +164,20 @@ module make_block(height, is_closed, has_crown, has_guide, has_marks, segments) 
     }
 }
 
+module bottom_block() {
+    segs_low = ["e", "f", "g", "h"];
+    make_block(BLOCK1_HEIGHT, false, true, true, true, segs_low);
+}
+
+module mid_block() {
+    segs_mid = ["i", "j", "k", 0];
+    make_block(BLOCK2_HEIGHT , false, true, true, true, segs_mid);
+}
+
+module top_block() {
+    segs_top = ["a", "b", "c", "d"];
+    make_block(BLOCK3_HEIGHT, true, true, false, false, segs_top);
+}
 
 if(0) {
     // test block
@@ -175,17 +186,13 @@ if(0) {
     make_block(BLOCK2_HEIGHT /10 , false, true, true, true, segs_mid);
 }
 else {
-    //// bottom block
-    segs_low = ["e", "f", "g", "h"];
-    make_block(BLOCK1_HEIGHT, false, true, true, true, segs_low);
+    bottom_block();
 
     // mid block
-    segs_mid = ["i", "j", "k", 0];
     translate([BLOCKS_WIDTH + 15, 0, 0])
-    make_block(BLOCK2_HEIGHT , false, true, true, true, segs_mid);
-
+    mid_block();
+    
     // top block
-    segs_top = ["a", "b", "c", "d"];
     translate([BLOCKS_WIDTH*2 + 15*2, 0, 0])
-    make_block(BLOCK3_HEIGHT, true, true, false, false, segs_top);
+    top_block();
 }
