@@ -6,12 +6,12 @@ use <04-holder.scad>
 use <05-cubes.scad>
 
 INTERSPACE_HEIGHT = 12.5 +20;
-OVERALL_ROTATION = 90;
+OVERALL_ROTATION = 40;
 
 //
 // CYLINDERS
 //
-rotate([0, 0, OVERALL_ROTATION])
+%rotate([0, 0, OVERALL_ROTATION])
 {
     // Base plate
     flip(PLATE_HEIGHT_SHORT)
@@ -19,52 +19,39 @@ rotate([0, 0, OVERALL_ROTATION])
     // PLATE_HEIGHT_SHORT
 
     // primary plate
-    translate([0, 0, PLATE_HEIGHT_SHORT + TOLERANCE])
+    z1 = PLATE_HEIGHT_SHORT + TOLERANCE;
+    translate([0, 0, z1])
     primary_plate();
     // PLATE_THICKNESS
 
     // wheel
-    translate([0, 0, PLATE_HEIGHT_SHORT + TOLERANCE
-                     + PLATE_THICKNESS + TOLERANCE
-                     ])
+    z2 = z1 + PLATE_THICKNESS + TOLERANCE;
+    translate([0, 0, z2])
     flip(PLATE2_WHEEL_HEIGHT, 90)
     plate2();
     // PLATE2_WHEEL_HEIGHT
 
     // wheel upside-down
-    plate2_y = PLATE_HEIGHT_SHORT + TOLERANCE
-             + PLATE_THICKNESS + TOLERANCE
-             + PLATE2_WHEEL_HEIGHT + INTERSPACE_HEIGHT;
-    plate2_y = BLOCK1_HEIGHT_STACKABLE
-             + CUBE_CROWN_HEIGHT
-             + BLOCK2_HEIGHT/2
-             - PLATE2_WHEEL_HEIGHT/2;
-    translate([0, 0, plate2_y])
+    z3 = PLATE2_Z;
+    translate([0, 0, z3])
     plate2();
 
     // primary plate upside-down
-    translate([0, 0, plate2_y
-                     + PLATE2_WHEEL_HEIGHT + TOLERANCE
-                     ])
-
+    z4 = z3 + PLATE2_WHEEL_HEIGHT + TOLERANCE;
+    translate([0, 0, z4])
     flip(PLATE_THICKNESS)
     primary_plate();
     // PLATE_THICKNESS
 
     // primary plate
-    translate([0, 0, plate2_y
-                     + PLATE2_WHEEL_HEIGHT + TOLERANCE
-                     + PLATE_THICKNESS + TOLERANCE
-                     ])
+    z5 = z4 + PLATE_THICKNESS + TOLERANCE;
+    translate([0, 0, z5])
     primary_plate();
     // PLATE_THICKNESS
     
     // wheel
-    translate([0, 0, plate2_y
-                     + PLATE2_WHEEL_HEIGHT + TOLERANCE
-                     + PLATE_THICKNESS + TOLERANCE
-                     + PLATE_THICKNESS + TOLERANCE
-                     ])
+    z6 = z5 + PLATE_THICKNESS + TOLERANCE;
+    translate([0, 0, z6])
     flip(PLATE2_WHEEL_HEIGHT, 90)
     plate2();
     // PLATE2_WHEEL_HEIGHT
@@ -79,18 +66,19 @@ difference() {
         flip(BLOCK1_HEIGHT + CUBE_CROWN_HEIGHT)
         bottom_block();
         
-        translate([0, 0, BLOCK1_HEIGHT + CUBE_CROWN_HEIGHT + TOLERANCE])
+        z1 = BLOCK1_HEIGHT + CUBE_CROWN_HEIGHT + TOLERANCE;
+        translate([0, 0, z1])
 
         flip(BLOCK2_HEIGHT_STACKABLE)
         mid_block();
 
-        translate([0, 0, BLOCK1_HEIGHT + CUBE_CROWN_HEIGHT + TOLERANCE
-                         + BLOCK2_HEIGHT_STACKABLE + TOLERANCE])
+        z2 = z1 + BLOCK2_HEIGHT_STACKABLE + TOLERANCE;
+        translate([0, 0, z2])
         flip(BLOCK3_HEIGHT_STACKABLE)
         top_block();
     }
     
-    translate([-BOX_SIDE/2, -BOX_SIDE, -ATOM])
+    translate([-BOX_SIDE/2/2, -BOX_SIDE, -ATOM])
     cube([BOX_SIDE*2,
           BOX_SIDE*2,
           (BLOCK1_HEIGHT_STACKABLE+BLOCK2_HEIGHT_STACKABLE+BLOCK1_HEIGHT_STACKABLE)*2]);
@@ -99,8 +87,7 @@ difference() {
 //
 // SUPPORT
 //
-holder_y = PLATE_THICKNESS - PLATE_HEIGHT_SHORT;
-rotate([0, 0, OVERALL_ROTATION + 45])
-translate([-5, 0, holder_y*2])
-holder();
 
+rotate([0, 0, OVERALL_ROTATION + 45])
+//translate([-4, 0, 0])
+holder();
