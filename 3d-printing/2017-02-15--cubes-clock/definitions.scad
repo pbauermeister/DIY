@@ -82,7 +82,7 @@ HOLDER_ARM_RADIUS_SHORTAGE = 15;
 HOLDER_ARM_RADIUS = 4;
 HOLDER_ARM_THICKNESS = 6;
 HOLDER_THICKNESS = 3;
-HOLDER_ANGLE = 20;
+HOLDER_ANGLE = 35; //20
 HOLDER_MODULES_SPACING = 10;
 
 
@@ -241,4 +241,10 @@ module screw(head_extent=0, is_clearance_hole=false) {
     for (i=[0:head_extent])
         translate([0, 0, i])
         cylinder(h=SCREW2_HEAD_THICKNESS, r=SCREW2_HEAD_DIAMETER/2 + PLAY);
+}
+
+module flip(height, additional_angle=0) {
+        translate([0, 0, height])
+        rotate([180, 0, 90-additional_angle])
+        children();
 }
