@@ -1,27 +1,22 @@
 include <definitions.scad>
-use <02-primary-plate-short.scad>
+use <06-base-plate.scad>
 use <02-primary-plate.scad>
 use <03-plate2.scad>
 use <04-holder.scad>
 use <05-cubes.scad>
 
 INTERSPACE_HEIGHT = 12.5 +20;
-OVERALL_ROTATION = 40;
+OVERALL_ROTATION = 45;
 
-//
-// CYLINDERS
-//
-%rotate([0, 0, OVERALL_ROTATION])
-{
+module cylinders() {
     // Base plate
-    flip(PLATE_HEIGHT_SHORT)
-    short_plate();
+    base_plate();
     // PLATE_HEIGHT_SHORT
 
     // primary plate
     z1 = PLATE_HEIGHT_SHORT + TOLERANCE;
     translate([0, 0, z1])
-    primary_plate();
+    primary_plate(has_holder_stop=false);
     // PLATE_THICKNESS
 
     // wheel
@@ -40,7 +35,7 @@ OVERALL_ROTATION = 40;
     z4 = z3 + PLATE2_WHEEL_HEIGHT + TOLERANCE;
     translate([0, 0, z4])
     flip(PLATE_THICKNESS)
-    primary_plate();
+    primary_plate(has_holder_stop=false);
     // PLATE_THICKNESS
 
     // primary plate
@@ -57,11 +52,7 @@ OVERALL_ROTATION = 40;
     // PLATE2_WHEEL_HEIGHT
 }
 
-//
-// CUBES
-//
-rotate([0, 0, OVERALL_ROTATION - 180])
-difference() {
+module cubes() {
     rotate([0, 0, 135]) {
         flip(BLOCK1_HEIGHT + CUBE_CROWN_HEIGHT)
         bottom_block();
@@ -77,17 +68,39 @@ difference() {
         flip(BLOCK3_HEIGHT_STACKABLE)
         top_block();
     }
-    
-    translate([-BOX_SIDE/2/2, -BOX_SIDE, -ATOM])
+}
+
+module cubes_cut() {
+    translate([-BOX_SIDE/2/2*0, -BOX_SIDE, -ATOM])
     cube([BOX_SIDE*2,
           BOX_SIDE*2,
           (BLOCK1_HEIGHT_STACKABLE+BLOCK2_HEIGHT_STACKABLE+BLOCK1_HEIGHT_STACKABLE)*2]);
 }
 
 //
-// SUPPORT
+// All together
 //
+
+rotate([0, 0, OVERALL_ROTATION])
+cylinders();
+
+rotate([0, 0, OVERALL_ROTATION - 180])
+difference() {
+    cubes();
+    cubes_cut();
+}
 
 rotate([0, 0, OVERALL_ROTATION + 45])
 //translate([-4, 0, 0])
+translate([-PLAY, 0, 0])
 holder();
+
+
+
+
+
+
+
+
+
+

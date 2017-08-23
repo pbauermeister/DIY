@@ -8,8 +8,6 @@
 
 include <definitions.scad>
 include <lib/wheel-lib.scad>
-//use <gears.scad>
-//use <servo.scad>
 
 BLOCKS_WIDTH = BOX_SIDE;
 
@@ -17,6 +15,10 @@ BLOCKS_R1 = PLATE2_BOX_INNER_HOLE_DIAMETER/2;
 BLOCKS_R2 = BLOCKS_R1 + WALL_THICKNESS;
 BLOCKS_R3 = BLOCKS_R2 + PLAY;
 BLOCKS_R4 = (BLOCKS_R3+BLOCKS_WIDTH/2)/2;
+
+CUBE_SNAP_BALLS_POS_R = BLOCKS_R4 + CUBE_SNAP_BALLS_RADIUS*CUBE_SNAP_BALLS_K + PLAY;
+
+function get_cube_snap_ball_pos_radius() = CUBE_SNAP_BALLS_POS_R;
 
 show_texts = false;
 
@@ -84,46 +86,51 @@ module make_block_segments(height, segments) {
     }
 }
 
-module make_block0(height, is_closed, has_crown, has_guide, has_marks, segments) {
+module make_block0(height, is_closed, has_full_crown, has_guide, has_marks, segments) {
     difference() {
         union() {
             difference() {
+                // outer shape
                 translate([-BLOCKS_WIDTH/2, -BLOCKS_WIDTH/2, 0])
                 cube([BLOCKS_WIDTH, BLOCKS_WIDTH, height]);
                 
-                scale([1, 1, height])
+                // central chamber
+                translate([0, 0, -ATOM])
+                scale([1, 1, height+ATOM*2])
                 cylinder(r=BLOCKS_R1, true);
 
                 if(has_guide) {
-                    translate([0, 0, BLOCKS_R3/2 + CUBE_CROWN_HEIGHT])
-                    cylinder(h=BLOCKS_R3, r1=BLOCKS_R3, r2=0, center=true);            
+                    // remove cone to create bottom chamfer
+                    translate([0, 0, BLOCKS_R3/2 + CUBE_CROWN_HEIGHT -ATOM])
+                    cylinder(h=BLOCKS_R3+ATOM*2, r1=BLOCKS_R3, r2=0, center=true); 
 
-                    translate([0, 0, (CUBE_CROWN_HEIGHT)/2])
-                    cylinder(h=CUBE_CROWN_HEIGHT, r=BLOCKS_R3, center=true);
+                    // remove cylinder to create radial play, below chamfer
+                    translate([0, 0, (CUBE_CROWN_HEIGHT)/2-ATOM])
+                    cylinder(h=CUBE_CROWN_HEIGHT+ATOM*2, r=BLOCKS_R3, center=true);
                 }
             }
 
-            if (has_crown) {
-                // crown
-                translate([0, 0, height])
-                barrel(BLOCKS_R2, BLOCKS_R1, CUBE_CROWN_HEIGHT);
+            // crown
+            translate([0, 0, height])
+            barrel(BLOCKS_R2, BLOCKS_R1, has_full_crown ? CUBE_CROWN_HEIGHT : CUBE_CROWN_SHORT_HEIGHT);
 
-                // ring to reduce friction
-                translate([0, 0, height])
-                barrel(BLOCKS_R4+CUBE_SNAP_BALLS_RADIUS, BLOCKS_R2, BLOCKS_JOIN);
-                
-                // snap balls
-                pos = BLOCKS_R4;
-//                h = PLAY/1.5;
-                h = PLAY;
-                for (i=[0:3])
-                    rotate([0, 0, 30 + 90*i])
-                    translate([0, pos, height+PLAY/2])
-                    cylinder(h=h, r=CUBE_SNAP_BALLS_RADIUS);
-//                    sphere(CUBE_SNAP_BALLS_RADIUS, true);
-            }
+            // ring to reduce friction
+            translate([0, 0, height])
+            barrel(BLOCKS_R4+CUBE_SNAP_BALLS_RADIUS*CUBE_SNAP_BALLS_K, BLOCKS_R2, BLOCKS_JOIN);
+            
+            // snap balls
+            for (i=[0:3])
+                rotate([0, 0, 30 + 90*i])
+                translate([0, get_cube_snap_ball_pos_radius(), height+PLAY/2])
+                scale([CUBE_SNAP_BALLS_K, CUBE_SNAP_BALLS_K, 1]) {
+                    sphere(CUBE_SNAP_BALLS_RADIUS, true);
+
+                    translate([0, 0, -BLOCKS_JOIN])
+                    cylinder(h=BLOCKS_JOIN, r=CUBE_SNAP_BALLS_RADIUS);
+                }
             
             if (is_closed) {
+                // top closing plate
                 translate([-BLOCKS_WIDTH/2, -BLOCKS_WIDTH/2, 0])
                 cube([BLOCKS_WIDTH, BLOCKS_WIDTH, WALL_THICKNESS]);
             }
@@ -136,22 +143,38 @@ module make_block0(height, is_closed, has_crown, has_guide, has_marks, segments)
         lever_length = (lever_r1*3 + lever_r2)/4;
         r = 2;
         rotate([0, 0, 45])
-        translate([0, -lever_cavity_thickness/2 +r, r + WALL_THICKNESS])
-        minkowski() {
-            cube([lever_length-r*2, lever_cavity_thickness-r*2, height*2]);
-            sphere(r=r);
+        if (0)
+            // rounded
+            translate([0, -lever_cavity_thickness/2 +r, r + WALL_THICKNESS])
+            minkowski() {
+                cube([lever_length-r*2, lever_cavity_thickness-r*2, height-CUBE_CROWN_HEIGHT]);
+                sphere(r=r);
         }
+        else
+            // not rounded
+            translate([0, -lever_cavity_thickness/2, WALL_THICKNESS])
+            cube([lever_length, lever_cavity_thickness, height-CUBE_CROWN_HEIGHT]);
+                
         
         // snap mark
         if (has_marks) {
-            pos = BLOCKS_R4;
-            for (i=[0:3])
-                rotate([0, 0, 30 + 90*i])
-                translate([0, pos, 0])
-                sphere(CUBE_SNAP_BALLS_RADIUS+PLAY*2, true);
+            make_block_snap_marks();
         }
+        
+        // segment gluing marks
         make_block_segments(height, segments);
     }
+}
+
+module make_block_snap_marks() {
+    r = CUBE_SNAP_BALLS_RADIUS + PLAY/2; // <== ADJUST
+    r = CUBE_SNAP_BALLS_RADIUS + PLAY/2.5; // <== ADJUST
+    r = CUBE_SNAP_BALLS_RADIUS + PLAY/2.3; // <== ADJUST
+    for (i=[0:3])
+        rotate([0, 0, 30 + 90*i])
+        translate([0, CUBE_SNAP_BALLS_POS_R, 0])
+        scale([CUBE_SNAP_BALLS_K, CUBE_SNAP_BALLS_K, CUBE_SNAP_BALLS_K])
+        sphere(r, true);
 }
 
 module make_block(height, is_closed, has_crown, has_guide, has_marks, segments) {
@@ -159,6 +182,7 @@ module make_block(height, is_closed, has_crown, has_guide, has_marks, segments) 
         make_block0(height, is_closed, has_crown, has_guide, has_marks, segments);
 
         if(0)
+            // cross-cut
             translate([BLOCKS_WIDTH/6, BLOCKS_WIDTH/6, 0])
             cube([BLOCKS_WIDTH, BLOCKS_WIDTH, height*2]);
     }
@@ -166,7 +190,7 @@ module make_block(height, is_closed, has_crown, has_guide, has_marks, segments) 
 
 module bottom_block() {
     segs_low = ["e", "f", "g", "h"];
-    make_block(BLOCK1_HEIGHT, false, true, true, true, segs_low);
+    make_block(BLOCK1_HEIGHT, false, false, true, true, segs_low);
 }
 
 module mid_block() {
@@ -179,20 +203,26 @@ module top_block() {
     make_block(BLOCK3_HEIGHT, true, true, false, false, segs_top);
 }
 
-if(0) {
+if (0) {
     // test block
-    segs_mid = ["i", "j", "k", 0];
-    translate([BLOCKS_WIDTH + 15, 0, 0])
-    make_block(BLOCK2_HEIGHT /10 , false, true, true, true, segs_mid);
+    intersection() {
+        make_block(5 , false, true, true, true, [0, 0, 0, 0]);
+        if (0)
+            cube([BLOCKS_WIDTH, BLOCKS_WIDTH, BLOCKS_WIDTH]);
+    }
 }
 else {
+    space = 7;
+    shift = BLOCKS_WIDTH/2 + space;
+    
+    translate([-shift, -shift, 0])
     bottom_block();
 
     // mid block
-    translate([BLOCKS_WIDTH + 15, 0, 0])
+    translate([shift, -shift, 0])
     mid_block();
     
     // top block
-    translate([BLOCKS_WIDTH*2 + 15*2, 0, 0])
+    translate([shift, shift, 0])
     top_block();
 }
