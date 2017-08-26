@@ -2,11 +2,23 @@
 // NOTES:
 //
 // Printing resolution: Normal (not draft, not fine)
-// Fill: 15%
+// Fill: 5%
 //
 // ============================================================================
 
 include <definitions.scad>
-use <06-base-plate.scad>
+use <cubes.scad>
 
-base_plate(true);
+space = 7;
+shift = BLOCKS_WIDTH/2 + space;
+
+translate([-shift, -shift, 0])
+bottom_block();
+
+// mid block
+translate([shift, -shift, 0])
+mid_block();
+
+// top block
+translate([shift, shift, 0])
+top_block();

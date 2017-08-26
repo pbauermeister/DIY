@@ -1,9 +1,17 @@
+// ============================================================================
+// NOTES:
+// Test file.
+// You can render it for test, but do not export to STL.
+//
+// ============================================================================
+
+
 include <definitions.scad>
-use <06-base-plate.scad>
-use <02-primary-plate.scad>
-use <03-plate2.scad>
-use <04-holder.scad>
-use <05-cubes.scad>
+use <base-plate.scad>
+use <center-plate.scad>
+use <lever-plate.scad>
+use <holder.scad>
+use <cubes.scad>
 
 INTERSPACE_HEIGHT = 12.5 +20;
 OVERALL_ROTATION = 45;
@@ -16,39 +24,39 @@ module cylinders() {
     // primary plate
     z1 = PLATE_HEIGHT_SHORT + TOLERANCE;
     translate([0, 0, z1])
-    primary_plate(has_holder_stop=false);
+    center_plate(has_holder_stop=false);
     // PLATE_THICKNESS
 
     // wheel
     z2 = z1 + PLATE_THICKNESS + TOLERANCE;
     translate([0, 0, z2])
     flip(PLATE2_WHEEL_HEIGHT, 90)
-    plate2();
+    lever_plate();
     // PLATE2_WHEEL_HEIGHT
 
     // wheel upside-down
     z3 = PLATE2_Z;
     translate([0, 0, z3])
-    plate2();
+    lever_plate();
 
     // primary plate upside-down
     z4 = z3 + PLATE2_WHEEL_HEIGHT + TOLERANCE;
     translate([0, 0, z4])
     flip(PLATE_THICKNESS)
-    primary_plate(has_holder_stop=false);
+    center_plate(has_holder_stop=false);
     // PLATE_THICKNESS
 
     // primary plate
     z5 = z4 + PLATE_THICKNESS + TOLERANCE;
     translate([0, 0, z5])
-    primary_plate();
+    center_plate();
     // PLATE_THICKNESS
     
     // wheel
     z6 = z5 + PLATE_THICKNESS + TOLERANCE;
     translate([0, 0, z6])
     flip(PLATE2_WHEEL_HEIGHT, 90)
-    plate2();
+    lever_plate();
     // PLATE2_WHEEL_HEIGHT
 }
 
@@ -71,9 +79,9 @@ module cubes() {
 }
 
 module cubes_cut() {
-    translate([-BOX_SIDE/2/2*0, -BOX_SIDE, -ATOM])
-    cube([BOX_SIDE*2,
-          BOX_SIDE*2,
+    translate([-BLOCKS_WIDTH/2/2*0, -BLOCKS_WIDTH, -ATOM])
+    cube([BLOCKS_WIDTH*2,
+          BLOCKS_WIDTH*2,
           (BLOCK1_HEIGHT_STACKABLE+BLOCK2_HEIGHT_STACKABLE+BLOCK1_HEIGHT_STACKABLE)*2]);
 }
 

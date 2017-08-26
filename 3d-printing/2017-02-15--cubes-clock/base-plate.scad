@@ -1,15 +1,14 @@
 // ============================================================================
 // NOTES:
-//
-// Printing resolution: Normal (not draft, not fine)
-// Fill: 15%
+// Library file. To be imported via the use <> statement.
+// You can render it for test, but do not export to STL.
 //
 // ============================================================================
 
 include <definitions.scad>
-use <02-primary-plate.scad>
-use <04-holder.scad>
-use <05-cubes.scad>
+use <center-plate.scad>
+use <holder.scad>
+use <cubes.scad>
 
 BASE_CROWN_MEDIAN_RADIUS = PLATE2_BOX_INNER_HOLE_DIAMETER/2;
 BASE_CROWN_OUTER_RADIUS = BASE_CROWN_MEDIAN_RADIUS + WALL_THICKNESS;
@@ -77,7 +76,7 @@ module base_plate_main_plate(variant_one) {
     else
         difference() {
             flip(PLATE_HEIGHT_SHORT)
-            primary_plate(is_short=true);
+            center_plate(is_short=true);
             translate([0, 0, -PLATE_THICKNESS])
             cylinder(r=PLATE_DIAMETER, h=PLATE_THICKNESS);
         }

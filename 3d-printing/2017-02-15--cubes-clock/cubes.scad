@@ -1,15 +1,12 @@
 // ============================================================================
 // NOTES:
-//
-// Printing resolution: Normal (not draft, not fine)
-// Fill: 5%
+// Library file. To be imported via the use <> statement.
+// You can render it for test, but do not export to STL.
 //
 // ============================================================================
 
 include <definitions.scad>
 include <lib/wheel-lib.scad>
-
-BLOCKS_WIDTH = BOX_SIDE;
 
 BLOCKS_R1 = PLATE2_BOX_INNER_HOLE_DIAMETER/2;
 BLOCKS_R2 = BLOCKS_R1 + WALL_THICKNESS;

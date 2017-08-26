@@ -1,15 +1,14 @@
 // ============================================================================
 // NOTES:
-//
-// Printing resolution: Fine
-// Fill: default (40%)
+// Library file. To be imported via the use <> statement.
+// You can render it for test, but do not export to STL.
 //
 // ============================================================================
 
 include <definitions.scad>
 use <gears.scad>
 
-module plate2_gear() {
+module lever_plate_gear() {
     translate([0, 0, (PLATE2_WHEEL_HEIGHT)]) {
         gears_pinion();
         
@@ -21,24 +20,24 @@ module plate2_gear() {
     }
 }
 
-module plate2_neck() {
+module lever_plate_neck() {
     scale([1, 1, PLATE2_WHEEL_HEIGHT])
     cylinder(r=PINION_NECK_RADIUS);
 }
 
-module plate2_crown() {
+module lever_plate_crown() {
     // base crown
     barrel(PLATE2_RADIUS, GEARS_DISTANCE + PLATE2_GROVE_THICKNESS/2, PLATE2_WHEEL_HEIGHT);
 }
 
-module plate2_bar() {
+module lever_plate_bar() {
     spoke(PLATE2_RADIUS, PLATE2_BAR_WIDTH, PLATE2_WHEEL_HEIGHT-PLATE2_GROVE_HEIGHT);
 }
 
-module plate2_lever() {
+module lever_plate_lever() {
     height = PLATE2_LEVER_HEIGHT;
 
-    lever_r1 = BOX_SIDE/2*sqrt(2);
+    lever_r1 = BLOCKS_WIDTH/2*sqrt(2);
     lever_r2 = PLATE2_BOX_INNER_HOLE_DIAMETER/2;
     lever_length = (lever_r1*3 + lever_r2)/4;
 
@@ -55,32 +54,32 @@ module plate2_lever() {
 
 }
 
-module plate2_grove() {
+module lever_plate_grove() {
     translate([0, 0, PLATE2_WHEEL_HEIGHT-PLATE2_GROVE_HEIGHT])
     barrel(GEARS_DISTANCE + PLATE2_GROVE_THICKNESS/2,
            GEARS_DISTANCE - PLATE2_GROVE_THICKNESS/2,
            PLATE2_GROVE_HEIGHT+ATOM);
 }
 
-module plate2() {
+module lever_plate() {
     difference() {
         union() {
-            plate2_gear();
-            plate2_neck();
-            plate2_crown();
+            lever_plate_gear();
+            lever_plate_neck();
+            lever_plate_crown();
 
             for(i=[0, 60, 120])
                 rotate([0, 0, i])
-                plate2_bar();
+                lever_plate_bar();
         }
         sphere(r=PINION_SCREW_HEAD_RADIUS);
-        plate2_grove();
+        lever_plate_grove();
     }    
-    plate2_lever();
+    lever_plate_lever();
 }
 
 difference() {
-    plate2();
+    lever_plate();
 //    cube(50);
 }
 

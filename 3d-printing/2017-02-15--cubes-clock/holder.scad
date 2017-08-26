@@ -1,8 +1,7 @@
 // ============================================================================
 // NOTES:
-//
-// Printing resolution: Normal (not draft, not fine)
-// Fill: 15%
+// Library file. To be imported via the use <> statement.
+// You can render it for test, but do not export to STL.
 //
 // ============================================================================
 

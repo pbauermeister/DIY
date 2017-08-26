@@ -23,5 +23,3 @@ module wheel_plate() {
 }
 
 wheel_plate();
-
-// TODO: Screw stuff
