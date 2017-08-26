@@ -12,13 +12,8 @@ use <cubes.scad>
 space = 7;
 shift = BLOCKS_WIDTH/2 + space;
 
-translate([-shift, -shift, 0])
-bottom_block();
+translate([-shift, -shift, 0]) bottom_block();
 
-// mid block
-translate([shift, -shift, 0])
-mid_block();
+translate([ shift, -shift, 0]) mid_block();
 
-// top block
-translate([shift, shift, 0])
-top_block();
+translate([ shift,  shift, 0]) top_block();

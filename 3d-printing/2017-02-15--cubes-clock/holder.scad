@@ -33,7 +33,7 @@ module one_holder_spine(height) {
 }
 
 module one_holder_tenon(upside_down, has_screw_hole, height=-1) {
-    h = height==-1 ? (has_screw_hole ? HOLDER_ARM_HEIGHT: PLATE_THICKNESS)
+    h = height==-1 ? (has_screw_hole ? HOLDER_ARM_HEIGHT: PLATE_HEIGHT)
                    : height;
     difference() {
         translate([-HOLDER_ARM_RADIUS_SHORTAGE, 0, 0]) {
@@ -57,7 +57,7 @@ module holder() {
     z2 = z1 + HOLDER_ARM_HEIGHT;
     z3 = PLATE2_Z + PLATE2_WHEEL_HEIGHT
         + TOLERANCE;
-    z4 = z3 + PLATE_THICKNESS;
+    z4 = z3 + PLATE_HEIGHT;
     h = z4 + HOLDER_ARM_HEIGHT;
     
     one_holder_spine(h) {
@@ -68,15 +68,15 @@ module holder() {
         one_holder_tenon(false, false);
 
 
-//        translate([0, -5, z2 + PLATE_THICKNESS])
-//        %one_holder_tenon(false, false, height=PLATE_THICKNESS+PLAY+PLATE2_HEIGHT);
-        clearance = PLATE_THICKNESS+PLAY+PLATE2_HEIGHT;
-        echo(clearance,z3-z2-PLATE_THICKNESS);
-        if (clearance>z3-z2-PLATE_THICKNESS) {
+//        translate([0, -5, z2 + PLATE_HEIGHT])
+//        %one_holder_tenon(false, false, height=PLATE_HEIGHT+PLAY+PLATE2_HEIGHT);
+        clearance = PLATE_HEIGHT+PLAY+PLATE2_HEIGHT;
+        echo(clearance,z3-z2-PLATE_HEIGHT);
+        if (clearance>z3-z2-PLATE_HEIGHT) {
             echo("Clearance issue --> no 3rd tenon");
-            dz = clearance - (z3-z2-PLATE_THICKNESS);
+            dz = clearance - (z3-z2-PLATE_HEIGHT);
             translate([0, 0, z3+dz])
-            one_holder_tenon(true, false, height=PLATE_THICKNESS-dz);
+            one_holder_tenon(true, false, height=PLATE_HEIGHT-dz);
         }
         else
             translate([0, 0, z3])

@@ -9,4 +9,4 @@
 include <definitions.scad>
 use <center-plate.scad>
 
- center_plate(has_holder_stop=true);
+center_plate(has_holder_stop=true);

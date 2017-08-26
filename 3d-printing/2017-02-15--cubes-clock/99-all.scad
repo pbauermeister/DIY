@@ -25,10 +25,10 @@ module cylinders() {
     z1 = PLATE_HEIGHT_SHORT + TOLERANCE;
     translate([0, 0, z1])
     center_plate(has_holder_stop=false);
-    // PLATE_THICKNESS
+    // PLATE_HEIGHT
 
     // wheel
-    z2 = z1 + PLATE_THICKNESS + TOLERANCE;
+    z2 = z1 + PLATE_HEIGHT + TOLERANCE;
     translate([0, 0, z2])
     flip(PLATE2_WHEEL_HEIGHT, 90)
     lever_plate();
@@ -42,18 +42,18 @@ module cylinders() {
     // primary plate upside-down
     z4 = z3 + PLATE2_WHEEL_HEIGHT + TOLERANCE;
     translate([0, 0, z4])
-    flip(PLATE_THICKNESS)
+    flip(PLATE_HEIGHT)
     center_plate(has_holder_stop=false);
-    // PLATE_THICKNESS
+    // PLATE_HEIGHT
 
     // primary plate
-    z5 = z4 + PLATE_THICKNESS + TOLERANCE;
+    z5 = z4 + PLATE_HEIGHT + TOLERANCE;
     translate([0, 0, z5])
     center_plate();
-    // PLATE_THICKNESS
+    // PLATE_HEIGHT
     
     // wheel
-    z6 = z5 + PLATE_THICKNESS + TOLERANCE;
+    z6 = z5 + PLATE_HEIGHT + TOLERANCE;
     translate([0, 0, z6])
     flip(PLATE2_WHEEL_HEIGHT, 90)
     lever_plate();

@@ -17,7 +17,7 @@ module wheel_plate() {
         cylinder(r=gears_wheel_radius(inner=true)-TOLERANCE);
 
         translate([0, 0, -ATOM])
-        scale([1, 1, WHEEL_PLATE_THICKNESS+ATOM*2])
+        scale([1, 1, WHEEL_PLATE_HEIGHT+ATOM*2])
         cylinder(r=SERVO_SCREW_THREAD_DIAMETER/2 + TOLERANCE);
     }
 }
