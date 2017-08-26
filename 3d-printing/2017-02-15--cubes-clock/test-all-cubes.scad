@@ -22,25 +22,25 @@ OVERALL_ROTATION = 45;
 module foot_cubes() {
     rotate([0, 0, 135]) {
         flip(BLOCK1_HEIGHT + CUBE_CROWN_HEIGHT)
-        bottom_block();
+        bottom_block(draft=true);
         
         z1 = BLOCK1_HEIGHT + CUBE_CROWN_HEIGHT + TOLERANCE;
         translate([0, 0, z1])
 
         flip(BLOCK2_HEIGHT_STACKABLE)
-        mid_block();
+        mid_block(draft=true);
 
         z2 = z1 + BLOCK2_HEIGHT_STACKABLE + TOLERANCE;
         translate([0, 0, z2])
         flip(BLOCK3_HEIGHT_STACKABLE)
-        top_block();
+        top_block(draft=true);
     }
 }
 
 module foot_digit() {
     rotate([0, 0, OVERALL_ROTATION - 180]) {
         foot_cubes();
-        base_plate(has_center_hole=true, with_screws=true);
+//        base_plate(has_center_hole=true, with_screws=true);
     }
 }
 
@@ -63,7 +63,7 @@ function foot_pos(index) = index * BLOCKS_WIDTH + sumv(spacings, upto=index);
 // All together
 //
 
-FOOT_SPACING_MARGIN = 5;
+FOOT_SPACING_MARGIN = 2;
 FOOT_HEIGHT = 20;
 FOOT_SPACING = BLOCKS_WIDTH * (sqrt(2)-1) + FOOT_SPACING_MARGIN;
 FOOT_CENTER_GAP =  BLOCKS_WIDTH/2;

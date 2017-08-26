@@ -83,13 +83,23 @@ module make_block_segments(height, segments) {
     }
 }
 
-module make_block0(height, is_closed, has_full_crown, has_guide, has_marks, segments) {
+module make_block_body(height, segments) {
+    difference() {
+        // outer shape
+        translate([-BLOCKS_WIDTH/2, -BLOCKS_WIDTH/2, 0])
+        cube([BLOCKS_WIDTH, BLOCKS_WIDTH, height]);
+        
+        // segment gluing marks
+        make_block_segments(height, segments);
+    }
+}
+
+module make_block_features(height, is_closed, has_full_crown, has_guide, has_marks, segments) {
     difference() {
         union() {
             difference() {
                 // outer shape
-                translate([-BLOCKS_WIDTH/2, -BLOCKS_WIDTH/2, 0])
-                cube([BLOCKS_WIDTH, BLOCKS_WIDTH, height]);
+                make_block_body(height, segments);
                 
                 // central chamber
                 translate([0, 0, -ATOM])
@@ -157,9 +167,6 @@ module make_block0(height, is_closed, has_full_crown, has_guide, has_marks, segm
         if (has_marks) {
             make_block_snap_marks();
         }
-        
-        // segment gluing marks
-        make_block_segments(height, segments);
     }
 }
 
@@ -174,30 +181,26 @@ module make_block_snap_marks() {
         sphere(r, true);
 }
 
-module make_block(height, is_closed, has_crown, has_guide, has_marks, segments) {
-    intersection() {
-        make_block0(height, is_closed, has_crown, has_guide, has_marks, segments);
-
-        if(0)
-            // cross-cut
-            translate([BLOCKS_WIDTH/6, BLOCKS_WIDTH/6, 0])
-            cube([BLOCKS_WIDTH, BLOCKS_WIDTH, height*2]);
-    }
+module make_block(height, is_closed, has_crown, has_guide, has_marks, segments, draft) {
+    if (draft)
+        make_block_body(height, segments);
+    else
+        make_block_features(height, is_closed, has_crown, has_guide, has_marks, segments, draft);
 }
 
-module bottom_block() {
+module bottom_block(draft=false) {
     segs_low = ["e", "f", "g", "h"];
-    make_block(BLOCK1_HEIGHT, false, false, true, true, segs_low);
+    make_block(BLOCK1_HEIGHT, false, false, true, true, segs_low, draft);
 }
 
-module mid_block() {
+module mid_block(draft=false) {
     segs_mid = ["i", "j", "k", 0];
-    make_block(BLOCK2_HEIGHT , false, true, true, true, segs_mid);
+    make_block(BLOCK2_HEIGHT , false, true, true, true, segs_mid, draft);
 }
 
-module top_block() {
+module top_block(draft=false) {
     segs_top = ["a", "b", "c", "d"];
-    make_block(BLOCK3_HEIGHT, true, true, false, false, segs_top);
+    make_block(BLOCK3_HEIGHT, true, true, false, false, segs_top, draft);
 }
 
 if (0) {
@@ -208,7 +211,7 @@ if (0) {
             cube([BLOCKS_WIDTH, BLOCKS_WIDTH, BLOCKS_WIDTH]);
     }
 }
-else {
+else if (0) {
     space = 7;
     shift = BLOCKS_WIDTH/2 + space;
     
@@ -222,4 +225,19 @@ else {
     // top block
     translate([shift, shift, 0])
     top_block();
+}
+else {
+    flip(BLOCK1_HEIGHT + CUBE_CROWN_HEIGHT)
+    bottom_block(draft=true);
+    
+    z1 = BLOCK1_HEIGHT + CUBE_CROWN_HEIGHT + TOLERANCE;
+    translate([0, 0, z1])
+
+    flip(BLOCK2_HEIGHT_STACKABLE)
+    mid_block(draft=true);
+
+    z2 = z1 + BLOCK2_HEIGHT_STACKABLE + TOLERANCE;
+    translate([0, 0, z2])
+    flip(BLOCK3_HEIGHT_STACKABLE)
+    top_block(draft=true);
 }
