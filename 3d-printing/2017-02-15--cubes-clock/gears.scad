@@ -1,13 +1,12 @@
+// ============================================================================
+// NOTES:
+// Library file. To be imported via the use <> statement.
+// You can render it for test, but do not export to STL.
+//
+// ============================================================================
+
 include <lib/wheel-lib.scad>
 include <definitions.scad>
-//include <servo.scad>
-
-//
-// NOTES:
-//
-// Printing resolution: Normal (not draft, not fine)
-// Fill: 10%
-//
 
 module _wheel(modul, zahnzahl, hoehe, bohrung, eingriffswinkel, schraegungswinkel) {
     pfeilrad(modul, zahnzahl, hoehe, bohrung, eingriffswinkel, schraegungswinkel);
