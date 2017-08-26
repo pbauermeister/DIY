@@ -64,8 +64,12 @@ module base_plate_cables_cavity() {
     }
 }
 
-module base_plate_main_plate(variant_one) {
-    if (variant_one) {
+module base_plate_center_hole(height) {
+        cylinder(r=BASE_PLATE_CAVITY_DIAMETER/2, h=height);
+}
+
+module base_plate_main_plate(has_center_hole) {
+    if (has_center_hole) {
         difference() {
             flip(PLATE_HEIGHT_SHORT)
             center_plate(is_short=true, has_servo_cavities=false);
@@ -73,7 +77,7 @@ module base_plate_main_plate(variant_one) {
             cylinder(r=PLATE_DIAMETER, h=PLATE_HEIGHT);
 
             translate([0, 0, -ATOM])            
-            cylinder(r=BASE_PLATE_CAVITY_DIAMETER/2, h=PLATE_HEIGHT_SHORT+ATOM*2);
+            base_plate_center_hole(PLATE_HEIGHT_SHORT+ATOM*2);
         }
     }
     else {
@@ -124,10 +128,10 @@ module base_plate_screws() {
     }
 }
 
-module base_plate_parts(variant_one) {
+module base_plate_parts(has_center_hole) {
     union() {
         // plate
-        base_plate_main_plate(variant_one);
+        base_plate_main_plate(has_center_hole);
         
         // support plates
         rotate([0, 0, 45]) {
@@ -139,19 +143,22 @@ module base_plate_parts(variant_one) {
     }
 }
 
-module base_plate(variant_one=false) {
+module base_plate(has_center_hole=false, with_screws=false) {
     difference() {
-        base_plate_parts(variant_one);
+        base_plate_parts(has_center_hole);
 
         rotate([0, 0, 45]) {
             base_plate_screws_holes();
-            if (!variant_one)
+            if (!has_center_hole)
                base_plate_cables_cavity();
         }
     }
 
     rotate([0, 0, 45])
-    %base_plate_screws();
+    if (with_screws)
+        base_plate_screws();
+    else
+        %base_plate_screws();
 }
 
 base_plate(true);
