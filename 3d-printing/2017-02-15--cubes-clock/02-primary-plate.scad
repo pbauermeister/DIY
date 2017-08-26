@@ -66,7 +66,7 @@ module make_servo_cavity(upside_down=false, with_cable_slot=true, with_servo_wel
 
     if (with_servo_well)
         translate([GEARS_DISTANCE, 0, -PLATE_THICKNESS+ATOM])
-        cylinder(r=SERVO_THICKNESS/2.5, h=PLATE_THICKNESS);
+        cylinder(r=SERVO_THICKNESS/2, h=PLATE_THICKNESS);
 }
 
 module plate() {
