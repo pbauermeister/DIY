@@ -1,3 +1,10 @@
+// ============================================================================
+// NOTES:
+// Definitions file. To be imported via the include <> statement.
+// You can render it for test, but do not export to STL.
+//
+// ============================================================================
+
 //
 // GENERAL
 //
@@ -29,7 +36,7 @@ WHEEL_HOLE_DIAMETER = SERVO_AXIS_RADIUS*2 - WHEEL_AXIS_TIGHTEN;
 
 //PINION_RADIUS = 5.6;
 //WHEEL_RADIUS = 10.6;
-WHEEL_PLATE_THICKNESS = 1;
+WHEEL_PLATE_HEIGHT = 1;
 
 //    Erlaubte Module nach DIN 780:
 //    0.05 0.06 0.08 0.10 0.12 0.16
@@ -44,7 +51,7 @@ GEARS_MODULE = 0.65;
 
 // Plate
 PLATE_DIAMETER = 50;
-PLATE_THICKNESS = 20.5;
+PLATE_HEIGHT = 20.5;
 PLATES_OVERLAP = 12;
 
 PLATE_HEIGHT_SHORT = 18;
@@ -63,8 +70,11 @@ PLATE2_RADIUS_RECESSION = 1.5;
 
 PLATE2_RADIUS = PLATE_DIAMETER/2 - PLATE2_RADIUS_RECESSION;
 
+BASE_PLATE_CAVITY_DIAMETER = 20;
+BASE_PLATE_CROWN_HEIGHT = 9;
+
 // Side screws
-SCREW_PLATE_THICKNESS = 1;
+SCREW_PLATE_HEIGHT = 1;
 SCREW2_DIAMETER = 2.9;
 SCREW2_HEAD_DIAMETER = 5.5;
 SCREW2_HEAD_THICKNESS = 2;
@@ -87,7 +97,7 @@ HOLDER_ANGLE = 35; //20
 HOLDER_MODULES_SPACING = 10;
 
 
-block_cylinder = PLATE_THICKNESS + PLATE2_HEIGHT;
+block_cylinder = PLATE_HEIGHT + PLATE2_HEIGHT;
 BLOCKS_JOIN = PLAY/2;
 BLOCK1_HEIGHT = block_cylinder*2  + PLAY*2 - PLATE2_HEIGHT;
 BLOCK1_HEIGHT_STACKABLE = BLOCK1_HEIGHT + BLOCKS_JOIN;
@@ -142,7 +152,7 @@ PLATE2_BOX_INNER_HOLE_DIAMETER = 62;
 WHEEL_THICKNESS = 3.5 -0.2;
 
 SERVO_X_ADJUSTMENT = 0.5;
-SERVO_X_POSITION = WHEEL_THICKNESS - SCREW_PLATE_THICKNESS + SERVO_X_ADJUSTMENT;
+SERVO_X_POSITION = WHEEL_THICKNESS - SCREW_PLATE_HEIGHT + SERVO_X_ADJUSTMENT;
 echo("Servo x pos: ", SERVO_X_POSITION);
 
 HOLDER_RADIUS = 29.5;
@@ -152,7 +162,7 @@ ZIP_TIE_SLIT_WIDTH = 3;
 ZIP_TIE_SLIT_THICKNESS = 2;
 ZIP_TIE_BUMP_RADIUS = 1;
 
-echo("Total height: ", PLATE_THICKNESS+PLATE2_HEIGHT+PLAY+TOLERANCE);
+echo("Total height: ", PLATE_HEIGHT+PLATE2_HEIGHT+PLAY+TOLERANCE);
 
 
 //
@@ -209,7 +219,7 @@ module alignment_columns(column_extra=0, height=1) {
 }
 
 function servo_cover_height() =
-           PLATE_THICKNESS
+           PLATE_HEIGHT
            - (WHEEL_EXTERNAL_DIAMETER/2 - PINION_THICKNESS + SERVO_THICKNESS/2)
            -TOLERANCE;
 

@@ -13,12 +13,10 @@ use <cubes.scad>
 BASE_CROWN_MEDIAN_RADIUS = PLATE2_BOX_INNER_HOLE_DIAMETER/2;
 BASE_CROWN_OUTER_RADIUS = BASE_CROWN_MEDIAN_RADIUS + WALL_THICKNESS;
 
-BASE_ONE_CAVITY_DIAMETER = 25;
-BASE_CROWN_HEIGHT = 9;
 BASE_SCREW_POS_RADIUS = BASE_CROWN_MEDIAN_RADIUS - SCREW2_HEAD_DIAMETER/2 - PLAY - WALL_THICKNESS;
 
 module base_plate_cavity(angle, radius, disc) {
-    height = BASE_CROWN_HEIGHT + 2*ATOM;
+    height = BASE_PLATE_CROWN_HEIGHT + 2*ATOM;
     difference() {
         // cable or holder cavity
         rotate([0, 0, 180 - angle/2])
@@ -67,19 +65,25 @@ module base_plate_cables_cavity() {
 }
 
 module base_plate_main_plate(variant_one) {
-    if (variant_one)
+    if (variant_one) {
         difference() {
-            cylinder(r=PLATE_DIAMETER/2, h=PLATE_THICKNESS);
+            flip(PLATE_HEIGHT_SHORT)
+            center_plate(is_short=true, has_servo_cavities=false);
+            translate([0, 0, -PLATE_HEIGHT])
+            cylinder(r=PLATE_DIAMETER, h=PLATE_HEIGHT);
+
             translate([0, 0, -ATOM])            
-            cylinder(r=BASE_ONE_CAVITY_DIAMETER/2, h=PLATE_THICKNESS+ATOM*2);
+            cylinder(r=BASE_PLATE_CAVITY_DIAMETER/2, h=PLATE_HEIGHT_SHORT+ATOM*2);
         }
-    else
+    }
+    else {
         difference() {
             flip(PLATE_HEIGHT_SHORT)
             center_plate(is_short=true);
-            translate([0, 0, -PLATE_THICKNESS])
-            cylinder(r=PLATE_DIAMETER, h=PLATE_THICKNESS);
+            translate([0, 0, -PLATE_HEIGHT])
+            cylinder(r=PLATE_DIAMETER, h=PLATE_HEIGHT);
         }
+    }
 }
 
 module base_plate_lower_plate() {
@@ -87,20 +91,20 @@ module base_plate_lower_plate() {
     r = BASE_CROWN_OUTER_RADIUS;
 
     difference() {
-        cylinder(r=r, h=BASE_CROWN_HEIGHT);
+        cylinder(r=r, h=BASE_PLATE_CROWN_HEIGHT);
         
         *translate([0, 0, -ATOM])
-        cylinder(r=PLATE_DIAMETER/2-PLAY, h=BASE_CROWN_HEIGHT+2*ATOM);
+        cylinder(r=PLATE_DIAMETER/2-PLAY, h=BASE_PLATE_CROWN_HEIGHT+2*ATOM);
 
         // snap marks
-        *translate([0, 0, BASE_CROWN_HEIGHT])
+        *translate([0, 0, BASE_PLATE_CROWN_HEIGHT])
         rotate([0, 0, 45]) flip(0)
         make_block_snap_marks();
         
         // grove
         translate([0, 0, CUBE_CROWN_HEIGHT - CUBE_CROWN_SHORT_HEIGHT - TOLERANCE])
         barrel(BASE_CROWN_MEDIAN_RADIUS + WALL_THICKNESS + PLAY,
-               BASE_CROWN_MEDIAN_RADIUS - PLAY/2, PLATE_THICKNESS);
+               BASE_CROWN_MEDIAN_RADIUS - PLAY/2, PLATE_HEIGHT);
     }
 }
 
@@ -108,7 +112,7 @@ module base_plate_screws_holes() {
     for (i=[0:2]) {
         rotate([0, 0, 120*i])
         translate([BASE_SCREW_POS_RADIUS, 0, WALL_THICKNESS*2])
-        screw(head_extent=PLATE_THICKNESS, is_clearance_hole=true);            
+        screw(head_extent=PLATE_HEIGHT, is_clearance_hole=true);            
     }
 }
 
@@ -150,4 +154,7 @@ module base_plate(variant_one=false) {
     %base_plate_screws();
 }
 
+base_plate(true);
+
+translate([BLOCKS_WIDTH, 0, 0])
 base_plate(false);
