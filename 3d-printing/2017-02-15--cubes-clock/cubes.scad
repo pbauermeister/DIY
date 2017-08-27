@@ -7,6 +7,7 @@
 
 include <definitions.scad>
 include <lib/wheel-lib.scad>
+use <digits.scad>
 
 BLOCKS_R1 = PLATE2_BOX_INNER_HOLE_DIAMETER/2;
 BLOCKS_R2 = BLOCKS_R1 + WALL_THICKNESS;
@@ -27,96 +28,49 @@ echo("Total =", BLOCK1_HEIGHT+BLOCK2_HEIGHT+BLOCK3_HEIGHT);
 
 echo(BLOCK1_HEIGHT+BLOCK2_HEIGHT+BLOCK3_HEIGHT);
 
-module make_block_dot_at(x, y, z) {
-    translate([x, y, z])
-    sphere(DIGIT_SEGMENT_WIDTH/2, true);
-}
-
-module make_block_square_at(x, y, z) {
-    translate([x, y, z])
-    cube(DIGIT_SEGMENT_WIDTH, true);
-}
-
-module make_block_segments(height, segments) {
-
+module make_block_segments(height, segments, outline=0) {
     offset = DIGIT_SEGMENT_WIDTH/2;
+    margin = DIGIT_SEGMENT_WIDTH/2;
+
     bottom = height - offset;
     mid = height / 2;
     top = offset;
     left = -BLOCKS_WIDTH/2 + offset;
     right = BLOCKS_WIDTH/2 - offset;
 
-    mleft = -BLOCKS_WIDTH/2 + offset + DIGIT_SEGMENT_WIDTH*2;
-    mright = BLOCKS_WIDTH/2 - offset - DIGIT_SEGMENT_WIDTH*2;
-
     y = BLOCKS_WIDTH/2;
     
-    r = 1;
     for (i=[0:3]) rotate([0, 0, 90*i]) {
         seg = segments[i];
-
-
-        if (seg=="a") hull() {
-            make_block_square_at(left, y, bottom);
-            make_block_dot_at(left, y, top);
-        }        
+        digit(seg, y, left, right, top, mid, bottom, outline, margin);
     }
 }
 
 module make_block_segments_marks(height, segments) {
-
+    make_block_segments(height, segments, TOLERANCE);
+/*
     offset = DIGIT_SEGMENT_WIDTH/2;
+    margin = DIGIT_SEGMENT_WIDTH/2;
+
     bottom = height - offset;
+    margin = DIGIT_SEGMENT_WIDTH;
     mid = height / 2;
     top = offset;
-    left = -BLOCKS_WIDTH/2 + offset;
-    right = BLOCKS_WIDTH/2 - offset;
-
-    mleft = -BLOCKS_WIDTH/2 + offset + DIGIT_SEGMENT_WIDTH*2;
-    mright = BLOCKS_WIDTH/2 - offset - DIGIT_SEGMENT_WIDTH*2;
+    left = -BLOCKS_WIDTH/2 + offset + margin;
+    right = BLOCKS_WIDTH/2 - offset - margin;
 
     y = BLOCKS_WIDTH/2;
     
-    r = 1;
     for (i=[0:3]) rotate([0, 0, 90*i]) {
         seg = segments[i];
 
         if (show_texts)
             %translate([0, y, mid])
             text(str(seg));
-         
-        if (seg=="a" || seg=="c" || seg=="d" ||
-            seg=="e" || seg=="g") // top-left
-            translate([left, y, top])
-            sphere(r, true);
-        if (seg=="a" || seg=="b" || seg=="c" || seg=="d" ||
-            seg=="e" || seg=="f" || seg=="h") // top-right
-            translate([right, y, top])
-            sphere(r, true);
-        if (seg=="a" || seg=="b" || seg=="c" ||
-            seg=="e" || seg=="f" || seg=="g" || seg=="h") // bottom-right
-            translate([right, y, bottom])
-            sphere(r, true);
-        if (seg=="a" || seg=="b" || seg=="d" ||
-            seg=="e" || seg=="g" || seg=="h") // bottom-left
-            translate([left, y, bottom])
-            sphere(r, true);
 
-        if (seg=="j") // mid-left
-            translate([left, y, mid])
-            sphere(r, true);
-        if (seg=="i" || seg=="j") // mid-right
-            translate([right, y, mid])
-            sphere(r, true);
-
-        if (seg=="k") // mid-left
-            translate([mleft, y, mid])
-            sphere(r, true);
-        if (seg=="k") // mid-left
-            translate([mright, y, mid])
-            sphere(r, true);
-        
+        digit_marks(seg, y, left, right, top, mid, bottom);
     }
+*/
 }
 
 module make_block_body(height, segments) {
@@ -130,7 +84,7 @@ module make_block_body(height, segments) {
         make_block_segments_marks(height, segments);
     }
 
-    color("black")
+    %color("black")
     make_block_segments(height, segments);
 }
 

@@ -65,8 +65,11 @@ function foot_pos(index) = index * BLOCKS_WIDTH + sumv(spacings, upto=index);
 
 FOOT_SPACING_MARGIN = 4;
 FOOT_HEIGHT = 20;
-FOOT_SPACING = BLOCKS_WIDTH * (sqrt(2)-1) / 2 + FOOT_SPACING_MARGIN;
 FOOT_CENTER_GAP =  BLOCKS_WIDTH / 2;
+
+FOOT_SPACING = BLOCKS_WIDTH * (sqrt(2)-1) / 2 + FOOT_SPACING_MARGIN;
+FOOT_SPACING = 1;
+
 
 echo("=====>", (sqrt(2)));
 spacings = [
@@ -84,7 +87,8 @@ echo(str("Foot total length: ", FOOT_LENGTH));
 //
 
 module all() {
-    color("white") {
+   // color("white")
+    {
         translate([foot_pos(0) + offset, offset, 0]) foot_digit(45*0);
         translate([foot_pos(1) + offset, offset, 0]) foot_digit();
         translate([foot_pos(2) + offset, offset, 0]) foot_digit();

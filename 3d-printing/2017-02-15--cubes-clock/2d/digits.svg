@@ -55,9 +55,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2"
-     inkscape:cx="496.26725"
-     inkscape:cy="285.51519"
+     inkscape:zoom="1.4142136"
+     inkscape:cx="404.25725"
+     inkscape:cy="259.76233"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -298,21 +298,21 @@
          sodipodi:role="line"
          x="-957.24292"
          y="329.80884"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12.5px;font-family:'Courier 10 Pitch';-inkscape-font-specification:'Courier 10 Pitch Bold'"
+         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12.5px;font-family:'Courier 10 Pitch';-inkscape-font-specification:'Courier 10 Pitch Italic'"
          id="tspan4474">0  1  2  3  4  5  6  7  8  9</tspan><tspan
          sodipodi:role="line"
          x="-957.24292"
-         y="345.43384"
+         y="345.65518"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12.5px;font-family:'Courier 10 Pitch';-inkscape-font-specification:'Courier 10 Pitch Bold'"
          id="tspan4478">a  b  c  c  b  d  d  c  a  a</tspan><tspan
          sodipodi:role="line"
          x="-957.24292"
-         y="361.05884"
+         y="361.28018"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12.5px;font-family:'Courier 10 Pitch';-inkscape-font-specification:'Courier 10 Pitch Bold'"
-         id="tspan4472">j  i  k  k  k  k  k  i  k  k</tspan><tspan
+         id="tspan4472">i  j  k  k  k  k  k  j  k  k</tspan><tspan
          sodipodi:role="line"
          x="-957.24292"
-         y="376.68384"
+         y="376.90518"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12.5px;font-family:'Courier 10 Pitch';-inkscape-font-specification:'Courier 10 Pitch Bold'"
          id="tspan4482">e  f  g  h  f  h  e  f  e  f</tspan></text>
     <g
@@ -631,7 +631,7 @@
          y="303.52753">k</tspan></text>
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:10.62992096;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m -561.61423,310.03938 10.62992,0"
+       d="m -637.79534,310.03938 10.62992,0"
        id="path4385-7-3"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />
