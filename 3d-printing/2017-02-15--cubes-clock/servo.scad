@@ -13,10 +13,10 @@ module servo_hull(with_clearance=false, with_cable_slot=false, rotation=180+45) 
             linear_extrude(height=thickness)
             //offset(delta=TOLERANCE/2) // <== Loosen a bit the cavity
             scale([10, 10, 1]) {
-                import("servo.dxf");
+                import("2d/servo.dxf");
                 
                 if (with_clearance)
-                    import("servo-clearances.dxf");
+                    import("2d/servo-clearances.dxf");
             }
 
             if (with_cable_slot) {
@@ -24,7 +24,7 @@ module servo_hull(with_clearance=false, with_cable_slot=false, rotation=180+45) 
                 linear_extrude(height=cable_slot_thickness)
                 //offset(delta=TOLERANCE/2) // <== Loosen a bit the cavity
                 scale([10, 10, 1])
-                import("servo-cable-slot.dxf");
+                import("2d/servo-cable-slot.dxf");
             }
         }
     }

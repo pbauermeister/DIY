@@ -37,8 +37,8 @@ module foot_cubes() {
     }
 }
 
-module foot_digit() {
-    rotate([0, 0, OVERALL_ROTATION - 180]) {
+module foot_digit(extra_rotation=0) {
+    rotate([0, 0, OVERALL_ROTATION - 180 + extra_rotation]) {
         foot_cubes();
 //        base_plate(has_center_hole=true, with_screws=true);
     }
@@ -63,11 +63,12 @@ function foot_pos(index) = index * BLOCKS_WIDTH + sumv(spacings, upto=index);
 // All together
 //
 
-FOOT_SPACING_MARGIN = 2;
+FOOT_SPACING_MARGIN = 4;
 FOOT_HEIGHT = 20;
-FOOT_SPACING = BLOCKS_WIDTH * (sqrt(2)-1) + FOOT_SPACING_MARGIN;
-FOOT_CENTER_GAP =  BLOCKS_WIDTH/2;
+FOOT_SPACING = BLOCKS_WIDTH * (sqrt(2)-1) / 2 + FOOT_SPACING_MARGIN;
+FOOT_CENTER_GAP =  BLOCKS_WIDTH / 2;
 
+echo("=====>", (sqrt(2)));
 spacings = [
     0,
     FOOT_SPACING,
@@ -84,7 +85,7 @@ echo(str("Foot total length: ", FOOT_LENGTH));
 
 module all() {
     color("white") {
-        translate([foot_pos(0) + offset, offset, 0]) foot_digit();
+        translate([foot_pos(0) + offset, offset, 0]) foot_digit(45*0);
         translate([foot_pos(1) + offset, offset, 0]) foot_digit();
         translate([foot_pos(2) + offset, offset, 0]) foot_digit();
         translate([foot_pos(3) + offset, offset, 0]) foot_digit();
@@ -127,7 +128,7 @@ module foot_stencile_halves(height) {
         cube([FOOT_LENGTH, BLOCKS_WIDTH+ATOM*2, height+ATOM*2]);
     }
 
-    translate([0, -BLOCKS_WIDTH - 20, 0])
+    translate([0, -BLOCKS_WIDTH - 10, 0])
     difference() {
         translate([-FOOT_LENGTH/2, 0, 0])
         foot_stencile(height);

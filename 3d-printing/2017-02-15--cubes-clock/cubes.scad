@@ -27,9 +27,45 @@ echo("Total =", BLOCK1_HEIGHT+BLOCK2_HEIGHT+BLOCK3_HEIGHT);
 
 echo(BLOCK1_HEIGHT+BLOCK2_HEIGHT+BLOCK3_HEIGHT);
 
+module make_block_dot_at(x, y, z) {
+    translate([x, y, z])
+    sphere(DIGIT_SEGMENT_WIDTH/2, true);
+}
+
+module make_block_square_at(x, y, z) {
+    translate([x, y, z])
+    cube(DIGIT_SEGMENT_WIDTH, true);
+}
+
 module make_block_segments(height, segments) {
 
-    offset = DIGIT_SEGMENT_WIDTH/2 + 0.5;
+    offset = DIGIT_SEGMENT_WIDTH/2;
+    bottom = height - offset;
+    mid = height / 2;
+    top = offset;
+    left = -BLOCKS_WIDTH/2 + offset;
+    right = BLOCKS_WIDTH/2 - offset;
+
+    mleft = -BLOCKS_WIDTH/2 + offset + DIGIT_SEGMENT_WIDTH*2;
+    mright = BLOCKS_WIDTH/2 - offset - DIGIT_SEGMENT_WIDTH*2;
+
+    y = BLOCKS_WIDTH/2;
+    
+    r = 1;
+    for (i=[0:3]) rotate([0, 0, 90*i]) {
+        seg = segments[i];
+
+
+        if (seg=="a") hull() {
+            make_block_square_at(left, y, bottom);
+            make_block_dot_at(left, y, top);
+        }        
+    }
+}
+
+module make_block_segments_marks(height, segments) {
+
+    offset = DIGIT_SEGMENT_WIDTH/2;
     bottom = height - offset;
     mid = height / 2;
     top = offset;
@@ -84,14 +120,18 @@ module make_block_segments(height, segments) {
 }
 
 module make_block_body(height, segments) {
+    color("white")
     difference() {
         // outer shape
         translate([-BLOCKS_WIDTH/2, -BLOCKS_WIDTH/2, 0])
         cube([BLOCKS_WIDTH, BLOCKS_WIDTH, height]);
         
         // segment gluing marks
-        make_block_segments(height, segments);
+        make_block_segments_marks(height, segments);
     }
+
+    color("black")
+    make_block_segments(height, segments);
 }
 
 module make_block_features(height, is_closed, has_full_crown, has_guide, has_marks, segments) {
