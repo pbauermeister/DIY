@@ -91,7 +91,6 @@ module base_plate_main_plate(has_center_hole) {
 }
 
 module base_plate_lower_plate() {
-    r = get_cube_snap_ball_pos_radius() + CUBE_SNAP_BALLS_RADIUS*CUBE_SNAP_BALLS_K*2 + WALL_THICKNESS;
     r = BASE_CROWN_OUTER_RADIUS;
 
     difference() {
