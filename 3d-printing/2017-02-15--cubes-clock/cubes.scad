@@ -73,7 +73,7 @@ module make_block_segments_marks(height, segments) {
 */
 }
 
-module make_block_body(height, segments) {
+module make_block_body(height, segments, with_ghosted_segments=true) {
     color("white")
     difference() {
         // outer shape
@@ -84,16 +84,20 @@ module make_block_body(height, segments) {
         make_block_segments_marks(height, segments);
     }
 
-    %color("black")
-    make_block_segments(height, segments);
+    if (with_ghosted_segments)
+        %color("black")
+        make_block_segments(height, segments);
+    else
+        make_block_segments(height, segments);
 }
 
-module make_block_features(height, is_closed, has_full_crown, has_guide, has_marks, segments) {
+module make_block_features(height, is_closed, has_full_crown, has_guide, has_marks, 
+                           segments, with_ghosted_segments=true) {
     difference() {
         union() {
             difference() {
                 // outer shape
-                make_block_body(height, segments);
+                make_block_body(height, segments, with_ghosted_segments);
                 
                 // central chamber
                 translate([0, 0, -ATOM])
@@ -175,37 +179,37 @@ module make_block_snap_marks() {
         sphere(r, true);
 }
 
-module make_block(height, is_closed, has_crown, has_guide, has_marks, segments, draft) {
+module make_block(height, is_closed, has_crown, has_guide, has_marks, segments, draft, with_ghosted_segments=true) {
     if (draft)
-        make_block_body(height, segments);
+        make_block_body(height, segments, with_ghosted_segments);
     else
-        make_block_features(height, is_closed, has_crown, has_guide, has_marks, segments, draft);
+        make_block_features(height, is_closed, has_crown, has_guide, has_marks, segments, draft, with_ghosted_segments);
 }
 
-module bottom_block(draft=false) {
+module bottom_block(draft=false, with_ghosted_segments=true) {
     segs_low = ["e", "f", "g", "h"];
-    make_block(BLOCK1_HEIGHT, false, false, true, true, segs_low, draft);
+    make_block(BLOCK1_HEIGHT, false, false, true, true, segs_low, draft, with_ghosted_segments);
 }
 
-module mid_block(draft=false) {
+module mid_block(draft=false, with_ghosted_segments=true) {
     segs_mid = ["i", "j", "k", 0];
-    make_block(BLOCK2_HEIGHT , false, true, true, true, segs_mid, draft);
+    make_block(BLOCK2_HEIGHT , false, true, true, true, segs_mid, draft, with_ghosted_segments);
 }
 
-module top_block(draft=false) {
+module top_block(draft=false, with_ghosted_segments=true) {
     segs_top = ["a", "b", "c", "d"];
-    make_block(BLOCK3_HEIGHT, true, true, false, false, segs_top, draft);
+    make_block(BLOCK3_HEIGHT, true, true, false, false, segs_top, draft, with_ghosted_segments);
 }
 
-if (0) {
-    // test block
+module test_one_collapsed_block() {
     intersection() {
         make_block(5 , false, true, true, true, [0, 0, 0, 0]);
         if (0)
             cube([BLOCKS_WIDTH, BLOCKS_WIDTH, BLOCKS_WIDTH]);
     }
 }
-else if (0) {
+
+module test_all_blocks() {
     space = 7;
     shift = BLOCKS_WIDTH/2 + space;
     
@@ -220,18 +224,53 @@ else if (0) {
     translate([shift, shift, 0])
     top_block();
 }
-else {
+
+module test_one_stack(what) {
+    all_rots = [
+        [270, 270, 270],
+        [0, 0, 0],
+        [90, 90, 90],
+        [180, 90, 90],
+        [0, 90, 0],
+        [180, 90, 180],
+        [270, 90, 180],
+        [0, 0, 90],
+        [270, 90, 270],
+        [180, 90, 270],
+    ];
+    rots = all_rots[what];
+
+    rotate([0, 0, rots[0]])
     flip(BLOCK1_HEIGHT + CUBE_CROWN_HEIGHT)
-    bottom_block(draft=true);
+    bottom_block(draft=true, with_ghosted_segments=false);
     
     z1 = BLOCK1_HEIGHT + CUBE_CROWN_HEIGHT + TOLERANCE;
+    rotate([0, 0, rots[1]])
     translate([0, 0, z1])
-
     flip(BLOCK2_HEIGHT_STACKABLE)
-    mid_block(draft=true);
+    mid_block(draft=true, with_ghosted_segments=false);
 
     z2 = z1 + BLOCK2_HEIGHT_STACKABLE + TOLERANCE;
+    rotate([0, 0, rots[2]])
     translate([0, 0, z2])
     flip(BLOCK3_HEIGHT_STACKABLE)
-    top_block(draft=true);
+    top_block(draft=true, with_ghosted_segments=false);
+}
+
+//test_one_collapsed_block();
+//test_all_blocks();
+
+union() {
+    time = $t*100;
+    
+    unit = time%10;
+    tens = floor(time/10);
+    echo(time, tens, unit);
+
+    test_one_stack(unit);
+
+    translate([-BLOCKS_WIDTH-5, 0, 0])
+    test_one_stack(tens);
+
+    *cube([BLOCKS_WIDTH, BLOCKS_WIDTH, BLOCKS_WIDTH*10]);
 }

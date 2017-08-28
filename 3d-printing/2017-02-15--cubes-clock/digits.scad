@@ -11,18 +11,26 @@ DIGIT_SEGMENT_THICKNESS = 1;
 DIGIT_MARK_RADIUS = 1;
 
 module digit_block_dot(outline) {
-    rotate([-90, 0, 0])
-    translate([0, 0, -DIGIT_SEGMENT_THICKNESS + TOLERANCE])
-    linear_extrude(height=DIGIT_SEGMENT_THICKNESS)
-    circle(d=DIGIT_SEGMENT_WIDTH + outline*2);
+    width = DIGIT_SEGMENT_WIDTH + outline*2;
+    thickness = DIGIT_SEGMENT_THICKNESS + (outline ? TOLERANCE : 0);
+    k = 1 - 2 * thickness / width;
+
+    rotate([90, 0, 0])
+    translate([0, 0, outline ? 0 : -ATOM])
+    linear_extrude(height=thickness, scale=k)
+    circle(d=width);
 }
 
 module digit_block_square(outline) {
-    rotate([-90, 0, 0])
-    translate([0, 0, -DIGIT_SEGMENT_THICKNESS + TOLERANCE])
-    linear_extrude(height=DIGIT_SEGMENT_THICKNESS)
-    translate([-DIGIT_SEGMENT_WIDTH/2 -outline, -DIGIT_SEGMENT_WIDTH/2 -outline, 0])
-    square(DIGIT_SEGMENT_WIDTH + outline*2);
+    width = DIGIT_SEGMENT_WIDTH + outline*2;
+    thickness = DIGIT_SEGMENT_THICKNESS + (outline ? TOLERANCE : 0);
+    k = 1 - 2 * thickness / width;
+
+    rotate([90, 0, 0])
+    translate([0, 0, outline ? 0 : -ATOM])
+    linear_extrude(height=thickness, scale=k)
+    translate([-width/2, -width/2, 0])
+    square(width);
 }
 
 module digit_block_dot_at(outline, x, y, z) {
@@ -48,7 +56,9 @@ module digit_draw(outline, y, path) {
         }
     else {
         for (i=[0:n-2]) {
-            if (i==0)
+            if (len(path[i]) == 0)
+                ; // if first point is emprh, skip it so we will start with a dot not a square
+            else if (i==0)
                 hull() {
                     digit_block_square_at(outline, path[i][0], y, path[i][1]);
                     digit_block_dot_at(outline, path[i+1][0], y, path[i+1][1]);
@@ -85,6 +95,7 @@ module digit(seg, y, left, right, top, mid, bottom, outline, margin) {
         [right2, bottom0],
     ]);
     else if (seg=="b") digit_draw(outline, y, [
+        [],
         [left2, bottom0],
         [right2, top2],
         [right2, bottom0],
@@ -96,8 +107,8 @@ module digit(seg, y, left, right, top, mid, bottom, outline, margin) {
     ]);
     else if (seg=="d") digit_draw(outline, y, [
         [left2, bottom0],
-        [left2, top0],
-        [right2, top0],
+        [left2, top2],
+        [right2, top2],
     ]);
 
     else if (seg=="j") digit_draw(outline, y, [
