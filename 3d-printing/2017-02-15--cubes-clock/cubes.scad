@@ -19,6 +19,7 @@ CUBE_SNAP_BALLS_POS_R = BLOCKS_R4 + CUBE_SNAP_BALLS_RADIUS*CUBE_SNAP_BALLS_K + P
 function get_cube_snap_ball_pos_radius() = CUBE_SNAP_BALLS_POS_R;
 
 show_texts = false;
+has_snaps = false;
 
 echo("Cylinder =", block_cylinder);
 echo("Block 1 =", BLOCK1_HEIGHT);
@@ -86,13 +87,13 @@ module make_block_body(height, segments, with_ghosted_segments=true) {
 
     if (with_ghosted_segments)
         %color("black")
-        make_block_segments(height, segments);
+*        make_block_segments(height, segments);
     else
         make_block_segments(height, segments);
 }
 
 module make_block_features(height, is_closed, has_full_crown, has_guide, has_marks, 
-                           segments, with_ghosted_segments=true) {
+                           segments, with_ghosted_segments) {
     difference() {
         union() {
             difference() {
@@ -116,15 +117,15 @@ module make_block_features(height, is_closed, has_full_crown, has_guide, has_mar
             }
 
             // crown
-            translate([0, 0, height])
+            translate([0, 0, height-ATOM])
             barrel(BLOCKS_R2, BLOCKS_R1, has_full_crown ? CUBE_CROWN_HEIGHT : CUBE_CROWN_SHORT_HEIGHT);
 
             // ring to reduce friction
-            translate([0, 0, height])
+            translate([0, 0, height-ATOM])
             barrel(BLOCKS_R4+CUBE_SNAP_BALLS_RADIUS*CUBE_SNAP_BALLS_K, BLOCKS_R2, BLOCKS_JOIN);
             
             // snap balls
-            for (i=[0:3])
+            if (has_snaps) for (i=[0:3])
                 rotate([0, 0, 30 + 90*i])
                 translate([0, get_cube_snap_ball_pos_radius(), height+PLAY/2])
                 scale([CUBE_SNAP_BALLS_K, CUBE_SNAP_BALLS_K, 1]) {
@@ -134,8 +135,8 @@ module make_block_features(height, is_closed, has_full_crown, has_guide, has_mar
                     cylinder(h=BLOCKS_JOIN, r=CUBE_SNAP_BALLS_RADIUS);
                 }
             
+            // top closing plate
             if (is_closed) {
-                // top closing plate
                 translate([-BLOCKS_WIDTH/2, -BLOCKS_WIDTH/2, 0])
                 cube([BLOCKS_WIDTH, BLOCKS_WIDTH, WALL_THICKNESS]);
             }
@@ -162,7 +163,7 @@ module make_block_features(height, is_closed, has_full_crown, has_guide, has_mar
                 
         
         // snap mark
-        if (has_marks) {
+        if (has_snaps) if (has_marks) {
             make_block_snap_marks();
         }
     }
@@ -183,7 +184,7 @@ module make_block(height, is_closed, has_crown, has_guide, has_marks, segments, 
     if (draft)
         make_block_body(height, segments, with_ghosted_segments);
     else
-        make_block_features(height, is_closed, has_crown, has_guide, has_marks, segments, draft, with_ghosted_segments);
+        make_block_features(height, is_closed, has_crown, has_guide, has_marks, segments, with_ghosted_segments);
 }
 
 module bottom_block(draft=false, with_ghosted_segments=true) {
