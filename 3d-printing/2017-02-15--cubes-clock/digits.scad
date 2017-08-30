@@ -16,7 +16,7 @@ module digit_block_dot(outline) {
     k = 1 - 2 * thickness / width;
 
     rotate([90, 0, 0])
-    translate([0, 0, outline ? 0 : -ATOM])
+    translate([0, 0, -ATOM])
     linear_extrude(height=thickness, scale=k)
     circle(d=width);
 }
@@ -27,7 +27,7 @@ module digit_block_square(outline) {
     k = 1 - 2 * thickness / width;
 
     rotate([90, 0, 0])
-    translate([0, 0, outline ? 0 : -ATOM])
+    translate([0, 0, -ATOM])
     linear_extrude(height=thickness, scale=k)
     translate([-width/2, -width/2, 0])
     square(width);
@@ -83,8 +83,6 @@ module digit(seg, y, left, right, top, mid, bottom, outline, margin) {
     top2    = top    + margin;
     bottom2 = bottom - margin;
 
-    left0   = left   + TOLERANCE;
-    right0  = right  - TOLERANCE;
     top0    = top    + TOLERANCE;
     bottom0 = bottom - TOLERANCE;
     

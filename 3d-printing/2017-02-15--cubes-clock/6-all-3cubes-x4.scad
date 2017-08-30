@@ -9,7 +9,7 @@
 include <definitions.scad>
 use <cubes.scad>
 
-space = 7;
+space = 3;
 shift = BLOCKS_WIDTH/2 + space;
 
 translate([-shift, -shift, 0]) bottom_block();
