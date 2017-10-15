@@ -62,18 +62,26 @@ module lever_plate_grove() {
 }
 
 module lever_plate() {
-    difference() {
+    screw_h = PLATE2_WHEEL_HEIGHT + GEARS_THICKNESS - WALL_THICKNESS*4;
+     difference() {
         union() {
+            // elements
             lever_plate_gear();
             lever_plate_neck();
             lever_plate_crown();
 
+            // spokes
             for(i=[0, 60, 120])
                 rotate([0, 0, i])
                 lever_plate_bar();
         }
-        sphere(r=PINION_SCREW_HEAD_RADIUS);
-        lever_plate_grove();
+        
+        // cylindric+conic screw cavity
+        cylinder(r=PINION_SCREW_HEAD_RADIUS, h=screw_h);
+        translate([0, 0, screw_h])
+        cylinder(r1=PINION_SCREW_HEAD_RADIUS, r2=0, h=PINION_SCREW_HEAD_RADIUS);
+
+        lever_plate_grove(); // useful?
     }    
     lever_plate_lever();
 }

@@ -2,7 +2,7 @@
 // NOTES:
 //
 // Printing resolution: Normal (not draft, not fine)
-// Fill: 5%
+// Fill: 10%
 //
 // ============================================================================
 
