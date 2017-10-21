@@ -8,11 +8,12 @@ module diagonal_end_rest_raw(thin=false) {
         translate([0, 0, -REST_HEIGHT/2])
         difference() {
             // wall, full surface, creating rest top
-            thickness = thin ? 0.5 : WALL_THICKNESS;
+            thickness = thin ? SUPPORT_THICKNESS : WALL_THICKNESS;
             dz = REST_HEIGHT + thickness/2;
             translate([-dz, 0, dz])
             cube([PIPE_DIAMETER_INNER* S2 *2, PIPE_DIAMETER_INNER, thickness], true);
 
+            // remove extraneous rest top
             translate([-REST_LENGTH-WALL_THICKNESS, 0, REST_HEIGHT])
             cube([PIPE_DIAMETER_INNER* S2 + REST_HEIGHT*S2, PIPE_DIAMETER_INNER+ATOM*2, REST_HEIGHT+WALL_THICKNESS], true);
         }
@@ -21,7 +22,7 @@ module diagonal_end_rest_raw(thin=false) {
 
 module diagonal_end_rest(thin=false, recessed=false) {
     intersection() {
-        radius = PIPE_DIAMETER_INNER/2 - (recessed ? 0.5 : 0);
+        radius = PIPE_DIAMETER_INNER/2 - (recessed ? SUPPORT_THICKNESS : 0);
         diagonal_end_rest_raw(thin);
         barrel(radius, 0, PIPE_HEIGHT);
     }
@@ -48,7 +49,7 @@ module diagonal_end_raw() {
         h = PIPE_DIAMETER_INNER * 2;
         translate([0, 0, h/2 - REST_HEIGHT/2])
         cube ([PIPE_DIAMETER_INNER* S2*S2, WALL_THIN_THICKNESS, h], true);
-        
+
         // short foot
         translate([0, 0, PIPE_DIAMETER_INNER/2 - REST_HEIGHT/2])
         cube ([WALL_THIN_THICKNESS, PIPE_DIAMETER_INNER, PIPE_DIAMETER_INNER], true);
@@ -62,7 +63,8 @@ module diagonal_end(flat=false) {
     rotate([0, rot, 0])
     translate([0, 0, sink])
     {
-        diagonal_end_rest();
+if($t>0.5)
+    diagonal_end_rest();
         intersection() {
             diagonal_end_raw();
             barrel(PIPE_DIAMETER_INNER/2, 0, PIPE_HEIGHT);
@@ -123,8 +125,8 @@ module perpendicular_end(flat=false) {
         intersection() {
              difference(){
                 perpendicular_end_raw(0);
-                 translate([-WALL_THIN_THICKNESS, 0, -WALL_THIN_THICKNESS])
-                perpendicular_end_raw(WALL_THIN_THICKNESS);
+                 translate([-WALL_THINNER_THICKNESS, 0, -WALL_THINNER_THICKNESS])
+                perpendicular_end_raw(WALL_THINNER_THICKNESS);
             }
             barrel(PIPE_DIAMETER_INNER/2, 0, PIPE_HEIGHT);
         }
