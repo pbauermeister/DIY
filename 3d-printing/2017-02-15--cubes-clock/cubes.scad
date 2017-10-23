@@ -47,33 +47,6 @@ module make_block_segments(height, segments, outline=0) {
     }
 }
 
-module make_block_segments_marks(height, segments) {
-    make_block_segments(height, segments, TOLERANCE);
-/*
-    offset = DIGIT_SEGMENT_WIDTH/2;
-    margin = DIGIT_SEGMENT_WIDTH/2;
-
-    bottom = height - offset;
-    margin = DIGIT_SEGMENT_WIDTH;
-    mid = height / 2;
-    top = offset;
-    left = -BLOCKS_WIDTH/2 + offset + margin;
-    right = BLOCKS_WIDTH/2 - offset - margin;
-
-    y = BLOCKS_WIDTH/2;
-    
-    for (i=[0:3]) rotate([0, 0, 90*i]) {
-        seg = segments[i];
-
-        if (show_texts)
-            %translate([0, y, mid])
-            text(str(seg));
-
-        digit_marks(seg, y, left, right, top, mid, bottom);
-    }
-*/
-}
-
 module make_block_body(height, segments, with_ghosted_segments=true) {
     color("white")
     difference() {
@@ -82,7 +55,7 @@ module make_block_body(height, segments, with_ghosted_segments=true) {
         cube([BLOCKS_WIDTH, BLOCKS_WIDTH, height]);
         
         // segment gluing marks
-        make_block_segments_marks(height, segments);
+        make_block_segments(height, segments, TOLERANCE);
     }
 
     if (with_ghosted_segments)
@@ -107,12 +80,13 @@ module make_block_features(height, is_closed, has_full_crown, has_guide, has_mar
 
                 if(has_guide) {
                     // remove cone to create bottom chamfer
-                    translate([0, 0, BLOCKS_R3/2 + CUBE_CROWN_HEIGHT -ATOM])
-                    cylinder(h=BLOCKS_R3+ATOM*2, r1=BLOCKS_R3, r2=0, center=true); 
+                    margin = PLAY/3;
+                    translate([0, 0, BLOCKS_R3/2 + CUBE_CROWN_HEIGHT -ATOM + margin/2])
+                    cylinder(h=BLOCKS_R3+ATOM*2+margin, r1=BLOCKS_R3+margin, r2=0, center=true); 
 
                     // remove cylinder to create radial play, below chamfer
-                    translate([0, 0, (CUBE_CROWN_HEIGHT)/2-ATOM])
-                    cylinder(h=CUBE_CROWN_HEIGHT+ATOM*2, r=BLOCKS_R3, center=true);
+                    translate([0, 0, (CUBE_CROWN_HEIGHT)/2-ATOM -margin/2])
+                    cylinder(h=CUBE_CROWN_HEIGHT+ATOM*2 + margin, r=BLOCKS_R3+margin, center=true);
                 }
             }
 
@@ -258,7 +232,11 @@ module test_one_stack(what) {
     top_block(draft=true, with_ghosted_segments=false);
 }
 
-//test_one_collapsed_block();
+if(0)
+intersection() {
+    test_one_collapsed_block();
+    cube(100);
+}
 //test_all_blocks();
 
 union() {
