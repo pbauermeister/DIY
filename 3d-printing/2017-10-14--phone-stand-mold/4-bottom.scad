@@ -1,3 +1,6 @@
+// Density: 40%
+// Quality: Draft
+
 use <parts.scad>
 
 intersection() 
