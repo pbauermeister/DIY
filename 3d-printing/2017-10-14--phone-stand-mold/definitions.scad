@@ -1,5 +1,7 @@
 S2 = sqrt(2);
 ATOM = 0.001;
+TOLERANCE = 0.17;
+PLAY = 0.4;
 
 PIPE_THICKNESS = 2.5;
 PIPE_DIAMETER_INNER = 102;
@@ -24,6 +26,17 @@ MARK_THICKNESS = 0.5;
 STOP_THICKNESS = 2;
 
 SUPPORT_THICKNESS = 0.5;
+
+LOGO_TENONS_DISTANCE = 30;
+LOGO_TENONS_DIAMETER = 5;
+LOGO_TENONS_DEPTH = 10;
+LOGO_TENONS_X_SHIFT = 5;
+
+SCREW_DIAMETER = 2.9;
+SCREW_HEAD_DIAMETER = 5.5;
+SCREW_HEAD_THICKNESS = 2;
+SCREW_HEIGHT = 12; // overall
+
 
 $fn = 90;
 
@@ -67,4 +80,17 @@ module trapezoid(size, center) {
         polyhedron(points, faces);
     else
         polyhedron(points, faces);
+}
+
+module screw(head_extent=0, is_clearance_hole=false) {   
+    // thread
+    translate([0, 0, -SCREW_HEIGHT + SCREW_HEAD_THICKNESS])
+    cylinder(h=SCREW_HEIGHT,
+             r=SCREW_DIAMETER/2 - TOLERANCE
+               + (is_clearance_hole ? TOLERANCE*2 : 0));
+    // head
+    for (i=[0:head_extent])
+        translate([0, 0, i])
+        cylinder(h=SCREW_HEAD_THICKNESS, 
+                 r=SCREW_HEAD_DIAMETER/2 + (is_clearance_hole ? PLAY : 0));
 }
