@@ -5,12 +5,12 @@ include <definitions.scad>
 use <parts.scad>
 
 PLATE_THICKNESS = 0.8;
-PLATE_WIDTH = 44;
+PLATE_WIDTH = 46;
 PLATE_HEIGHT = 19;
 FONT_SIZE = 6;
 FONT = "Arial:style=Bold";
 FONT_THICKNESS = 0.2;
-FONT_SPACING = 1.125;
+FONT_SPACING = 1.2;
 
 module write(text, valign) {
     scale([0.8, 1, 1]) // make font narrow
@@ -22,7 +22,7 @@ module write(text, valign) {
 // Tenons
 for (i=[-1, 1])
     translate([i*LOGO_TENONS_DISTANCE/2, 0, PLATE_THICKNESS])
-    cylinder(d=LOGO_TENONS_DIAMETER - TOLERANCE*4, h=LOGO_TENONS_DEPTH);
+    cylinder(d=LOGO_TENONS_DIAMETER - TOLERANCE*8.1, h=LOGO_TENONS_DEPTH);
 
 difference() {
     // Plate

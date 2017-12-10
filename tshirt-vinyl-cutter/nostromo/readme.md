@@ -6,5 +6,5 @@ Please Google for files:
 - uscss_nostromo___alternate_2_by_skinnyinvader-d88wqvn.jpg
 
 ## Files
-- nostromo-1.svg
-- nostromo.svg    -- Final file
+- nostromo-design.svg   -- design
+- nostromo-linecut.svg  -- line for vinyl cutter
