@@ -1,39 +1,55 @@
 THICKNESS = 0.4;
 EMBOSS = 0.3;
-
-LENGTH = 50;
-WIDTH = 13;
-
 BORDER = 1;
 CARVE = 0.2;
+LENGTH = 48;
 R = 1.2;
+
+DXF = "design.dxf";
+
+IS_CONVEX = !true;
+FILLET = 6;
+
+module gfx() {
+    resize([LENGTH, 0, 0], auto=true)
+    import(DXF);
+}
+
+module fillet(r) {
+    offset(r=-r) offset(delta=r) children();
+}
+
+module body(thickness, inset) {
+    if(IS_CONVEX)
+        linear_extrude(height=thickness)
+        offset(r=-inset)
+        fillet(FILLET)
+        gfx();
+    else
+        linear_extrude(height=thickness)
+        offset(r=-inset)
+        hull()
+        gfx();
+}
 
 module all() {
     difference() {
         union() {
+            // logo
+            linear_extrude(height=1)
+            gfx();
+
             // body
             translate([0, 0, -THICKNESS])
-            cube([LENGTH, WIDTH, THICKNESS]);
-
-            // logo
-            resize([LENGTH, WIDTH, EMBOSS])
-            linear_extrude(height=1)
-            import("design.dxf");
+            body(THICKNESS, 0);
         }
 
         // carved back
-        translate([BORDER, BORDER, -THICKNESS])
-        cube([LENGTH-BORDER*2, WIDTH-BORDER*2, CARVE]);
-
-        // corners
-        translate([0, 0, 0])      rotate([0, 0, 45]) cube([R, R, 10], true);
-        translate([LENGTH, 0, 0]) rotate([0, 0, 45]) cube([R, R, 10], true);
-        translate([0, WIDTH, 0])      rotate([0, 0, 45]) cube([R, R, 10], true);
-        translate([LENGTH, WIDTH, 0]) rotate([0, 0, 45]) cube([R, R, 10], true);
+        translate([0, 0, -THICKNESS])
+        body(CARVE, BORDER);
     }
 }
 
-//k = 15/13;
-//scale([k, k, 1])
 rotate([180, 0, 0])
 all();
+
