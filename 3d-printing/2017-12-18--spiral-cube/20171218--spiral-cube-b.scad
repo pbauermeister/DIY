@@ -5,7 +5,7 @@ SIZE = 35;
 STEPS = 150;
 TOTAL_ROTATION = 30;
 K = 2;
-LAYER = 0.17;
+LAYER = 0.2;
 
 module make_cube_edges(size, rotation, etch_base) {
     d1 = size - WALL_THICKNESS*2; // to keep walls
