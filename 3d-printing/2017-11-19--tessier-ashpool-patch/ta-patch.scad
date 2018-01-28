@@ -7,7 +7,10 @@ BACK_THICKNESS = 0.2; // adjust to obtain the thinnest possible layer for your p
 // The total thickness will be LOGO_THICKNESS+BACK_THICKNESS+BACK_BORDER_THICKNESS
 
 // Desired length:
-LENGTH = 48; // set to 0 to keep length defined in vector graphics
+LENGTH = 48;
+// set to positive value to force length to this value;
+// set to 0 to keep length defined in vector graphics; 
+// set to negative value to scale horizontally by -LENGTH factor;
 // Note: aspect ratio is preserved
 
 // BACK BORDER
@@ -40,8 +43,12 @@ FILLET = 6; // - if BACK_DXF is empty, we will fill areas using a fillet of this
 // -------
 
 module load_gfx(file_name) {
-    resize([LENGTH, 0, 0], auto=true)
-    import(file_name);
+    if(LENGTH < 0)
+        scale([-LENGTH, -LENGTH, 1])
+        import(file_name);
+    else
+        resize([LENGTH, 0, 0], auto=true)
+        import(file_name);
 }
 
 module fillet(r) {
