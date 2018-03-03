@@ -80,12 +80,12 @@ module diagonal_end_raw() {
                 h = PIPE_DIAMETER_INNER;
                 hf1 = 1;
                 translate([0, 0, h/2*hf1 - REST_HEIGHT/2])
-                cube ([PIPE_DIAMETER_INNER* S2*S2, WALL_THIN_THICKNESS, h*hf1], true);
+                cube([PIPE_DIAMETER_INNER* S2*S2, WALL_THIN_THICKNESS, h*hf1], true);
 
                 // short diameter foot
                 hf2 = 1/4;
                 translate([0, 0, PIPE_DIAMETER_INNER/2*hf2 - REST_HEIGHT/2])
-                cube ([WALL_THIN_THICKNESS, PIPE_DIAMETER_INNER, PIPE_DIAMETER_INNER*hf2], true);
+                cube([WALL_THIN_THICKNESS, PIPE_DIAMETER_INNER, PIPE_DIAMETER_INNER*hf2], true);
             }
             // screw hole
             make_screw(false);
@@ -113,45 +113,77 @@ module diagonal_end(flat=false) {
 }
 
 module perpendicular_end_raw(recess) {
+    // small chamber
     translate([0, 0, CABLE_GROVE_HEIGHT/2 + PIPE_MARGIN/2])
-    trapezoid ([PIPE_DIAMETER_OUTER, CABLE_GROVE_WIDTH-recess*2, CABLE_GROVE_HEIGHT + PIPE_MARGIN], true);
+    trapezoid([PIPE_DIAMETER_OUTER, CABLE_GROVE_WIDTH-recess*2, CABLE_GROVE_HEIGHT + PIPE_MARGIN], true, 10, true);
 
-    translate([-CAVITY_SHORTAGE/2, 0, CAVITY_HEIGHT/2 + PIPE_MARGIN/2])
-    trapezoid ([PIPE_DIAMETER_INNER-CAVITY_SHORTAGE, CAVITY_WIDTH-recess*2, CAVITY_HEIGHT + PIPE_MARGIN], true);
+    // big chamber
+    translate([-CAVITY_SHORTAGE/2, 0, CAVITY_HEIGHT/2 + PIPE_MARGIN/2]) {
+        intersection() {
+            trapezoid([PIPE_DIAMETER_INNER-CAVITY_SHORTAGE, CAVITY_WIDTH-recess*2, CAVITY_HEIGHT + PIPE_MARGIN], true, 10, true);
+        
+            translate([-PIPE_DIAMETER_INNER/8 + CAVITY_SPHERE_SHIFT_TUNING, 0, -PIPE_DIAMETER_INNER/4])
+            sphere(d=PIPE_DIAMETER_INNER + CAVITY_SPHERE_RADIUS_TUNING);
+        }
+    }
 
     if (!recess) {
-        // marks
+        // small chamber mark
         translate([0, 0, PIPE_MARGIN/2])
-        trapezoid ([PIPE_DIAMETER_OUTER, CABLE_GROVE_WIDTH+MARK_THICKNESS*2-recess*2, PIPE_MARGIN], true);
+        trapezoid([PIPE_DIAMETER_OUTER, CABLE_GROVE_WIDTH+MARK_THICKNESS*2-recess*2, PIPE_MARGIN], true);
 
+        // big chamber mark
         translate([-CAVITY_SHORTAGE/2, 0, PIPE_MARGIN/2])
-        trapezoid ([PIPE_DIAMETER_INNER-CAVITY_SHORTAGE, CAVITY_WIDTH+MARK_THICKNESS*2-recess*2, PIPE_MARGIN], true);
+        trapezoid([PIPE_DIAMETER_INNER-CAVITY_SHORTAGE, CAVITY_WIDTH+MARK_THICKNESS*2-recess*2, PIPE_MARGIN], true);
         
         // strut
         strut_height = WALL_THICKNESS;
         translate([0, 0, strut_height/2])
-        cube ([WALL_THICKNESS, PIPE_DIAMETER_INNER, strut_height], true); 
+        cube([WALL_THICKNESS, PIPE_DIAMETER_INNER, strut_height], true); 
     }
 }
 
 module perpendicular_end_stop() {
-    translate([0, 0, -STOP_THICKNESS/2])
-    cube ([PIPE_DIAMETER_OUTER, CABLE_GROVE_WIDTH+MARK_THICKNESS*2, STOP_THICKNESS], true);
+    difference() {
+        union() {
+            // small chamber base
+            translate([0, 0, -STOP_THICKNESS/2])
+            cube([PIPE_DIAMETER_OUTER, CABLE_GROVE_WIDTH + MARK_THICKNESS*2, STOP_THICKNESS], true);
 
-    translate([-CAVITY_SHORTAGE/2 -PIPE_THICKNESS/2, 0, -STOP_THICKNESS/2])
-    cube ([PIPE_DIAMETER_OUTER-PIPE_THICKNESS-CAVITY_SHORTAGE, CAVITY_WIDTH+MARK_THICKNESS*2, STOP_THICKNESS], true);
-    
-    translate([0, 0, -STOP_THICKNESS/2])
-    cube ([WALL_THICKNESS, PIPE_DIAMETER_OUTER, STOP_THICKNESS], true); 
+            // big chamber base
+            translate([-CAVITY_SHORTAGE/2 -PIPE_THICKNESS/2, 0, -STOP_THICKNESS/2])
+            cube([PIPE_DIAMETER_OUTER-PIPE_THICKNESS-CAVITY_SHORTAGE, CAVITY_WIDTH+MARK_THICKNESS*2, STOP_THICKNESS], true);
+            
+            // strut
+            translate([0, 0, -STOP_THICKNESS/2])
+            cube([WALL_THICKNESS, PIPE_DIAMETER_OUTER, STOP_THICKNESS], true); 
+        }
+        // groove
+        translate([0, 0, -STOP_THICKNESS/2])
+        cube([PIPE_DIAMETER_OUTER+ATOM, BASE_GROOVE_WIDTH, STOP_THICKNESS+ATOM], true);
+    }
+
+    // groove filler
+    translate([WALL_THICKNESS+5, PIPE_DIAMETER_OUTER/2 +CAVITY_WIDTH/2 + 5 , -STOP_THICKNESS/2])
+    //%translate([0, 0 , -STOP_THICKNESS/2 -STOP_THICKNESS ])
+    {
+        // grove filler
+        translate([0, 0, STOP_THICKNESS])
+        cube([PIPE_DIAMETER_OUTER+ATOM, BASE_GROOVE_WIDTH - TOLERANCE*1.5, STOP_THICKNESS+ATOM], true);
+
+        // support (cross)
+        cube([PIPE_DIAMETER_OUTER+ATOM, CABLE_GROVE_WIDTH + MARK_THICKNESS*2, STOP_THICKNESS+ATOM], true);
+        cube([WALL_THICKNESS, PIPE_DIAMETER_OUTER * .8, STOP_THICKNESS], true); 
+    }
 }
 
 module perpendicular_end(flat=false) {
     translate([0, 0, flat ? STOP_THICKNESS : 0])
     {
         intersection() {
-             difference(){
+            difference() {
                 perpendicular_end_raw(0);
-                 translate([-WALL_THINNER_THICKNESS, 0, -WALL_THINNER_THICKNESS])
+                translate([-WALL_THINNER_THICKNESS, 0, -WALL_THINNER_THICKNESS])
                 perpendicular_end_raw(WALL_THINNER_THICKNESS);
             }
             barrel(PIPE_DIAMETER_INNER/2, 0, PIPE_HEIGHT);
