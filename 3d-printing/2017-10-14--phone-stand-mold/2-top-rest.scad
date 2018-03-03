@@ -1,5 +1,5 @@
-// Density: 40%
-// Quality: Draft
+// Density: 20%
+// Quality: Normal
 
 include <definitions.scad>
 use <parts.scad>

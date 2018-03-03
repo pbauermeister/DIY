@@ -16,12 +16,18 @@ REST_HEIGHT = 10;
 REST_LENGTH = 25;
 BASE_MIN_THICKNESS = 25;
 PLUG_GROVE_WIDTH = 12;
+
 CABLE_GROVE_WIDTH = 7;
 CABLE_GROVE_HEIGHT = 5;
+
+BASE_GROOVE_WIDTH = 3.5;
 
 CAVITY_WIDTH = 20;
 CAVITY_SHORTAGE = 35;
 CAVITY_HEIGHT = 30;
+CAVITY_SPHERE_RADIUS_TUNING = 3;
+CAVITY_SPHERE_SHIFT_TUNING = -3;
+
 MARK_THICKNESS = 0.5;
 STOP_THICKNESS = 2;
 
@@ -50,12 +56,12 @@ module barrel(outer_radius, inner_radius, height) {
     }
 }
 
-module trapezoid(size, center) {
+module trapezoid(size, center, conicity=20, rounded=false) {
 //    cube(size, center);
     x = size[0];
     y = size[1];
     z = size[2];
-    d = z / 20; // conicity
+    d = z / conicity; // conicity
     
     points = [
     [ 0,  0,  0 ],  //0
@@ -75,11 +81,15 @@ module trapezoid(size, center) {
     [6,7,3,2],  // back
     [7,4,0,3]]; // left
 
-    if(center)
-        translate([-x/2, -y/2, -z/2])
+    translate([center ? -x/2 : 0, center ? -y/2 : 0, center ? -z/2 : 0]) {
         polyhedron(points, faces);
-    else
-        polyhedron(points, faces);
+
+        if (rounded)
+            translate([x/2, y/2, z])
+            scale([1, 1, 0.5])
+            rotate([0, 90, 0])
+            cylinder(h=x, r=y/2-d, center=true);
+    }
 }
 
 module screw(head_extent=0, is_clearance_hole=false) {   
