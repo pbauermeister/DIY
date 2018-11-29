@@ -226,7 +226,10 @@ module mesh_plate(z, n, next=0) {
                 lotus_border(n);
 
                 // next lotus
-                if (next) lotus(next);
+                if (next) {
+                    lotus(next);
+                    lotus_border(next);
+                }
 
                 // frame
                 translate([0, 0, .5])
@@ -244,16 +247,29 @@ module mesh_plate(z, n, next=0) {
     }
 }
 
-if(1) {
-    mesh_plate(0, 1, 4);
-    mesh_plate(1, 1, 4);
+module all() {
+    mesh_plate(0, 1, 1);
+    mesh_plate(1, 1, 2);
 
-    mesh_plate(2, 2, 4);
-    mesh_plate(3, 2, 4);
+    mesh_plate(2, 2, 2);
+    mesh_plate(3, 2, 3);
 
-    mesh_plate(4, 3, 4);
+    mesh_plate(4, 3, 3);
     mesh_plate(5, 3, 4);
 
     mesh_plate(6, 4);
     mesh_plate(7, 4);
 }
+
+if(0)
+intersection() {
+    all();
+
+    rotate([0, 0, 45])
+    translate([0, 0, -D/2])
+    cube([D, D, D]);
+    
+    
+    cube([D, D, D], true);
+}
+else all();
