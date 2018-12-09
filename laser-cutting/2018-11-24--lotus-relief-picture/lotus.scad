@@ -1,5 +1,3 @@
-//$fn = 4;
-
 ATOM = 0.01;
 pi = 180;
 
@@ -10,26 +8,15 @@ D = 90;
 THICKNESS = 1;
 
 COLORS = [
-"LightYellow",
-    "PowderBlue",
-    "LightBlue",
-"Yellow",
-    "SkyBlue",
-    "LightSkyBlue",
-"Gold",
-    "DeepSkyBlue",
-    "DodgerBlue",
-"Orange",
-    "CornflowerBlue",
-    "RoyalBlue",
-"DarkOrange",
     "Blue",
-    "MediumBlue",
-"OrangeRed",
-    "DarkBlue",
-    "Navy",
-"Tomato",
-    "MidnightBlue"
+    "Blue",
+    "Blue",
+
+    "Gold",
+    "Blue",
+    "Blue",
+
+    "DarkSlateGray"
 ];
 
 /*
@@ -44,35 +31,36 @@ module seg(x1, y1, x2, y2, thickness_k=1) {
     }
 }
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
 // LOTUS
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
 
 /*
  * Generate various lotus shapes
  */
 
 // https://podcollective.com/polar-graph-art-quickgraph-a/lotus-equasion/
-function r1(t) = (1 + (((abs(cos(t*3)))+(0.25-(abs(cos(t*3+pi/2))))*2)
-                      / (2+abs(cos(t*6+pi/2))*8))
+function r1(t) = (1+(((abs(cos(t*3)))+(0.25-(abs(cos(t*3+pi/2))))*2)
+                    / (2+abs(cos(t*6+pi/2))*8))
                  ) * 0.7;
-function r2(t) = (2 + (((abs(cos(t*3)))+(0.25-(abs(cos(t*3+pi/2))))*2)
-                     / (2+abs(cos(t*6+pi/2))*8))
+function r2(t) = (2+(((abs(cos(t*3)))+(0.25-(abs(cos(t*3+pi/2))))*2)
+                    / (2+abs(cos(t*6+pi/2))*8))
                  ) *0.6;
-function r3(t) = (3 + (((abs(cos(t*6)))+(0.25-(abs(cos(t*6+pi/2))))*2)
-                     / (2+abs(cos(t*12+pi/2))*8))
+function r3(t) = (3+(((abs(cos(t*6)))+(0.25-(abs(cos(t*6+pi/2))))*2)
+                    / (2+abs(cos(t*12+pi/2))*8))
                  ) * 0.6;
 
 function r4_(t) = //(1.0 * min(1/abs(cos(t)), 1/abs(sin(t))) *
-                 (3 + (((abs(cos(t*8)))+(0.25-(abs(cos(t*8+pi/2))))*2)
-                      / (2+abs(cos(t*16+pi/2))*8))
+                 (3+(((abs(cos(t*8)))+(0.25-(abs(cos(t*8+pi/2))))*2)
+                    / (2+abs(cos(t*16+pi/2))*8))
                  ) *0.8;
 
-function r4(t) = (3 + (((abs(cos(t*6)))+(0.25-(abs(cos(t*6+pi/2))))*2)
-                     / (2+abs(cos(t*12+pi/2))*8))
+function r4(t) = (3+(((abs(cos(t*6)))+(0.25-(abs(cos(t*6+pi/2))))*2)
+                    / (2+abs(cos(t*12+pi/2))*8))
                  ) * 0.8;
 
-function r0(t, n) = n==1 ? r1(t) : n==2 ? r2(t) : n==3 ? r3(t) : r4(t);
+function r0(t, n)
+    = n==1 ? r1(t) : n==2 ? r2(t) : n==3 ? r3(t) : r4(t);
 function fx(t, n) = cos(t) * r0(t, n) * K;
 function fy(t, n) = sin(t) * r0(t, n) * K;
 function points(n) = [ for(t=[0:STEP1:360]) [fx(t, n), fy(t, n)]];
@@ -99,33 +87,9 @@ module lotus_border(n) {
     }
 }
 
-/*
- * Generate plate with a lotus hole
- */
-/*
-module lotus_plate(n) {
-    translate([0, 0, n])
-    difference() {
-        translate([0, 0, .5])
-        cube([D, D, 1-ATOM*2], true);
-        
-        translate([0, 0, -.5])
-        scale([1, 1, 2])
-        lotus(n);
-    }
-}
-
-if (0) {
-    color("lightblue")      lotus_plate(1);
-    color("blue")           lotus_plate(2);
-    color("darkblue")       lotus_plate(3);
-    color("LightSkyBlue")   lotus_plate(4);
-}
-*/
-
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
 // MESHS
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
 
 // Mesh: cartesian -> polar -> distortion -> cartesian
 function aa(x, y, i, r) = atan2(y, x); // + i*sin(r);
@@ -142,13 +106,13 @@ function yy2(x, y, i) = let(r=rr(x, y, i), a=aa(x, y, i, r))
                     fr(r, a)*sin(-fa(r, a));
 
 // Mesh distortion
-function fr(r, a) = r; //         +sin(a*8)*4;
+function fr(r, a) = r;
 function fa(r, a) = a + r*r/50;
 
 /*
  * Generate distored mesh
  */
-module mesh1(index) {
+module mesh(index) {
     space = 20;
     step = 5;
     //thickness_k = 1;
@@ -189,23 +153,6 @@ module mesh1(index) {
 }
 
 /*
-module mesh2() {
-    STEP2 = 12;
-    R = D/2;
-    for (i=[0:STEP2:360-STEP2]) {
-        x= R * cos(i);
-        y= R * sin(i);
-        translate([x, y, 0])
-        difference() {
-            cylinder(d=R+THICKNESS/2);
-            translate([0, 0, -.75])
-            cylinder(d=R-THICKNESS/2, h=2);
-        }
-    }
-}
-*/
-
-/*
  * Generate plate with mesh cutouts and lotus hole
  */
 module mesh_plate(z, n, next=0) {
@@ -220,7 +167,7 @@ module mesh_plate(z, n, next=0) {
 
             union() {
                 // mesh
-                mesh1(n2);
+                mesh(n2);
                 
                 // lotus border
                 lotus_border(n);
@@ -258,18 +205,6 @@ module all() {
     mesh_plate(5, 3, 4);
 
     mesh_plate(6, 4);
-    mesh_plate(7, 4);
 }
 
-if(0)
-intersection() {
-    all();
-
-    rotate([0, 0, 45])
-    translate([0, 0, -D/2])
-    cube([D, D, D]);
-    
-    
-    cube([D, D, D], true);
-}
-else all();
+all();
