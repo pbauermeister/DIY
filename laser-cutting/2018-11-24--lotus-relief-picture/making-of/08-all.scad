@@ -207,4 +207,8 @@ module all() {
     mesh_plate(6, 4);
 }
 
-all();
+
+difference() {
+    //all();
+    translate([0, -D, -D/2]) cube([D, D, D]);
+}

@@ -9,12 +9,12 @@ THICKNESS = 1;
 
 COLORS = [
     "Blue",
-    "Blue",
+    "RoyalBlue",
     "Blue",
 
     "Gold",
     "Blue",
-    "Blue",
+    "RoyalBlue",
 
     "DarkSlateGray"
 ];
@@ -158,7 +158,8 @@ module mesh(index) {
 module mesh_plate(z, n, next=0) {
     n2 = 1 + z/2.75;
     color(COLORS[z])
-    translate([0, 0, z])
+    translate([0, 0, z*3.5])
+    scale([1, 1, 2])
     difference() {
         // clip
         intersection() {
@@ -207,4 +208,9 @@ module all() {
     mesh_plate(6, 4);
 }
 
-all();
+
+difference() {
+    all();
+
+    translate([0, -D, -D/2]) cube([D, D, D]);
+}
