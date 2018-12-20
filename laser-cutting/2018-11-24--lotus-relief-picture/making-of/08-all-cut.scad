@@ -1,5 +1,5 @@
 ATOM = 0.01;
-pi = 180;
+AMAX = 180;
 
 STEP1 = 1;
 K = 10;
@@ -40,23 +40,23 @@ module seg(x1, y1, x2, y2, thickness_k=1) {
  */
 
 // https://podcollective.com/polar-graph-art-quickgraph-a/lotus-equasion/
-function r1(t) = (1+(((abs(cos(t*3)))+(0.25-(abs(cos(t*3+pi/2))))*2)
-                    / (2+abs(cos(t*6+pi/2))*8))
+function r1(t) = (1+(((abs(cos(t*3)))+(0.25-(abs(cos(t*3+AMAX/2))))*2)
+                    / (2+abs(cos(t*6+AMAX/2))*8))
                  ) * 0.7;
-function r2(t) = (2+(((abs(cos(t*3)))+(0.25-(abs(cos(t*3+pi/2))))*2)
-                    / (2+abs(cos(t*6+pi/2))*8))
+function r2(t) = (2+(((abs(cos(t*3)))+(0.25-(abs(cos(t*3+AMAX/2))))*2)
+                    / (2+abs(cos(t*6+AMAX/2))*8))
                  ) *0.6;
-function r3(t) = (3+(((abs(cos(t*6)))+(0.25-(abs(cos(t*6+pi/2))))*2)
-                    / (2+abs(cos(t*12+pi/2))*8))
+function r3(t) = (3+(((abs(cos(t*6)))+(0.25-(abs(cos(t*6+AMAX/2))))*2)
+                    / (2+abs(cos(t*12+AMAX/2))*8))
                  ) * 0.6;
 
 function r4_(t) = //(1.0 * min(1/abs(cos(t)), 1/abs(sin(t))) *
-                 (3+(((abs(cos(t*8)))+(0.25-(abs(cos(t*8+pi/2))))*2)
-                    / (2+abs(cos(t*16+pi/2))*8))
+                 (3+(((abs(cos(t*8)))+(0.25-(abs(cos(t*8+AMAX/2))))*2)
+                    / (2+abs(cos(t*16+AMAX/2))*8))
                  ) *0.8;
 
-function r4(t) = (3+(((abs(cos(t*6)))+(0.25-(abs(cos(t*6+pi/2))))*2)
-                    / (2+abs(cos(t*12+pi/2))*8))
+function r4(t) = (3+(((abs(cos(t*6)))+(0.25-(abs(cos(t*6+AMAX/2))))*2)
+                    / (2+abs(cos(t*12+AMAX/2))*8))
                  ) * 0.8;
 
 function r0(t, n)
@@ -158,40 +158,44 @@ module mesh(index) {
 module mesh_plate(z, n, next=0) {
     n2 = 1 + z/2.75;
     color(COLORS[z])
-    translate([0, 0, z*3.5])
-    scale([1, 1, 2])
-    difference() {
-        // clip
-        intersection() {
-            translate([0, 0, .5])
-            cube([D, D, 1-ATOM*2], true);
-
-            union() {
-                // mesh
-                mesh(n2);
-                
-                // lotus border
-                lotus_border(n);
-
-                // next lotus
-                if (next) {
-                    lotus(next);
-                    lotus_border(next);
-                }
-
-                // frame
-                translate([0, 0, .5])
-                difference() {
-                    cube([D, D, 1], true);
-                    cube([D-THICKNESS*2, D-THICKNESS*2, 2], true);
-                }
-
-            }
-        }
-        // bore lotus
-        translate([0, 0, -.5])
-        scale([1, 1, 2])
-        lotus(n);
+    translate([0, 0, z*4])
+	minkowski() {
+	    scale([1, 1, 2])
+	    difference() {
+	        // clip
+	        intersection() {
+	            translate([0, 0, .5])
+	            cube([D, D, 1-ATOM*2], true);
+	
+	            union() {
+	                // mesh
+	                mesh(n2);
+	                
+	                // lotus border
+	                lotus_border(n);
+	
+	                // next lotus
+	                if (next) {
+	                    lotus(next);
+	                    lotus_border(next);
+	                }
+	
+	                // frame
+	                translate([0, 0, .5])
+	                difference() {
+	                    cube([D, D, 1], true);
+	                    cube([D-THICKNESS*2,D-THICKNESS*2,2],true);
+	                }
+	
+	            }
+	        }
+	        // bore lotus
+	        translate([0, 0, -.5])
+	        scale([1, 1, 2])
+	        lotus(n);
+	    }
+	
+	    cube(0.1, true);
     }
 }
 
