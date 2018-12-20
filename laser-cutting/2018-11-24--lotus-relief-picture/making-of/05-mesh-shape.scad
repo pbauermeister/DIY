@@ -1,4 +1,3 @@
-ATOM = 0.01;
 D = 90;
 THICKNESS = 1;
 
