@@ -40,29 +40,22 @@ module mesh() {
     // X mesh lines
     for (y=[-D:space:D]) {
         for (x=[-D:step:D-step]) {
-            x0 = x;
-            y0 = y;
-            x1 = x+step;
-            y1 = y;
-            seg(xx1(x0, y0), yy1(x0, y0),
-                xx1(x1, y1), yy1(x1, y1));
+            seg(xx1(x, y), yy1(x, y),
+                xx1(x+step, y), yy1(x+step, y));
 
-            seg(xx2(x0, y0), yy2(x0, y0),
-                xx2(x1, y1), yy2(x1, y1));
+            seg(xx2(x, y), yy2(x, y),
+                xx2(x+step, y), yy2(x+step, y));
         }
     }
 
     // Y mesh lines
     for (y=[-D:space:D]) {
         for (x=[-D:step:D-step]) {
-            x0 = x;
-            y0 = y;
-            x1 = x+step;
-            y1 = y;
-            seg(xx1(y0, x0), yy1(y0, x0), 
-                xx1(y1, x1), yy1(y1, x1));
-            seg(xx2(y0, x0), yy2(y0, x0),
-                xx2(y1, x1), yy2(y1, x1));
+            seg(xx1(y, x), yy1(y, x), 
+                xx1(y, x+step), yy1(y, x+step));
+
+            seg(xx2(y, x), yy2(y, x), 
+                xx2(y, x+step), yy2(y, x+step));
         }
     }
 }

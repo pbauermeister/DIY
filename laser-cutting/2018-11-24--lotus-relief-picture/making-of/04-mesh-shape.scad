@@ -1,4 +1,3 @@
-ATOM = 0.01;
 D = 90;
 THICKNESS = 1;
 
@@ -8,7 +7,7 @@ THICKNESS = 1;
 module seg(x1, y1, x2, y2) {
     hull() {
         translate([x1, y1, 0]) cylinder(d=THICKNESS);
-        translate([x2, y2, 0]) cylinder(d=THICKNESS);
+	translate([x2, y2, 0]) cylinder(d=THICKNESS);
     }
 }
 
@@ -26,7 +25,7 @@ function fr(r, a) = r;
 function fa(r, a) = a + r*r/50;
 
 /*
- * Generate distored mesh
+ * Generate distorted mesh
  */
 module mesh() {
     space = 20;
@@ -34,33 +33,28 @@ module mesh() {
 
     // X mesh lines
     for (y=[-D:space:D]) {
-        for (x=[-D:step:D-step]) {
+	for (x=[-D:step:D-step]) {
             x0 = x;
             y0 = y;
             x1 = x+step;
             y1 = y;
-            seg(xx(x0, y0), yy(x0, y0),
-                xx(x1, y1), yy(x1, y1));
-
-            seg(xx(x0, y0), yy(x0, y0),
-                xx(x1, y1), yy(x1, y1));
-        }
+            seg(xx(x, y), yy(x, y),
+		xx(x+step, y), yy(x+step, y));
+	}
     }
 
     // Y mesh lines
     for (y=[-D:space:D]) {
-        for (x=[-D:step:D-step]) {
+	for (x=[-D:step:D-step]) {
             x0 = x;
             y0 = y;
             x1 = x+step;
             y1 = y;
-            seg(xx(y0, x0), yy(y0, x0), 
-                xx(y1, x1), yy(y1, x1));
-            seg(xx(y0, x0), yy(y0, x0),
-                xx(y1, x1), yy(y1, x1));
-        }
+            seg(xx(y, x), yy(y, x),
+		xx(y, x+step), yy(y, x+step));
+	}
     }
 }
 
-
 mesh();
+

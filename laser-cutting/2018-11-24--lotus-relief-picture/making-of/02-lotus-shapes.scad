@@ -1,27 +1,27 @@
-PI = 180;
+PI = 180; // one half turn in degree
 ANGULAR_STEP = 1;
 K = 10;
 
-function r1(t) = (1 + (((abs(cos(t*3)))+(0.25-(abs(cos(t*3+PI/2))))*2)
-                      / (2+abs(cos(t*6+PI/2))*8))
+function r1(a) = (1 + (((abs(cos(a*3)))+(0.25-(abs(cos(a*3+PI/2))))*2)
+                      / (2+abs(cos(a*6+PI/2))*8))
                  ) * 0.7;
 
-function r2(t) = (2 + (((abs(cos(t*3)))+(0.25-(abs(cos(t*3+PI/2))))*2)
-                     / (2+abs(cos(t*6+PI/2))*8))
+function r2(a) = (2 + (((abs(cos(a*3)))+(0.25-(abs(cos(a*3+PI/2))))*2)
+                     / (2+abs(cos(a*6+PI/2))*8))
                  ) *0.6;
 
-function r3(t) = (3 + (((abs(cos(t*6)))+(0.25-(abs(cos(t*6+PI/2))))*2)
-                     / (2+abs(cos(t*12+PI/2))*8))
+function r3(a) = (3 + (((abs(cos(a*6)))+(0.25-(abs(cos(a*6+PI/2))))*2)
+                     / (2+abs(cos(a*12+PI/2))*8))
                  ) * 0.6;
 
-function r4(t) = (3 + (((abs(cos(t*6)))+(0.25-(abs(cos(t*6+PI/2))))*2)
-                     / (2+abs(cos(t*12+PI/2))*8))
+function r4(a) = (3 + (((abs(cos(a*6)))+(0.25-(abs(cos(a*6+PI/2))))*2)
+                     / (2+abs(cos(a*12+PI/2))*8))
                  ) * 0.8;
 
-function r0(t, n) = n==1 ? r1(t) : n==2 ? r2(t) : n==3 ? r3(t) : r4(t);
-function fx(t, n) = cos(t) * r0(t, n) * K;
-function fy(t, n) = sin(t) * r0(t, n) * K;
-function points(n) = [for(t=[0:ANGULAR_STEP:360]) [fx(t, n), fy(t, n)]];
+function r0(a, n) = n==1 ? r1(a) : n==2 ? r2(a) : n==3 ? r3(a) : r4(a);
+function fx(a, n) = cos(a) * r0(a, n) * K;
+function fy(a, n) = sin(a) * r0(a, n) * K;
+function points(n) = [for(a=[0:ANGULAR_STEP:360]) [fx(a, n), fy(a, n)]];
 
 module lotus(n) {
     linear_extrude(1)

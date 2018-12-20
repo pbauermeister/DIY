@@ -1,5 +1,5 @@
 ATOM = 0.01;
-pi = 180;
+AMAX = 180;
 
 STEP1 = 1;
 K = 10;
@@ -40,23 +40,23 @@ module seg(x1, y1, x2, y2, thickness_k=1) {
  */
 
 // https://podcollective.com/polar-graph-art-quickgraph-a/lotus-equasion/
-function r1(t) = (1+(((abs(cos(t*3)))+(0.25-(abs(cos(t*3+pi/2))))*2)
-                    / (2+abs(cos(t*6+pi/2))*8))
+function r1(t) = (1+(((abs(cos(t*3)))+(0.25-(abs(cos(t*3+AMAX/2))))*2)
+                    / (2+abs(cos(t*6+AMAX/2))*8))
                  ) * 0.7;
-function r2(t) = (2+(((abs(cos(t*3)))+(0.25-(abs(cos(t*3+pi/2))))*2)
-                    / (2+abs(cos(t*6+pi/2))*8))
+function r2(t) = (2+(((abs(cos(t*3)))+(0.25-(abs(cos(t*3+AMAX/2))))*2)
+                    / (2+abs(cos(t*6+AMAX/2))*8))
                  ) *0.6;
-function r3(t) = (3+(((abs(cos(t*6)))+(0.25-(abs(cos(t*6+pi/2))))*2)
-                    / (2+abs(cos(t*12+pi/2))*8))
+function r3(t) = (3+(((abs(cos(t*6)))+(0.25-(abs(cos(t*6+AMAX/2))))*2)
+                    / (2+abs(cos(t*12+AMAX/2))*8))
                  ) * 0.6;
 
 function r4_(t) = //(1.0 * min(1/abs(cos(t)), 1/abs(sin(t))) *
-                 (3+(((abs(cos(t*8)))+(0.25-(abs(cos(t*8+pi/2))))*2)
-                    / (2+abs(cos(t*16+pi/2))*8))
+                 (3+(((abs(cos(t*8)))+(0.25-(abs(cos(t*8+AMAX/2))))*2)
+                    / (2+abs(cos(t*16+AMAX/2))*8))
                  ) *0.8;
 
-function r4(t) = (3+(((abs(cos(t*6)))+(0.25-(abs(cos(t*6+pi/2))))*2)
-                    / (2+abs(cos(t*12+pi/2))*8))
+function r4(t) = (3+(((abs(cos(t*6)))+(0.25-(abs(cos(t*6+AMAX/2))))*2)
+                    / (2+abs(cos(t*12+AMAX/2))*8))
                  ) * 0.8;
 
 function r0(t, n)
