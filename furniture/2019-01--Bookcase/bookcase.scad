@@ -74,7 +74,7 @@ translate([0, SHIFT, 0]) {
 
 // - intermediate
 translate([0, SHIFT, 0]) {
-	vplank1(PLEN - PTCK, PLEN/2 - PTCK/2, 50 + PTCK);
+	vplank1(PLEN - PTCK - 450, PLEN/2 - PTCK/2, 50 + PTCK);
 	vplank1(50, PLEN/2 - PTCK/2, 0);
 }
 
@@ -115,12 +115,15 @@ hplank2(XWID, 800, -XWID);
 // mid right shelves
 translate([0, SHIFT, 0])
 vplank1(600 - PTCK, PLEN/4, 800 + PTCK);
-hplank1(PLEN/4, 800 + 270);
+hplank1(PLEN/2, 800 + 270);
 
 // mid left shelves: computer & hifi
 translate([0, SHIFT, 0])
 vplank1(600 - PTCK, PLEN - PTCK - 440, 800 + PTCK);
 //hplank0(PLEN/2 - PTCK*1.5 - 440, 900, PLEN/2 + PTCK/2);
+
+hplank1(440,  920, PLEN-440);
+hplank1(440, 1140, PLEN-440);
 
 // top trunk
 hplank2(PLEN, 1400);
@@ -140,10 +143,14 @@ glassdoor(DLEN, 200, PLEN-DLEN, 1800, true);
 glassdoor(DLEN, 200,     -XWID, 1800, false);
 
 // top bookcase
-hplank1(PLEN, 2245);
-hplank1(XWID - PTCK, 2245, -XWID);
+hplank1(PLEN - XWID, 2245);
 
-if(1) {
+translate([0, -SHIFT, 0])
+vplank1(450-PTCK, PLEN - XWID, 2000 + PTCK);
+
+//hplank1(XWID - PTCK, 2245, -XWID);
+
+module dvds() {
 	///////////////////////////////////////////////////////
 	// DVDs: 20 sets, 360 DVDs
 	
@@ -176,34 +183,24 @@ if(1) {
 		object(12, 195, 140, i*12, 600, 200);
 		object(12, 140, 195, i*12, 600);
 	}
-	
+}
+
+module books() {	
 	///////////////////////////////////////////////////////
 	// Books
 	
-	// 316 Pocket books
+	// 336 Pocket books
 	
-	// - 94 books
+	// - 168 books
 	translate([0, PTCK, 0])
-	for (i = [0:46]) {
-		object(25, 180, 110, i*25, 2262, 0);
-		object(25, 180, 110, i*25, 2262, 115);
-	}
-	// - 94 books
-	translate([PLEN/2 + PTCK/2, PTCK, 0])
-	for (i = [0:46]) {
+	for (i = [0:83]) {
 		object(25, 180, 110, i*25, 2262, 0);
 		object(25, 180, 110, i*25, 2262, 115);
 	}
 	
-	// - 64 books
-	translate([375, 0, 0])
-	for (i = [0:31]) {
-		object(25, 180, 110, i*25, 2000+PTCK, 0);
-		object(25, 180, 110, i*25, 2000+PTCK, 115);
-	}
-	// - 64 books
-	translate([PLEN/2 + PTCK/2, 0, 0])
-	for (i = [0:31]) {
+	// - 168 books
+	translate([0, PTCK, 0])
+	for (i = [0:83]) {
 		object(25, 180, 110, i*25, 2000+PTCK, 0);
 		object(25, 180, 110, i*25, 2000+PTCK, 115);
 	}
@@ -215,7 +212,7 @@ if(1) {
 	
 	// 40 albums
 	for (i = [0:39]) {
-		object(15, 300, 200, i*15, 1070+PTCK, 100);
+		object(15, 300, 200, i*15 + PLEN/4, 1070+PTCK, 100);
 	}
 	
 	// atlas, dicts
@@ -224,17 +221,20 @@ if(1) {
 	}
 	for (i = [1:3]) {
 		object(60, 250, 180, -PTCK - 2*40 - i * 60, 800+PTCK);
-	}
-	
-	
+	}	
+}
+
+module speakers() {
 	///////////////////////////////////////////////////////
 	// Speakers
 	
 	color("black") {
-		object(370, 210, 300, 0, 2000+PTCK);
-		object(370, 210, 300, PLEN-370, 2000+PTCK);
+		object(210, 370, 300, -PTCK-210, 2000+PTCK, 100);
+		object(210, 370, 300,  PLEN-210, 2000+PTCK, 100);
 	}
-	
+}
+
+module computer() {
 	//////////////////////////////////////////////////
 	// Computer
 	
@@ -255,22 +255,32 @@ if(1) {
 
 	// - macmini + DVD
 	color("silver")
-	object(196, 36, 196, PLEN-440 + 5, 990 + PTCK, 150);
+	object(196, 36, 196, PLEN-440 + 5, 800 + PTCK, 150);
 	color("white")
-	object(196, 36, 196, PLEN-440 + 5, 990 + PTCK + 37, 150);
-	
+	object(196, 36, 196, PLEN-440 + 5, 800 + PTCK + 37, 150);
+}
+
+module hifi() {	
 	//////////////////////////////////////////////////
 	// Hifi
 	
 	// - receiver
 	color([.25, .25, .25])
-	object(435, 150, 300, PLEN-435, 800+PTCK, 50);
+	object(435, 150-10, 300, PLEN-435, 920+PTCK+10, 50);
 	
 	// - DVD player
 	color("black")
-	object(435, 40-3, 250, PLEN-435, 800+PTCK+150+3, 100);
+	object(435, 40-3, 250, PLEN-435, 920+PTCK+150+3, 100);
 	
 	// - squeezebox
 	color([.25, .25, .25])
-	object(150, 100, 80, PLEN-150, 800+PTCK+150+40, 270);
+	object(150, 100, 80, PLEN-150, 800+PTCK, 270);
+}
+
+if (1) {
+	dvds();	
+	books();
+	hifi();
+	speakers();
+	computer();
 }
