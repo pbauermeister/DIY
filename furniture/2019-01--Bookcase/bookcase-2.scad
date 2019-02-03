@@ -1,35 +1,41 @@
 
 GAP = 1;
-PLEN = 2400; // plank length
-PTCK =   18; // plank thickness
-XWID =  280; // extention width
+PLEN = 2500; // plank length
+PTCK =   27; // plank thickness
 
-DLEN = (PLEN+XWID) / 2 +20; // door length
+PTCK2 =   18; // plank thickness
+
+//XWID =  280; // extention width
+
+DLEN = (PLEN) / 2 +20; // door length
 DTCK = 5;
 
-WID0 = 200; // width 1
 WID1 = 300; // width 1
 WID2 = 400; // width 2
 
-PHIG = 50; // plinth height
+PHIG = 95; // plinth height
 
-SHIFT = PTCK*1; // front-shift intermediate vplancks
+//SHIFT = PTCK*0; // front-shift intermediate vplancks
 
 //////////////////////////////////////////////////
-module _vplank(length, xpos, zpos, width) {
+module _vplank(length, xpos, zpos, width, tck=PTCK) {
 	color("peru")
 	translate([xpos, 0, zpos + GAP])
-	cube([PTCK, width, length - GAP*2]);
+	cube([tck, width, length - GAP*2]);
+	echo("Plank " , width, length);
 }
 module vplank1(length, xpos, zpos=0)
        _vplank(length, xpos, zpos, WID1);
 module vplank2(length, xpos, zpos=0)
        _vplank(length, xpos, zpos, WID2);
+module vplank3(length, xpos, zpos=0)
+       _vplank(length, xpos, zpos, WID1, PTCK2);
 //////////////////////////////////////////////////
-module _hplank(length, zpos, xpos, width) {
+module _hplank(length, zpos, xpos, width, tck=PTCK) {
 	color("peru")
 	translate([xpos + GAP, 0, zpos])
-	cube([length - GAP*2, width, PTCK]);
+	cube([length - GAP*2, width, tck]);
+	echo("Plank " , width, length);
 }
 module hplank0(length, zpos, xpos=0)
        _hplank(length, zpos, xpos, WID0);
@@ -37,6 +43,10 @@ module hplank1(length, zpos, xpos=0)
        _hplank(length, zpos, xpos, WID1);
 module hplank2(length, zpos, xpos=0)
        _hplank(length, zpos, xpos, WID2);
+
+module hplank3(length, zpos, xpos=0)
+       _hplank(length, zpos, xpos, WID1, PTCK2);
+
 //////////////////////////////////////////////////
 module _door(length, height, xpos, zpos, is_front) {
 	DTCK = 5;
@@ -60,106 +70,65 @@ module object(w, h, d, x, y, f=0) {
 }
 //////////////////////////////////////////////////
 
-// vertical
+module shelf()
+{
+	// verticals
+	
+	// - rightmost
+	vplank2(2450, -PTCK, 0);
+	
+	// - left
+	vplank2(2450, PLEN, 0);
 
-// - rightmost
-vplank2(PLEN - 185, -XWID -PTCK, 50);
-vplank2(50, -XWID -PTCK, 0);
+     // - mid
+	vplank3(2000 - 0*PTCK, PLEN/2 - PTCK2/2, 0);
+	
+	// plinth
+	color([.25, 0, 0])
+	translate([0, WID2 - 40, 0])
+	cube([PLEN, 20, PHIG]);
 
-// - right
-translate([0, SHIFT, 0]) {
-	vplank1(PLEN, -PTCK, 50);
-	vplank1(50, -PTCK, 0);
+	// bottom trunk, height 42 cm
+	echo("bdoor", 600-PTCK-PHIG -PTCK*2 -5);
+	hplank2(PLEN, PHIG);
+	hplank2(PLEN, 800 - 200 -PTCK*2 -5);
+	door(DLEN, 600-PTCK-PHIG -PTCK*2 -5, PLEN-DLEN, PHIG+PTCK, true);
+	door(DLEN, 600-PTCK-PHIG -PTCK*2 -5,         0, PHIG+PTCK, false);
+	
+	// dvds
+	// - drawer
+#		hplank3(PLEN, 800 - 200 -PTCK);	
+	hplank2(PLEN, 800);
+
+	// top trunk, height 37 cm
+	hplank2(PLEN, 1400);	
+	hplank2(PLEN, 1800);
+	door(DLEN, 400-PTCK, PLEN-DLEN, 1400+PTCK, true);
+	door(DLEN, 400-PTCK,         0, 1400+PTCK, false);
+	
+	// top showcase, height 20 cm
+	hplank2(PLEN, 2000);
+	glassdoor(DLEN, 200, PLEN-DLEN, 1800, true);
+	glassdoor(DLEN, 200,         0, 1800, false);
+	
+	// mid right shelves: books
+	vplank3(600 - PTCK, 300, 800 + PTCK);
+	hplank3(PLEN/2-300 - PTCK2 - PTCK2/2, 800 + 270, 300+PTCK2);
+	
+	// mid left shelves: computer & hifi
+	vplank3(600 - PTCK, PLEN - PTCK2 - 440, 800 + PTCK);	
+	hplank3(440,  920, PLEN-440);
+	hplank3(440, 1140, PLEN-440);
+		
+	// top bookcase
+	hplank3(2000, 2245, (PLEN-2000)/2);
+	vplank3(450, (PLEN-2000)/2 - PTCK2, 2000);
+	vplank3(450, (PLEN-2000)/2 + 2000, 2000);
 }
-
-// - intermediate
-translate([0, SHIFT, 0]) {
-	vplank1(PLEN - PTCK - 450, PLEN/2 - PTCK/2, 50 + PTCK);
-	vplank1(50, PLEN/2 - PTCK/2, 0);
-}
-
-// - left
-vplank2(PLEN, PLEN, 50);
-vplank2(50, PLEN, 0);
-
-// plinth
-color([.25, 0, 0])
-translate([-XWID, WID2 - 40, 0])
-cube([PLEN + XWID, 20, PHIG]);
-
-// bottom trunk
-hplank2(PLEN, PHIG);
-hplank2(XWID, PHIG, -XWID);
-
-hplank2(PLEN, 800 - 200 -PTCK*2 -5);
-hplank2(XWID, 800 - 200 -PTCK*2 -5, -XWID);
-
-door(DLEN, 600-PTCK-PHIG -PTCK*2 -5, PLEN-DLEN, PHIG+PTCK, true);
-door(DLEN, 600-PTCK-PHIG -PTCK*2 -5,     -XWID, PHIG+PTCK, false);
-
-// spare plank
-translate([0, PTCK, PHIG+PTCK])
-rotate([90, 0, 0])
-#hplank2(PLEN, 0);
-
-// dvds
-// - drawer
-translate([0, PTCK*3, 0]) {
-	hplank1(PLEN, 800 - 200 -PTCK);
-	hplank1(XWID, 800 - 200 -PTCK, -XWID);
-}
-
-hplank2(PLEN, 800);
-hplank2(XWID, 800, -XWID);
-
-// mid right shelves
-translate([0, SHIFT, 0])
-vplank1(600 - PTCK, PLEN/4, 800 + PTCK);
-hplank1(PLEN/2, 800 + 270);
-
-// mid left shelves: computer & hifi
-translate([0, SHIFT, 0])
-vplank1(600 - PTCK, PLEN - PTCK - 440, 800 + PTCK);
-//hplank0(PLEN/2 - PTCK*1.5 - 440, 900, PLEN/2 + PTCK/2);
-
-hplank1(440,  920, PLEN-440);
-hplank1(440, 1140, PLEN-440);
-
-// top trunk
-hplank2(PLEN, 1400);
-hplank2(XWID, 1400, -XWID);
-
-hplank2(PLEN, 1800);
-hplank2(XWID, 1800, -XWID);
-
-door(DLEN, 400-PTCK, PLEN-DLEN, 1400+PTCK, true);
-door(DLEN, 400-PTCK,     -XWID, 1400+PTCK, false);
-
-// top showcase
-hplank2(PLEN, 2000);
-hplank2(XWID, 2000, -XWID);
-
-glassdoor(DLEN, 200, PLEN-DLEN, 1800, true);
-glassdoor(DLEN, 200,     -XWID, 1800, false);
-
-// top bookcase
-hplank1(PLEN - XWID, 2245);
-
-translate([0, -SHIFT, 0])
-vplank1(450-PTCK, PLEN - XWID, 2000 + PTCK);
-
-//hplank1(XWID - PTCK, 2245, -XWID);
 
 module dvds() {
 	///////////////////////////////////////////////////////
-	// DVDs: 20 sets, 360 DVDs
-	
-	// - 42 DVDs
-	translate([-XWID, PTCK, 0])
-	for (i = [0:20]) {
-		object(12, 195, 140, i*12, 600, 200);
-		object(12, 140, 195, i*12, 600);
-	}
+	// DVDs: 20 sets, 338 DVDs
 	
 	// - 20 DVD sets
 	translate([0, PTCK, 0])
@@ -168,18 +137,18 @@ module dvds() {
 		object(45, 140, 195, i*45, 600);
 	}
 	
-	// - 122 DVDs
+	// - 132 DVDs
 	translate([10*45, PTCK, 0])
-	for (i = [1:61]) {
+	for (i = [1:66]) {
 		translate([(i-1)*12, 0, 0]) {
 			object(12, 195, 140, 0, 600, 200);
 			object(12, 140, 195, 0, 600);
 		}
 	}
 	
-	// 196 DVDs
+	// 206 DVDs
 	translate([PLEN/2 + PTCK/2, PTCK, 0])
-	for (i = [0:97]) {
+	for (i = [0:102]) {
 		object(12, 195, 140, i*12, 600, 200);
 		object(12, 140, 195, i*12, 600);
 	}
@@ -189,39 +158,39 @@ module books() {
 	///////////////////////////////////////////////////////
 	// Books
 	
-	// 336 Pocket books
+	// 328 Pocket books 
 	
-	// - 168 books
-	translate([0, PTCK, 0])
-	for (i = [0:83]) {
-		object(25, 180, 110, i*25, 2262, 0);
-		object(25, 180, 110, i*25, 2262, 115);
+	// - 160 books
+	translate([(PLEN-2000)/2, PTCK, 0])
+	for (i = [1:80]) {
+		object(25, 180, 110, (i-1)*25, 2262, 0);
+		object(25, 180, 110, (i-1)*25, 2262, 115);
 	}
-	
+
 	// - 168 books
-	translate([0, PTCK, 0])
-	for (i = [0:83]) {
-		object(25, 180, 110, i*25, 2000+PTCK, 0);
-		object(25, 180, 110, i*25, 2000+PTCK, 115);
+	translate([(PLEN-2000)/2, PTCK, 0])
+	for (i = [1:80]) {
+		object(25, 180, 110, (i-1)*25, 2000+PTCK, 0);
+		object(25, 180, 110, (i-1)*25, 2000+PTCK, 115);
 	}
-	
-	// 40 Cook books
-	for (i = [0:39]) {
-		object(15, 230, 180, i*15, 800+PTCK, 100);
+
+	// 61 Cook books
+	for (i = [1:61]) {
+		object(15, 230, 180, (i-1)*15 + 300+PTCK2, 800+PTCK, 100);
 	}
 	
 	// 40 albums
-	for (i = [0:39]) {
-		object(15, 300, 200, i*15 + PLEN/4, 1070+PTCK, 100);
+	for (i = [1:40]) {
+		object(15, 300, 200, (i-1)*15 + 300+PTCK2, 1070+PTCK, 100);
 	}
 	
 	// atlas, dicts
 	for (i = [1:2]) {
-		object(40, 400, 300, -PTCK - i*40, 800+PTCK);
+		object(40, 400, 300, (i-1)*40, 800+PTCK);
 	}
 	for (i = [1:3]) {
-		object(60, 250, 180, -PTCK - 2*40 - i * 60, 800+PTCK);
-	}	
+		object(60, 250, 180, 2*40 + (i-1)*60, 800+PTCK);
+	}
 }
 
 module speakers() {
@@ -229,7 +198,7 @@ module speakers() {
 	// Speakers
 	
 	color("black") {
-		object(210, 370, 300, -PTCK-210, 2000+PTCK, 100);
+		object(210, 370, 300,         0, 2000+PTCK, 100);
 		object(210, 370, 300,  PLEN-210, 2000+PTCK, 100);
 	}
 }
@@ -277,8 +246,10 @@ module hifi() {
 	object(150, 100, 80, PLEN-150, 800+PTCK, 270);
 }
 
-if (1) {
-	dvds();	
+shelf();
+
+{
+	dvds();
 	books();
 	hifi();
 	speakers();
