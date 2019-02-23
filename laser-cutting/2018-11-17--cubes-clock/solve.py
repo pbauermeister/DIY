@@ -3,7 +3,7 @@
 from itertools import permutations
 
 TOP = [0, 1, 1, 0, 2, 2, 1, 3, 3, 0]
-BOT = [0, 1, 2, 3, 2, 1, 0, 1, 0, 1]
+BOT = [0, 1, 2, 3, 2, 1, 0, 1, 2, 1]
 
 def max_dist(top, bot):
     pairs = zip(top, bot)
@@ -11,6 +11,7 @@ def max_dist(top, bot):
     return max(deltas), top, bot, deltas
 
 def print_combination(top, bot, deltas):
+    print('      ', [1,2,3,4,5,6,7,8,9,0])
     print('top   ', top)
     print('bottom', bot)
     md = max(deltas)
