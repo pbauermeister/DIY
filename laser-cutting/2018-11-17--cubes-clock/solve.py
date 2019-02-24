@@ -2,21 +2,27 @@
 
 from itertools import permutations
 
-TOP = [0, 1, 1, 0, 2, 2, 1, 3, 3, 0]
-BOT = [0, 1, 2, 3, 2, 1, 0, 1, 2, 1]
+# Possible solution, known non-optimal:
+#      0  1  2  3  4  5  6  7  8  9
+TOP = [0, 0, 1, 1, 0, 2, 2, 1, 3, 3]
+BOT = [1, 0, 1, 2, 3, 2, 1, 0, 1, 2]
 
-def max_dist(top, bot):
+def dist(top, bot):
     pairs = zip(top, bot)
     deltas = [abs(p[0]-p[1]) for p in pairs]
+    return deltas
+
+def max_dist(top, bot):
+    deltas = dist(top, bot)
     return max(deltas), top, bot, deltas
 
 def print_combination(top, bot, deltas):
-    print('      ', [1,2,3,4,5,6,7,8,9,0])
-    print('top   ', top)
-    print('bottom', bot)
+    print('  Digit            ', list(range(10)))
+    print('  Top face index   ', top)
+    print('  Bottom face index', bot)
     md = max(deltas)
     nb = len([d for d in deltas if d==md])
-    print('delta ', deltas, nb, 'x max delta', md)
+    print('  Face index delta ', deltas, nb, 'x max delta', md)
     print()
     
 faces = [0, 1, 2, 3]
@@ -31,9 +37,11 @@ for permutation in permutations(faces):
 
 combinations.sort()
 min_max = min([m for m, t, b, d in combinations])
-print(min_max)
-
 min_combinations = [(m, t, b, d) for m, t, b, d in combinations if m==min_max]
 
+print('Original:')
+print_combination(TOP, BOT, dist(TOP, BOT))
+
+print('Bottom face permutations:')
 for m, t, b, d in min_combinations:
     print_combination(t, b, d)
