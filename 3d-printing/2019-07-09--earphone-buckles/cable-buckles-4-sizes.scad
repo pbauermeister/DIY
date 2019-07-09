@@ -40,7 +40,27 @@ PLAY  = 0.7;
 SPACE = PLAY/2;
 ATOM  = 0.001;
 
+// Transform: Grow object, useful to carve another object with a play margin
+module grow_object() {
+	if (DRAFT) {
+		// do not grow, much faster
+		children();
+	} else {
+		// grow size in each dimension (by a cube)
+		minkowski() {
+			children();
+			cube([PLAY, PLAY, PLAY], true);
+		}
+	}
+}
 
+// Transform: Shift object in Y direction
+module move(by) {
+	translate([0, by, 0])
+	children();
+}
+
+// Helper object: A hollow full buckle, to create the base object, as well as as a cavity
 module full_buckle(offset, height, length, width) {
     cube([length - width, width - offset*2, height + ATOM*2], true);
 
@@ -51,6 +71,7 @@ module full_buckle(offset, height, length, width) {
     cylinder(d=width - offset*2, h=height + ATOM*2, center=true);
 }
 
+// Helper object: A hollow raw buckle
 module hollow_buckle(height, wall_thickness, length, width) {
     translate([0, 0, height/2])
     difference() {
@@ -59,6 +80,7 @@ module hollow_buckle(height, wall_thickness, length, width) {
     }
 }
 
+// Object: The prong
 module prong(wall_thickness, height, length, width, prong_size) {
 	prong_width = prong_size;
 	prong_width2 = prong_size * .8;
@@ -83,21 +105,10 @@ module prong(wall_thickness, height, length, width, prong_size) {
 		translate([-prong_width/2-1, -width/2 + hinge_radius/4.5, hinge_radius])
 		rotate([0, 90, 0])
 		cylinder(r=hinge_radius/1.75, h=prong_width + 2);
-
 	}
 }
 
-module grow_object() {
-	if (DRAFT) {
-		children();
-	} else {
-		minkowski() {
-			children();
-			cube([PLAY, PLAY, PLAY], true);
-		}
-	}
-}
-
+// Object: Buckle, carved to make room for the prong
 module buckle(height, wall_thickness, length, width, prong_size) {
 	difference() {
 		hollow_buckle(height, wall_thickness, length, width);
@@ -105,14 +116,10 @@ module buckle(height, wall_thickness, length, width, prong_size) {
 	}
 }
 
+// Object: One whole object (buckle and prong)
 module unit(height, wall_thickness, length, width, prong_size) {
 	buckle(height, wall_thickness, length, width, prong_size);
 	prong(wall_thickness, height, length, width, prong_size);
-}
-
-module move(by) {
-	translate([0, by, 0])
-	children();
 }
 
 // Here it goes:
