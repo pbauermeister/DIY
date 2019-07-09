@@ -1,13 +1,17 @@
 
 
 $fn = 90;
-WALL_THICKNESS = 1.4;
-HEIGHT = WALL_THICKNESS*6;
-DEPTH = 15;
+WALL_THICKNESS = 2.5; //1.4;
+HEIGHT = 8.4;
 ATOM = 0.001;
-WIDTH = 28;
 SPACING = 5;
-PLAY = 0.5;
+PLAY = 0.6;
+
+DEPTH = 15 + 2;
+WIDTH = 28 + 4;
+FLAP_WIDTH = WIDTH/4.5;
+
+HINGE_RADIUS = 4.2;
 
 module rounded(offset, h) {
     cube([WIDTH-DEPTH-offset*0, DEPTH-offset*2, h+ATOM*2], true);
@@ -28,26 +32,26 @@ module box(h) {
 }
 
 module flap() {
-     width = WIDTH/5;
+     width = FLAP_WIDTH;
 	difference() {
 		union() {
-			translate([-width/2, -DEPTH/2 +WALL_THICKNESS, 0])
+			translate([-width/2, -DEPTH/2 +WALL_THICKNESS/2, 0])
 			cube([width, DEPTH, WALL_THICKNESS]);
 
-			translate([-width/2, -DEPTH/2 -WALL_THICKNESS*1.5, 0])
-			cube([width, DEPTH, WALL_THICKNESS*4]);
+			translate([-width/2, -DEPTH/2 -WALL_THICKNESS-1, 0])
+			cube([width, DEPTH, HEIGHT]);
 
-			translate([-width/2, -DEPTH/2 +WALL_THICKNESS/1.5-WALL_THICKNESS*3, 0])
-			cube([width, WALL_THICKNESS*6, WALL_THICKNESS*3]);
+			translate([-width/2, -DEPTH/2 + HINGE_RADIUS/4.5-HINGE_RADIUS, 0])
+			cube([width, HINGE_RADIUS*2, HINGE_RADIUS]);
 
-			translate([-width/2, -DEPTH/2 +WALL_THICKNESS/1.5, WALL_THICKNESS*3])
+			translate([-width/2, -DEPTH/2 +  HINGE_RADIUS/4.5, HINGE_RADIUS])
 			rotate([0, 90, 0])
-			cylinder(r=WALL_THICKNESS*3, h=width);
+			cylinder(r=HINGE_RADIUS, h=width);
 		}
 
-		translate([-width/2-1, -DEPTH/2 +WALL_THICKNESS/1.5, WALL_THICKNESS*3])
+		translate([-width/2-1, -DEPTH/2 + HINGE_RADIUS/4.5, HINGE_RADIUS])
 		rotate([0, 90, 0])
-		cylinder(r=WALL_THICKNESS*2, h=width+2);
+		cylinder(r=HINGE_RADIUS/1.75, h=width+2);
 
 	}
 }
@@ -55,10 +59,10 @@ module flap() {
 module unit() {
 	difference() {
 		box(HEIGHT);
-		minkowski() {
+//		minkowski() {
 			flap();
-			cube([PLAY, PLAY, PLAY], true);
-		}
+//			cube([PLAY, PLAY, PLAY], true);
+//		}
 	}
 	flap();
 }
