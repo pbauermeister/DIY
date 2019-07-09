@@ -1,5 +1,12 @@
-// Object sizes
+/* OpenSCAD project.
+ * Buckles to hold cables together. 4 different sizes.
+ *
+ * (C) 2019 by P. Bauermeister
+ *
+ * See https://github.com/pbauermeister/DIY/tree/master/3d-printing/2019-07-09--earphone-buckles
+*/
 
+// Object sizes
 SMALL_HEIGHT          =  8.4;
 SMALL_WALL_THICKNESS  =  1.7;
 SMALL_LENGTH          = 28.0;
@@ -24,14 +31,15 @@ BIGGER_LENGTH         = 56.0;
 BIGGER_WIDTH          = 32.0;
 BIGGER_PRONG_SIZE     =  9.0;
 
-// Globals
-PLAY = 0.7;
-SPACE = PLAY/2;
-$fn = 90;
-
 // Rendering
 DRAFT = false; // false: final rendering, true: disable Minkowski
-ATOM = 0.001;
+$fn = 90;
+
+// Globals
+PLAY  = 0.7;
+SPACE = PLAY/2;
+ATOM  = 0.001;
+
 
 module full_buckle(offset, height, length, width) {
     cube([length - width, width - offset*2, height + ATOM*2], true);
@@ -103,10 +111,11 @@ module unit(height, wall_thickness, length, width, prong_size) {
 }
 
 module move(by) {
-  translate([0, by, 0])
-  children();
+	translate([0, by, 0])
+	children();
 }
 
+// Here it goes:
 move(SMALL_WIDTH/2)
 unit(SMALL_HEIGHT, SMALL_WALL_THICKNESS, SMALL_LENGTH, SMALL_WIDTH, SMALL_PRONG_SIZE);
 
