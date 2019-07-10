@@ -42,27 +42,30 @@ ATOM  = 0.001;
 
 // Transform: Grow object, useful to carve another object with a play margin
 module grow_object() {
-	if (DRAFT) {
-		// do not grow, much faster
-		children();
-	} else {
-		// grow size in each dimension (by a cube)
-		minkowski() {
-			children();
-			cube([PLAY, PLAY, PLAY], true);
-		}
-	}
+    if (DRAFT) {
+        // do not grow, much faster
+        children();
+    } else {
+        // grow size in each dimension (by a cube)
+        minkowski() {
+            children();
+            cube([PLAY, PLAY, PLAY], true);
+        }
+    }
 }
 
 // Transform: Shift object in Y direction
 module move(by) {
-	translate([0, by, 0])
-	children();
+    translate([0, by, 0])
+    children();
 }
 
 // Helper object: A hollow full buckle, to create the base object, as well as as a cavity
 module full_buckle(offset, height, length, width) {
+    // body
     cube([length - width, width - offset*2, height + ATOM*2], true);
+
+    // rounded ends
 
     translate([length/2 - width/2, 0, 0])
     cylinder(d=width - offset*2, h=height + ATOM*2, center=true);
@@ -82,47 +85,52 @@ module hollow_buckle(height, wall_thickness, length, width) {
 
 // Object: The prong
 module prong(wall_thickness, height, length, width, prong_size) {
-	prong_width = prong_size;
-	prong_width2 = prong_size * .8;
-	hinge_radius = height/2;
+    prong_width = prong_size;
+    prong_width2 = prong_size * .8;
+    hinge_radius = height/2;
 
-	difference() {
-		union() {
-			translate([-prong_width/2, -width/2 + wall_thickness/2, 0])
-			cube([prong_width, width, wall_thickness]);
+    difference() {
+        union() {
+            // arm
 
-			translate([-prong_width2/2, -width/2 + wall_thickness/2, 0])
-			cube([prong_width2, width -wall_thickness*1.5 - SPACE, height*.9]);
+            translate([-prong_width/2, -width/2 + wall_thickness/2, 0])
+            cube([prong_width, width, wall_thickness]);
 
-			translate([-prong_width/2, -width/2 + hinge_radius/4.5 - hinge_radius, 0])
-			cube([prong_width, hinge_radius*2, hinge_radius]);
+            translate([-prong_width2/2, -width/2 + wall_thickness/2, 0])
+            cube([prong_width2, width -wall_thickness*1.5 - SPACE, height*.9]);
 
-			translate([-prong_width/2, -width/2 + hinge_radius/4.5, hinge_radius])
-			rotate([0, 90, 0])
-			cylinder(r=hinge_radius, h=prong_width);
-		}
+            // hinge
 
-		translate([-prong_width/2-1, -width/2 + hinge_radius/4.5, hinge_radius])
-		rotate([0, 90, 0])
-		cylinder(r=hinge_radius/1.75, h=prong_width + 2);
-	}
+            translate([-prong_width/2, -width/2 + hinge_radius/4.5 - hinge_radius, 0])
+            cube([prong_width, hinge_radius*2, hinge_radius]);
+
+            translate([-prong_width/2, -width/2 + hinge_radius/4.5, hinge_radius])
+            rotate([0, 90, 0])
+            cylinder(r=hinge_radius, h=prong_width);
+        }
+        // hinge hole
+        translate([-prong_width/2-1, -width/2 + hinge_radius/4.5, hinge_radius])
+        rotate([0, 90, 0])
+        cylinder(r=hinge_radius/1.75, h=prong_width + 2);
+    }
 }
 
 // Object: Buckle, carved to make room for the prong
 module buckle(height, wall_thickness, length, width, prong_size) {
-	difference() {
-		hollow_buckle(height, wall_thickness, length, width);
-		grow_object() prong(wall_thickness, height, length, width, prong_size);
-	}
+    difference() {
+        hollow_buckle(height, wall_thickness, length, width);
+        grow_object() prong(wall_thickness, height, length, width, prong_size);
+    }
 }
 
-// Object: One whole object (buckle and prong)
+// Object: One whole finished object (buckle and prong)
 module unit(height, wall_thickness, length, width, prong_size) {
-	buckle(height, wall_thickness, length, width, prong_size);
-	prong(wall_thickness, height, length, width, prong_size);
+    buckle(height, wall_thickness, length, width, prong_size);
+    prong(wall_thickness, height, length, width, prong_size);
 }
 
-// Here it goes:
+// Here it goes: make several copies of various sizes
+
 move(SMALL_WIDTH/2)
 unit(SMALL_HEIGHT, SMALL_WALL_THICKNESS, SMALL_LENGTH, SMALL_WIDTH, SMALL_PRONG_SIZE);
 
