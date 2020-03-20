@@ -16,28 +16,43 @@ WID2 = 400; // width 2
 PHIG = 95; // plinth height
 
 //SHIFT = PTCK*0; // front-shift intermediate vplancks
+HEIGHT = 2450;
+
+XPLO_K = 1/30;
 
 //////////////////////////////////////////////////
+
 module _vplank(length, xpos, zpos, width, tck=PTCK) {
-	color("peru")
+	xplo_x = xpos - PLEN/2;
+	xplo_z = length/2 + zpos - HEIGHT/2;
+	translate([ xplo_x * XPLO_K, 0, xplo_z * XPLO_K])  // EXPLO
+
+	color(tck==PTCK ? "black" : "#fdd", tck==PTCK ? 1 : .25)
 	translate([xpos, 0, zpos + GAP])
 	cube([tck, width, length - GAP*2]);
 	echo("Plank " , width, length);
 }
+
 module vplank1(length, xpos, zpos=0)
        _vplank(length, xpos, zpos, WID1);
 module vplank2(length, xpos, zpos=0)
        _vplank(length, xpos, zpos, WID2);
 module vplank3(length, xpos, zpos=0)
-       translate([0, 30, 0])
        _vplank(length, xpos, zpos, WID1, PTCK2);
+
 //////////////////////////////////////////////////
+
 module _hplank(length, zpos, xpos, width, tck=PTCK) {
-	color("peru")
+	xplo_x = length/2 + xpos - PLEN/2;
+	xplo_z = zpos - HEIGHT/2;
+	translate([ xplo_x * XPLO_K, 0, xplo_z * XPLO_K])  // EXPLO
+
+	color(tck==PTCK ? "black" : "#fdd", tck==PTCK ? 1 : .25)
 	translate([xpos + GAP, 0, zpos])
 	cube([length - GAP*2, width, tck]);
 	echo("Plank " , width, length);
 }
+
 module hplank0(length, zpos, xpos=0)
        _hplank(length, zpos, xpos, WID0);
 module hplank1(length, zpos, xpos=0)
@@ -49,9 +64,13 @@ module hplank3(length, zpos, xpos=0)
        _hplank(length, zpos, xpos, WID1, PTCK2);
 
 //////////////////////////////////////////////////
+
 module _door(length, height, xpos, zpos, is_front) {
 	DTCK = 5;
 	depth = WID2-5 - DTCK * (is_front?1:2.5);
+*
+	translate([0, 200, 0])  // EXPLO
+
 	translate([xpos, depth, zpos])
 	cube([length, DTCK, height]);	
 }
@@ -82,9 +101,11 @@ module shelf()
 	vplank2(2450, PLEN, 0);
 
      // - mid
+color("#bbb")
 	vplank3(2000 - 0*PTCK, PLEN/2 - PTCK2/2, 0);
 	
 	// plinth
+*
 	color([.25, 0, 0])
 	translate([0, WID2 - 40, 0])
 	cube([PLEN, 20, PHIG]);
@@ -92,37 +113,24 @@ module shelf()
 	// bottom trunk, height 42 cm
 	echo("bdoor", 600-PTCK-PHIG -PTCK*2 -5);
 	hplank2(PLEN, PHIG);
-	echo("* H1", PHIG);
-
 	hplank2(PLEN, 800 - 200 -PTCK*2 -5);
-	echo("* H2", 800 - 200 -PTCK*2 -5);
-
 	door(DLEN, 600-PTCK-PHIG -PTCK*2 -5, PLEN-DLEN, PHIG+PTCK, true);
 	door(DLEN, 600-PTCK-PHIG -PTCK*2 -5,         0, PHIG+PTCK, false);
 	
 	// dvds
 	// - drawer
-#		hplank3(PLEN, 800 - 200 -PTCK);	
+*
+	#hplank3(PLEN, 800 - 200 -PTCK);	
 	hplank2(PLEN, 800);
-	echo("* H3", 800);
 
 	// top trunk, height 37 cm
 	hplank2(PLEN, 1400);	
-	echo("* H4", 1400);
-
 	hplank2(PLEN, 1800);
-	echo("* H5", 1800);
-
 	door(DLEN, 400-PTCK, PLEN-DLEN, 1400+PTCK, true);
 	door(DLEN, 400-PTCK,         0, 1400+PTCK, false);
 	
 	// top showcase, height 20 cm
 	hplank2(PLEN, 2000);
-	echo("* H6", 2000);
-
-*translate([0, -10, 0])
-cube([100, 100, 2000]);
-
 	glassdoor(DLEN, 200, PLEN-DLEN, 1800, true);
 	glassdoor(DLEN, 200,         0, 1800, false);
 	
@@ -261,48 +269,12 @@ module hifi() {
 	object(150, 100, 80, PLEN-150, 800+PTCK, 270);
 }
 
-
-module person() {
-	scale([1, 0.6, 1]) {
-		translate([-80, 0,   0]) cylinder(r= 80, h=700);
-		translate([ 80, 0,   0]) cylinder(r= 80, h=700);
-		translate([  0, 0, 700]) cylinder(r=180, h=620);
-	}
-	translate([ 190, 0, 700]) cylinder(r=40, h=620);
-	translate([-190, 0, 700]) cylinder(r=40, h=620);
-
-	translate([0, 0, 1600-125]) sphere(r=125);
-}
-
-module person_sitting() {
-	scale([1, 0.6, 1]) translate([-80, -450,   0]) cylinder(r=80, h=440+80);
-	scale([1, 0.6, 1]) translate([ 80, -450,   0]) cylinder(r=80, h=440+80);
-
-	translate([-80, -50, 500]) rotate([90, 0, 0])
-	scale([1, 0.6, 1]) cylinder(r=80, h=250);
-	translate([80, -50, 500]) rotate([90, 0, 0])
-	scale([1, 0.6, 1]) cylinder(r=80, h=250);
-
-	scale([1, 0.6, 1]) translate([  0,    0, 440]) cylinder(r=180, h=580);
-	
-	translate([ 190, 0, 440]) cylinder(r=40, h=580);
-	translate([-190, 0, 440]) cylinder(r=40, h=580);
-
-	translate([0, 0, 1300-125 ]) sphere(r=125);
-}
-
-
 shelf();
 
-{
+if(0) {
 	dvds();
 	books();
 	hifi();
 	speakers();
 	computer();
 }
-
-translate([PLEN/4, 900, 0]) person();
-
-color("orange")
-translate([PLEN*.65, 750, 0]) person_sitting();
