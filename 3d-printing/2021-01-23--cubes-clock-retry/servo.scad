@@ -1,22 +1,22 @@
 include <definitions.scad>
 
-module servo(with_cavities=false) {
+module servo(with_cavities=false, short_cavity=false) {
     servo_hull();
     if (with_cavities) {
         servo_screw_cavity();
-        servo_cavities();
+        servo_cavities(short_cavity=short_cavity);
     }
 }
 
-servo(with_cavities=false);
+servo(with_cavities=!false);
 
 module servo_hull(with_clearance=false, with_cable_slot=false) {
     // tab
     difference() {
-        translate([SERVO_OFFSET_X-SERVO_TAB_WIDTH_EXCESS,
+        translate([SERVO_OFFSET_X-SERVO_TAB_WIDTH_EXCESS_2,
                    -SERVO_BODY_WIDTH/2,
                    0])
-        cube([SERVO_BODY_LENGTH+2*SERVO_TAB_WIDTH_EXCESS,
+        cube([SERVO_BODY_LENGTH + SERVO_TAB_WIDTH_EXCESS_1 + SERVO_TAB_WIDTH_EXCESS_2,
               SERVO_BODY_WIDTH,
               SERVO_TAB_HEIGHT]);
         servo_screw_cavity();
@@ -42,29 +42,23 @@ module servo_hull(with_clearance=false, with_cable_slot=false) {
     cube([SERVO_HORN_DIAMETER, SERVO_AXIS_RADIUS*2, SERVO_HORN_HEIGHT]);
 }
 
-module servo_cavities() {
-    // cable pit
-    offset_x = -SERVO_TAB_WIDTH_EXCESS - SERVO_CABLE_CAVITY_THICKNESS-SERVO_CABLE_CAVITY_THICKNESS_OFFSET_X;
-    translate([SERVO_OFFSET_X+offset_x,
-               -SERVO_BODY_WIDTH/2,
+module servo_cavities(short_cavity=false) {
+    // cable vertical pit
+    translate([-SUPPORT_DIAMETER/2 + SERVO_CABLE_CAVITY_OFFSET_FROM_BORDER,
+               -SERVO_CABLE_CAVITY_WIDTH/2,
                -SERVO_BODY_HEIGHT-SERVO_TAB_OFFSET_Z - SERVO_CAVITY_BOTTOM_EXTENT])
     cube([SERVO_CABLE_CAVITY_THICKNESS,
-          SERVO_BODY_WIDTH,
+          SERVO_CABLE_CAVITY_WIDTH,
           SERVO_BODY_HEIGHT+SERVO_CAVITY_BOTTOM_EXTENT]);
 
-    // cable pit 2
-    /*
-    translate([SERVO_OFFSET_X+offset_x+SERVO_CABLE_CAVITY_THICKNESS -ATOM,
-               -SERVO_BODY_WIDTH/2,
-               -SERVO_BODY_HEIGHT-SERVO_TAB_OFFSET_Z-SERVO_CABLE_CAVITY_THICKNESS])
-    cube([SERVO_BODY_LENGTH,
-          SERVO_BODY_WIDTH,
-          SERVO_CABLE_CAVITY_THICKNESS]); */
-    translate([SERVO_OFFSET_X+offset_x+SERVO_CABLE_CAVITY_THICKNESS -ATOM,
-               0,
-               -SERVO_BODY_HEIGHT-SERVO_TAB_OFFSET_Z-SERVO_BODY_WIDTH/2])
-    rotate([0, 90, 0])
-    cylinder(d=SERVO_BODY_WIDTH, h=SERVO_BODY_LENGTH);
+    // cable horizontal gallery
+    cavity_2_len = SUPPORT_DIAMETER/2 - (short_cavity ? SERVO_CABLE_CAVITY_OFFSET_FROM_BORDER : 0);
+    translate([-SUPPORT_DIAMETER/2 + (short_cavity ? SERVO_CABLE_CAVITY_OFFSET_FROM_BORDER : 0),
+               -SERVO_CABLE_CAVITY_WIDTH/2,
+               -SERVO_BODY_HEIGHT-SERVO_TAB_OFFSET_Z]) {
+        rotate([0, 90, 0])
+        cube([SERVO_CABLE_CAVITY_THICKNESS, SERVO_CABLE_CAVITY_WIDTH, cavity_2_len]);
+    }
 
     // main body
     translate([SERVO_OFFSET_X - PLAY,
