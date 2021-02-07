@@ -60,10 +60,10 @@ module support_mid() {
 }
 
 module cubes() {
-    translate([-CUBE_WIDTH/2, -CUBE_WIDTH/2, 0])
+    translate([-CUBE_WIDTH/2, -CUBE_WIDTH/2, ])
     cube([CUBE_WIDTH, CUBE_WIDTH, CUBE_HEIGHT]);
 
-    translate([-CUBE_WIDTH/2, -CUBE_WIDTH/2, CUBE_HEIGHT])
+    translate([-CUBE_WIDTH/2, -CUBE_WIDTH/2, CUBE_HEIGHT+.1])
     cube([CUBE_WIDTH, CUBE_WIDTH, CUBE_HEIGHT]);
 }
 
