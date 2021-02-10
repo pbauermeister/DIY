@@ -43,6 +43,18 @@ module servo_hull(with_clearance=false, with_cable_slot=false) {
 }
 
 module servo_cavities(short_cavity=false) {
+    // servo
+    difference() {
+        translate([SERVO_OFFSET_X-SERVO_TAB_WIDTH_EXCESS_2,
+                   -SERVO_BODY_WIDTH/2,
+                   0])
+        cube([SERVO_BODY_LENGTH + SERVO_TAB_WIDTH_EXCESS_1 + SERVO_TAB_WIDTH_EXCESS_2,
+              SERVO_BODY_WIDTH,
+              -SERVO_TAB_OFFSET_Z]);
+        servo_screw_cavity();
+    }
+
+    
     // cable vertical pit
     translate([-SUPPORT_DIAMETER/2 + SERVO_CABLE_CAVITY_OFFSET_FROM_BORDER,
                -SERVO_CABLE_CAVITY_WIDTH/2,
