@@ -1,6 +1,12 @@
 include <definitions.scad>
 use <servo.scad>
 
+/*
+TODO:
+- sign markers on cube faces
+- base, fixed to bottom supprt, with cavities for cables and arduino
+*/
+
 module servo1(with_cavities=false, short_cavity=false) {
     height = CUBE_HEIGHT / 2 + CUBE_RAISE -SERVO_TAB_BOTTOM_TO_HORN_HEIGHT;
     translate([0, 0, height-CUBE_RAISE])
@@ -23,8 +29,13 @@ module support_bottom() {
     height = CUBE_HEIGHT / 2 + CUBE_RAISE -SERVO_TAB_BOTTOM_TO_HORN_HEIGHT;
     echo("support_bottom height", height);
     difference() {
-        translate([0, 0, -CUBE_RAISE]) 
-        cylinder(d=SUPPORT_DIAMETER, h=height);
+        union() {
+            translate([0, 0, -CUBE_RAISE]) 
+            cylinder(d=SUPPORT_DIAMETER, h=height);
+            
+            translate([0, 0, -CUBE_RAISE]) 
+            cylinder(d=CUBE_WIDTH - PLAY, h=CUBE_RAISE);
+        }
 
         servo1(with_cavities=true);
     }
@@ -59,51 +70,56 @@ module support_mid() {
     }
 }
 
-module cubes() {
-    translate([-CUBE_WIDTH/2, -CUBE_WIDTH/2, ])
-    cube([CUBE_WIDTH, CUBE_WIDTH, CUBE_HEIGHT]);
-
-//    translate([-CUBE_WIDTH/2, -CUBE_WIDTH/2, CUBE_HEIGHT+.1])
-    //cube([CUBE_WIDTH, CUBE_WIDTH, CUBE_HEIGHT]);
+module cube_lower() {
+    difference() {
+        cube_any(0, ceiling_thickness=0);
+        servo2(with_cavities=true);
+    }
 }
 
 module cube_upper() {
+    horn_heigh = SERVO_TOTAL_HEIGHT - SERVO_BODY_HEIGHT;
+    cube_any(CUBE_HEIGHT, ceiling_thickness=horn_heigh/2);
+}
+
+module cube_any(altitude, ceiling_thickness) {
     inner_width = CUBE_WIDTH - CUBE_WALL_THICKNESS*2;
     inner_height = CUBE_HEIGHT - CUBE_WALL_THICKNESS;
 
     // walls
     color("#eeeeee")
     difference() {
-        translate([-CUBE_WIDTH/2, -CUBE_WIDTH/2, CUBE_HEIGHT])
+        translate([-CUBE_WIDTH/2, -CUBE_WIDTH/2, altitude])
         cube([CUBE_WIDTH, CUBE_WIDTH, CUBE_HEIGHT]);
 
-        translate([-inner_width/2, -inner_width/2, CUBE_HEIGHT])
+        translate([-inner_width/2, -inner_width/2, altitude])
         cube([inner_width, inner_width, inner_height]);
     }
     
-    r1 = CUBE_WIDTH/2 - WALL_THICKNESS - (SPACING/2);
-    r2 = CUBE_WIDTH/2 * sqrt(2) - WALL_THICKNESS;
-    h = (r2 - r1) * 1.5;
-
-    horn_heigh = SERVO_TOTAL_HEIGHT - SERVO_BODY_HEIGHT;
-    ceiling_thickness = horn_heigh/2;
-
     // bottom chamfer
     thickness = 1;
     difference() {
-        translate([-inner_width/2, -inner_width/2, CUBE_HEIGHT])
+        r1 = CUBE_WIDTH/2 - WALL_THICKNESS - (SPACING/2);
+        r2 = CUBE_WIDTH/2 * sqrt(2) - WALL_THICKNESS;
+        h  = (r2 - r1) * 1.5;
+
+        translate([-inner_width/2, -inner_width/2, altitude])
         cube([inner_width, inner_width, h+thickness]);
 
-        translate([0, 0, CUBE_HEIGHT+thickness])
+        translate([0, 0, altitude+thickness])
         cylinder(r1=r1, r2=r2, h=h+ATOM);
 
-        translate([0, 0, CUBE_HEIGHT-ATOM])
+        translate([0, 0, altitude-ATOM])
         cylinder(r1=r1, r2=r1, h=thickness+ATOM*2);
     }
     
     // top chamfer
-    translate([0, 0, CUBE_HEIGHT-h-WALL_THICKNESS-ceiling_thickness])
+    r1 = ceiling_thickness ? CUBE_WIDTH/2 - WALL_THICKNESS - (SPACING/2) : SERVO_BODY_WIDTH/2;
+    r2 = CUBE_WIDTH/2 * sqrt(2) - WALL_THICKNESS;
+    h  = ceiling_thickness ? (r2 - r1) * 1.5                             : (r2 - r1) * 1;
+    translate([0, 0, altitude-h-WALL_THICKNESS-ceiling_thickness])
     difference() {
+
         translate([-inner_width/2, -inner_width/2, CUBE_HEIGHT])
         cube([inner_width, inner_width, h]);
 
@@ -112,15 +128,16 @@ module cube_upper() {
     }
 
     // ceiling
+    if (ceiling_thickness)
     difference() {
         translate([-CUBE_WIDTH/2,
                    -CUBE_WIDTH/2,
-                   CUBE_HEIGHT*2 - SERVO_TOP_TO_CUBE_MARGIN-ceiling_thickness])
+                   altitude + CUBE_HEIGHT - SERVO_TOP_TO_CUBE_MARGIN-ceiling_thickness])
         cube([CUBE_WIDTH, CUBE_WIDTH,
               SERVO_TOP_TO_CUBE_MARGIN+ceiling_thickness]);
         translate([0,
                    0,
-                   CUBE_HEIGHT*2 - SERVO_TOP_TO_CUBE_MARGIN-ceiling_thickness-ATOM])
+                   altitude + CUBE_HEIGHT - SERVO_TOP_TO_CUBE_MARGIN-ceiling_thickness-ATOM])
         horn_cross(.3, ceiling_thickness+PLAY);
     }
 }
@@ -134,23 +151,26 @@ module horn_cross(d, h) {
     cube([HORN_CROSS_WIDTH+d, HORN_ARM_THICKNESS+d, h]);
 }
 
-module servos() {
-    color("brown") servo1();
-    color("red") servo2();
-    color("#ff4020") servo3();
+module servos(with_cavities=false) {
+    color("brown") servo1(with_cavities);
+    color("red") servo2(with_cavities);
+    color("#ff4020") servo3(with_cavities);
 }
 
 
+//rotate([0, 0, -45]) 
 intersection() {
     union() {
         support_bottom();
         support_mid();
-        %servos();
-        //%cubes();
-        translate([0, 0, .2]) cube_upper();
+        
+        translate([0, 0, .2]) cube_lower();
+        translate([0, 0, .4]) cube_upper();
+        %
+        servos();
     }
     
-    //rotate([0, 0, 45]) 
+    rotate([0, 0, 45*0]) 
     translate([-75, 0, -20]) cube(150);  // vertical cross-cut
     //translate([-75, -75, -75]) cube(150);  // vertical cross-cut
 
