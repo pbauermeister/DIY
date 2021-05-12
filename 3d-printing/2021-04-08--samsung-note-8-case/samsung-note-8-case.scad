@@ -17,7 +17,7 @@ use <hinge2.scad>
 
 //                              v2      v3
 WALL_THICKNESS =   1.5  +.6 +   1       -1.5;
-WIDTH          =  74.8  +.5;
+WIDTH          =  74.8  +.5             +.1;
 LENGTH         = 163.0  +.5             +.5;
 THICKNESS      =   8.7  +.5 +   .6;
 CUTS_D = 4+1;
@@ -35,13 +35,11 @@ PREVIEW_FORCE_RENDER_HINGE = true;
 SUPPRESS_HINGE = false;
 PREVIEW_CUTS = true;
 
-//$fn = $preview ? 9 : 40;
 $fn = 40;
-
 
 module partitionner(extra=0) {
     x_tweak = .3; //.4; //.5; //.6; //.8; //.75;
-    y_tweak = .7;    
+    y_tweak = .7 +1;    
     chamfer = CUTS_D;
     minkowski() {
         intersection() {
@@ -73,23 +71,9 @@ module case_full_0() {
     minkowski() {
         phone();
 
-         // v1
-        if (0) sphere(d=WALL_THICKNESS);
-
-        // v2
-        if (0) difference() {
-            scale([1.5, 1, 1.5])
-            translate([0.5, 0, 0])
-            sphere(d=WALL_THICKNESS);
-            rotate([90, 0, 0])
-            cylinder(r=WALL_THICKNESS, h=.5);
-        }
-        
-        // v3
-        if (1)
-            translate([0.4, 0, 0])
-            scale([1.5, 1, 1.5])
-            sphere(d=WALL_THICKNESS);        
+        translate([0.4, 0, 0])
+        scale([1.5, 1, 1.5])
+        sphere(d=WALL_THICKNESS);        
     }
 }
 
@@ -105,13 +89,11 @@ module case_full() {
     }
 }
 
-
 module camera_hollowing() {
     minkowski() {
         CAMERA_WIDTH = 43;
-        //CAMERA_HEIGHT = 
         w = CAMERA_WIDTH - CUTS_D;
-        h = 13;
+        h = 13.5;
         pos = 139.5;
         echo(CUTS_D/2);
         translate([WIDTH/2 - w/2, 0, pos -h/2])
@@ -121,42 +103,28 @@ module camera_hollowing() {
 }
 
 module left_buttons_hollowing() {
-    // old ones
-    if (0)
-    minkowski() {
-        translate([-WIDTH/4,
-                  WALL_THICKNESS - .75,
-                  91])
-        cube([WIDTH/2, .00001, 45]);
-        sphere(d=CUTS_D*2, $fn=60);
-    }
-
     // new ones
     minkowski() {
         translate([CUTS_D*0-WALL_THICKNESS,
-                  WALL_THICKNESS - .75,
+                  WALL_THICKNESS + .75,
                   91 + 3])
         cube([WIDTH/2, .00001, 45-6]);
         rotate([0, 90, 0]) cylinder(d=CUTS_D*2, h=1, $fn=60);
-        //sphere(d=CUTS_D*2, $fn=60);
     }
 }
+
 module case() {
     translate([0, -THICKNESS/2, 0])
     difference() {
 
+        // case without lid
         intersection() {
             case_full();
             partitionner();
         }
+
         // hollow hull by phone
         phone();
-
-        /*
-        // free face
-        translate([-WIDTH/2, -WALL_THICKNESS*9.5, -LENGTH/2])
-        cube([WIDTH*2, WALL_THICKNESS*10, LENGTH*2]);
-        */
 
         // bottom  hollowings
         minkowski() {
@@ -166,6 +134,7 @@ module case() {
         }
 
         // usb plug hollowing
+        if(0)
         minkowski() {
             translate([WIDTH/2 - USB_PLUG_WIDTH/2 + CUTS_D/2,
                        -WALL_THICKNESS*1.5,
@@ -178,31 +147,22 @@ module case() {
         left_buttons_hollowing();
 
         // right buttons
-        if (0) 
-        minkowski() {
-            translate([WIDTH-WIDTH/4, THICKNESS/2 + WALL_THICKNESS/2, 98])
-            cube([WIDTH/2, .00001, 15]);
-            sphere(d=CUTS_D, $fn=60);
-        }
-        else
         minkowski() {
             translate([WIDTH-WIDTH/4, THICKNESS/2 + POWER_BUTTON_OFFSET + WALL_THICKNESS/2, POWER_BUTTON_POS-CUTS_D])
             cube([WIDTH/2, .00001, POWER_BUTTON_HEIGHT - CUTS_D]);
-            sphere(d=CUTS_D, $fn=60);
+            sphere(d=CUTS_D/2, $fn=60);
+        }
+        minkowski() {
+            translate([WIDTH+CUTS_D*1.5, THICKNESS/2 + POWER_BUTTON_OFFSET + WALL_THICKNESS/2, POWER_BUTTON_POS-CUTS_D])
+            cube([WIDTH/2, .00001, POWER_BUTTON_HEIGHT - CUTS_D]);
+            sphere(d=CUTS_D*3, $fn=60);
         }
 
         // camera
-        if (0)
-        minkowski() {
-            w = 45 - CUTS_D;
-            translate([WIDTH/2 - w/2, 0, 131 + CUTS_D/2])
-            cube([w, THICKNESS*2, 12 - CUTS_D]);
-            sphere(d=CUTS_D, $fn=60);
-        }
         difference() {
             minkowski() {
                 camera_hollowing();
-                scale([1.5, 1, 1])
+                scale([1.75, 1, 1])
                 cube(0.25, center=true);
             }
             
@@ -222,11 +182,6 @@ module lid() {
 
             // keep face
             partitionner(LID_SPACING);
-            
-             /*
-            translate([-WIDTH/2, WALL_THICKNESS*.5, -LENGTH/20])
-            cube([WIDTH*2, WALL_THICKNESS*10, LENGTH*2]);
-            */
 
             // speaker
             w = 10;
@@ -288,7 +243,6 @@ module lid_hinge() {
             translate([-WIDTH/2, 0, 0]) case_full();
         }
 
-//        translate([0, 0, -WALL_THICKNESS])
         lid_hinge0();
     }
 }
@@ -304,15 +258,6 @@ module lid_hinge_maybe_cached() {
 }
 
 /******************************************************************************/
-module support_pillar(l, w, hh) {
-    dd = WALL_THICKNESS/2;
-    h = hh +dd;
-    translate([WIDTH/2-l/2, THICKNESS/2 - w/2 +3, -dd])
-    difference() {
-        cube([l, w, h]);
-//        translate([.5, .5, 0]) cube([l-1, w-1, h]);
-    }
-}
 
 module support() {
     // anti-supports
@@ -349,7 +294,6 @@ module support() {
         w2 = 3+9;
     }
 
-    
     // power button
     translate([WIDTH-.4, -THICKNESS*.25-SUPPORT_THICKNESS*2+1.2-.6, POWER_BUTTON_POS+POWER_BUTTON_HEIGHT/2-CUTS_D*1.5])
     scale([.5, 1, 1])
@@ -396,11 +340,15 @@ module support() {
 
 module all() {
     union() {
+//
         case();
+//
         if (1) translate([0, -LID_SPACING, 0]) lid();
+//
         if (!SUPPRESS_HINGE) lid_hinge_maybe_cached();
     }
     
+//
     support();
 }
 
