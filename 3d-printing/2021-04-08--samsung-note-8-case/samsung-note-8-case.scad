@@ -16,7 +16,7 @@
 use <hinge2.scad>
 
 //                              v2      v3
-WALL_THICKNESS =   1.5  +.6 +   1       -1.5;
+WALL_THICKNESS =   1.5  +.6 +   1       -1.5 +.4;
 WIDTH          =  74.8  +.5             +.1;
 LENGTH         = 163.0  +.5             +.5;
 THICKNESS      =   8.7  +.5 +   .6;
@@ -33,7 +33,7 @@ LID_SPACING = .15;
 
 PREVIEW_FORCE_RENDER_HINGE = true;
 SUPPRESS_HINGE = false;
-PREVIEW_CUTS = true;
+PREVIEW_CUTS = !true;
 
 $fn = 40;
 
@@ -174,6 +174,7 @@ module case() {
 module lid() {
     translate([0, -THICKNESS/2, 0]) {
         difference() {
+            translate([0, -.07, 0])  // TWEAK
             translate([0, -LID_SPACING/2, 0])
             case_full();
 
@@ -206,6 +207,7 @@ module lid_hinge0() {
     xtd = 3*3;
     intersection() {
         difference() {
+            translate([0, .1, 0]) // TWEAK
             translate([0, -LID_SPACING, -WALL_THICKNESS -10])
             hinge(x_shift=shift, extent=xtd, nb_layers=9);
 
