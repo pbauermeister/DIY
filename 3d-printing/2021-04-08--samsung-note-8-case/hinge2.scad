@@ -1,7 +1,7 @@
 $fn            = 45;
 TOLERANCE      =  0.15       + 0.07;
 ATOM           =  0.001;
-THICKNESS      =  2.00       + 1.25 +.1       +0.7    -.3                 +0.15;
+THICKNESS      =  2.00       + 1.25 +.1       +0.7    -.3                 +0.15 +0.15/2;
 LAYER_HEIGHT   =               4.55 *0 + 11                        +1.1   -2.2;
 LINE_THICKNESS =  0.80       + 0.04; // <== TUNE for a 1-line wall
 WALL_THICKNESS =  0.75;
