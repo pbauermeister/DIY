@@ -33,12 +33,12 @@ LID_SPACING = .15;
 
 PREVIEW_FORCE_RENDER_HINGE = true;
 SUPPRESS_HINGE = false;
-PREVIEW_CUTS = !true;
+PREVIEW_CUTS = true;
 
 $fn = 40;
 
 module partitionner(extra=0) {
-    x_tweak = .3; //.4; //.5; //.6; //.8; //.75;
+    x_tweak = .6 + .2; //.4; //.5; //.6; //.8; //.75;
     y_tweak = .7 +1;    
     chamfer = CUTS_D;
     minkowski() {
@@ -54,7 +54,9 @@ module partitionner(extra=0) {
             }
             case_full();
         }
-        if (extra) cube(extra, true);
+        if (extra)
+            cylinder(r=extra, h=1, center=true);
+            //cube(extra);
     }
 }
 
@@ -81,7 +83,7 @@ module case_full() {
     case_full_0();
     
     intersection() {
-        translate ([-WALL_THICKNESS/2 - .4, -WALL_THICKNESS, -WALL_THICKNESS])
+        translate ([-WALL_THICKNESS/2 - .4 +.2, -WALL_THICKNESS, -WALL_THICKNESS])
         cube([THICKNESS + WALL_THICKNESS*2, THICKNESS + WALL_THICKNESS*2, LENGTH + WALL_THICKNESS*2]);
         
         translate ([-WIDTH/2, 0, 0])
@@ -98,6 +100,7 @@ module camera_hollowing() {
         echo(CUTS_D/2);
         translate([WIDTH/2 - w/2, 0, pos -h/2])
         cube([w, THICKNESS*2, h - CUTS_D]);
+
         sphere(d=CUTS_D, $fn=60);
     }
 }
@@ -162,7 +165,7 @@ module case() {
         difference() {
             minkowski() {
                 camera_hollowing();
-                scale([1.75, 1, 1])
+                scale([1.9, 1, 1])
                 cube(0.25, center=true);
             }
             
@@ -264,9 +267,10 @@ module lid_hinge_maybe_cached() {
 module support() {
     // anti-supports
 
-    translate([0, 0, -WALL_THICKNESS]) {
-        thickness = .2;
+    translate([0, 0, -WALL_THICKNESS/2]) {
+        thickness = .15;
 
+        // hinge
         translate([-5 -5.0 -1, -THICKNESS, 0])
         cube([5, THICKNESS*2, thickness]);
         
@@ -278,9 +282,11 @@ module support() {
         translate([0, -1, 0])
         cube([10, 2, thickness]);
 
-        translate([THICKNESS/2 *1.2, -THICKNESS/2*.7, 0])
-        cube([WIDTH-THICKNESS*1.2, THICKNESS*.7, thickness]);
+        // center
+        translate([THICKNESS/2 *1.2, -THICKNESS/2*.5, 0])
+        cube([WIDTH-THICKNESS*1.2, THICKNESS*.5, thickness]);
 
+        // sides
         translate([THICKNESS/2 *1.2, -THICKNESS/2 -1 -2, 0])
         cube([WIDTH-THICKNESS*1.2, 2, thickness]);
 
