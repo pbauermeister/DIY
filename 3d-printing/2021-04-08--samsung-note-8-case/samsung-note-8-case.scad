@@ -14,6 +14,7 @@
 
 
 use <hinge2.scad>
+use <hinge2_mini.scad>
 
 //                              v2      v3
 WALL_THICKNESS =   1.5  +.6 +   1       -1.5 +.4;
@@ -31,7 +32,7 @@ POWER_BUTTON_OFFSET = -1;
 SUPPORT_THICKNESS = 0.45;
 LID_SPACING = .15;
 
-PREVIEW_FORCE_RENDER_HINGE = true;
+PREVIEW_FORCE_RENDER_HINGE = !true;
 SUPPRESS_HINGE = false;
 PREVIEW_CUTS = true;
 
@@ -346,24 +347,51 @@ module support() {
 
 /******************************************************************************/
 
+module flap() {
+    thickness = HINGE2M_get_hinge_thickness();
+    height = HINGE2M_get_hinge_height();
+    translate([WIDTH - THICKNESS, THICKNESS/2 + thickness, THICKNESS]) {
+        hinge_mini(extent=thickness/4);
+        translate([-thickness*1.25, -thickness/2, 0]) cylinder(d=thickness, h=height);
+        translate([thickness*1.25, -thickness/2, 0]) cylinder(d=thickness, h=height);
+    }
+}
+
+module flap_cut() {
+    thickness = HINGE2M_get_hinge_thickness();
+    height = HINGE2M_get_hinge_height();
+    play = .125;
+    translate([WIDTH - THICKNESS - thickness*1.5*0, THICKNESS/2, THICKNESS]) {
+        l = 40 + thickness/2;
+        translate([-l+thickness/2, -thickness/2, -play]) cube([l+play*2, thickness*2, height+play*2]);
+    }
+}
+
 module all() {
     union() {
 //
-        case();
+        difference() {
+            case();
+            %flap_cut();
+        }
+
 //
         if (1) translate([0, -LID_SPACING, 0]) lid();
 //
         if (!SUPPRESS_HINGE) lid_hinge_maybe_cached();
+
     }
     
-//
-    support();
+//    support();
 }
 
 intersection() {
     all();
     
-    if ($preview && PREVIEW_CUTS)
-        translate([0, 0, LENGTH/4])
+    //if ($preview && PREVIEW_CUTS)
+    if (true)
+        translate([0, 0, -LENGTH/4])
         cube(LENGTH, true);
 }
+
+        flap();

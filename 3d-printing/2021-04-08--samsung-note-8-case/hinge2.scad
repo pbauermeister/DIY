@@ -6,7 +6,7 @@ LAYER_HEIGHT   =               4.55 *0 + 11                        +1.1   -2.2;
 LINE_THICKNESS =  0.80       + 0.04; // <== TUNE for a 1-line wall
 WALL_THICKNESS =  0.75;
 SUPPORT_D      =  0.50;
-
+echo("THCIKNESS=", THICKNESS);
 
 module p0(h=LAYER_HEIGHT, is_top=false, is_bottom=false, is_left=false, is_right=false) {
     difference() {
