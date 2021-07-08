@@ -66,12 +66,12 @@ module cube_upper() {
     cube_any(CUBE_HEIGHT, ceiling_thickness=horn_heigh/2);
 }
 
-module cube_walls(altitude, inner_width, inner_height) {
+module cube_walls(altitude, inner_width, inner_height, mink=true) {
     difference() {
         translate([-CUBE_WIDTH/2+CHAMFER, -CUBE_WIDTH/2+CHAMFER, altitude+CHAMFER])
         minkowski() {
             cube([CUBE_WIDTH-CHAMFER*2, CUBE_WIDTH-CHAMFER*2, CUBE_HEIGHT-CHAMFER*2]);
-            if (!$preview)
+            if (!$preview && mink)
                 sphere(r=CHAMFER);
         }
 

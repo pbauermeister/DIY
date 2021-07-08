@@ -6,8 +6,10 @@ SERVO_BODY_HEIGHT = 28.9 -.3;
 
 SERVO_AXIS_RADIUS = 3;
 
-SERVO_OFFSET_X = -8.5 +.75;  // crucial for proper centering of servo axis
-
+SERVO_OFFSET_X = -8.50 // <-- crucial for proper centering of servo axis
+               +   .75       
+               -   .20 // 2021-03-13
+               ;
 SERVO_TAB_WIDTH_EXCESS_1 = 8;
 SERVO_TAB_WIDTH_EXCESS_2 = 8;
 SERVO_TAB_HEIGHT = 11.4;
