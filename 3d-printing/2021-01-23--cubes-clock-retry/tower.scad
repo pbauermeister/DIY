@@ -82,19 +82,26 @@ module cube_upper() {
     cube_any(CUBE_HEIGHT, ceiling_thickness=horn_heigh/2);
 }
 
+module cube_walls(altitude, inner_width, inner_height) {
+    difference() {
+        translate([-CUBE_WIDTH/2+CHAMFER, -CUBE_WIDTH/2+CHAMFER, altitude+CHAMFER])
+        minkowski() {
+            cube([CUBE_WIDTH-CHAMFER*2, CUBE_WIDTH-CHAMFER*2, CUBE_HEIGHT-CHAMFER*2]);
+            sphere(r=CHAMFER);
+        }
+
+        translate([-inner_width/2, -inner_width/2, altitude])
+        cube([inner_width, inner_width, inner_height]);
+    }
+}
+
 module cube_any(altitude, ceiling_thickness) {
     inner_width = CUBE_WIDTH - CUBE_WALL_THICKNESS*2;
     inner_height = CUBE_HEIGHT - CUBE_WALL_THICKNESS;
 
     // walls
     color("#eeeeee")
-    difference() {
-        translate([-CUBE_WIDTH/2, -CUBE_WIDTH/2, altitude])
-        cube([CUBE_WIDTH, CUBE_WIDTH, CUBE_HEIGHT]);
-
-        translate([-inner_width/2, -inner_width/2, altitude])
-        cube([inner_width, inner_width, inner_height]);
-    }
+    cube_walls(altitude, inner_width, inner_height);
     
     // bottom chamfer
     thickness = 1;
@@ -130,10 +137,10 @@ module cube_any(altitude, ceiling_thickness) {
     // ceiling
     if (ceiling_thickness)
     difference() {
-        translate([-CUBE_WIDTH/2,
-                   -CUBE_WIDTH/2,
-                   altitude + CUBE_HEIGHT - SERVO_TOP_TO_CUBE_MARGIN-ceiling_thickness])
-        cube([CUBE_WIDTH, CUBE_WIDTH,
+        translate([-CUBE_WIDTH/2+CHAMFER,
+                   -CUBE_WIDTH/2+CHAMFER,
+                   altitude + CUBE_HEIGHT - SERVO_TOP_TO_CUBE_MARGIN-ceiling_thickness-ATOM])
+        cube([CUBE_WIDTH-CHAMFER*2, CUBE_WIDTH-CHAMFER*2,
               SERVO_TOP_TO_CUBE_MARGIN+ceiling_thickness]);
         translate([0,
                    0,

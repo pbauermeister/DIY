@@ -10,8 +10,8 @@ module servos_cavities_from_stl() {
 }
 
 module servos_cavities() {
-    //servos_cavities_render();
-    servos_cavities_from_stl();
+    servos_cavities_render();
+    //servos_cavities_from_stl();
 }
 
 servos_cavities();

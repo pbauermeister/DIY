@@ -5,113 +5,110 @@
 include <definitions.scad>
 use <tower.scad>
 
-ADJUST = 1;  // increase to loosen plate and gripper
 
-module plate(thickness, margin, ball_diameter, adjust) {
-    translate([0, 0, thickness/2])
+module crown(shave=0, holes=false, simple=false) {
+    translate([0, 0, GRIPPER_THICKNESS/2])
     difference() {
         // body
-        cube([CUBE_WIDTH, CUBE_WIDTH, thickness], center=true);
+        cube([CUBE_WIDTH-shave*2, CUBE_WIDTH-shave*2, GRIPPER_THICKNESS], center=true);
 
-        r0 = CUBE_WIDTH/2-margin;
-        circum = PI*r0*2;
-        steps = 360 / 1;
-        tooth = circum / steps / sqrt(2);
-        r = r0 - tooth*sqrt(2)/2 -PLAY/2*ADJUST;
 
         // hole
-        cylinder(r=r, h=thickness*2, center=true);
+        cylinder(r=GRIPPER_CROWN_RADIUS, h=GRIPPER_THICKNESS*2, center=true);
         
         // teeth
-        for (i=[0:steps-1]) {
-            rotate([0, 0, i*360/steps])
-            translate([r, 0, 0])
-            scale([1.75, 1, 1])
-            rotate([0, 0, 45])
-            cube([tooth, tooth, thickness*2], center=true);
-        }
+        if (!simple)
+            for (i=[0:GRIPPER_STEPS-1]) {
+                rotate([0, 0, i*360/GRIPPER_STEPS])
+                translate([GRIPPER_CROWN_RADIUS, 0, 0])
+                scale([1.75, 1, 1])
+                rotate([0, 0, 45])
+                cube([GRIPPER_TOOTH, GRIPPER_TOOTH, GRIPPER_THICKNESS*2], center=true);
+            }
         
         // groove
-        rotate_extrude(convexity = 10)
-        translate([r, 0, 0])
-        circle(d = ball_diameter+PLAY*2);
+        if (!simple)
+            rotate_extrude(convexity = 10)
+            translate([GRIPPER_CROWN_RADIUS, 0, 0])
+            circle(d = GRIPPER_BALL_DIAMETER+PLAY*2);
 
         // corner holes
-        shift = 2;
-        d2 = (CUBE_WIDTH/2 - margin*sqrt(2)) * (sqrt(2)-1) - shift;
-        for (i=[0:3]) {
-            rotate([0, 0, 45 + i*90])
-            translate([CUBE_WIDTH/2 - margin + d2/2 +shift, 0, 0])
-            cylinder(d=d2, h=thickness*2, center=true);
+        if (holes) {
+            shift = 2;
+            d2 = (CUBE_WIDTH/2 - GRIPPER_MARGIN*sqrt(2)) * (sqrt(2)-1) - shift;
+            for (i=[0:3]) {
+                rotate([0, 0, 45 + i*90])
+                translate([CUBE_WIDTH/2 - GRIPPER_MARGIN + d2/2 +shift, 0, 0])
+                cylinder(d=d2, h=GRIPPER_THICKNESS*2, center=true);
+            }
         }
     }
 }
 
-module gripper(thickness, margin, ball_diameter) {
-    translate([0, 0, thickness/2])
+module gripper() {
+    translate([0, 0, GRIPPER_THICKNESS/2])
     difference() {
-        d = CUBE_WIDTH/2-margin;
+        d = CUBE_WIDTH/2-GRIPPER_MARGIN;
         cube_w = 1 * 3.5;
         cube_diag = cube_w / sqrt(2);
         arm_width = cube_w * 4;
         cavity_w = 1.5;
         cavity_shift = 0.75;
         union() {
-            cylinder(r=HORN_CROSS_WIDTH, h=thickness, center=true);
+            cylinder(r=HORN_CROSS_WIDTH, h=GRIPPER_THICKNESS, center=true);
 
             for (i=[0:3]) {
                 rotate([0, 0, i*90])
                 difference() {
                     union() {
-                        translate([CUBE_WIDTH/2-margin-cube_diag+TOLERANCE, 0, 0])
+                        translate([CUBE_WIDTH/2-GRIPPER_MARGIN-cube_diag+TOLERANCE, 0, 0])
                         scale([1, 0.66, 1])
                         rotate([0, 0, 45])
-                        cube([cube_w, cube_w, thickness], center=true);
+                        cube([cube_w, cube_w, GRIPPER_THICKNESS], center=true);
                         translate([d/2-cube_w/sqrt(2), 0, 0])
-                        cube([d, arm_width, thickness], center=true);
+                        cube([d, arm_width, GRIPPER_THICKNESS], center=true);
                         
                         translate([TOLERANCE*0, 0, 0])
                         hull() {
-                            translate([CUBE_WIDTH/2-margin+TOLERANCE, 0, 0])
-                            sphere(d=ball_diameter-TOLERANCE);
-                            translate([CUBE_WIDTH/2-margin+TOLERANCE-cube_diag*2, cube_diag*2*.66, 0])
-                            sphere(d=ball_diameter-TOLERANCE);
+                            translate([CUBE_WIDTH/2-GRIPPER_MARGIN+TOLERANCE, 0, 0])
+                            sphere(d=GRIPPER_BALL_DIAMETER-TOLERANCE);
+                            translate([CUBE_WIDTH/2-GRIPPER_MARGIN+TOLERANCE-cube_diag*2, cube_diag*2*.66, 0])
+                            sphere(d=GRIPPER_BALL_DIAMETER-TOLERANCE);
                         }
                         translate([TOLERANCE*0, 0, 0])
                         hull() {
-                            translate([CUBE_WIDTH/2-margin+TOLERANCE, 0, 0])
-                            sphere(d=ball_diameter-TOLERANCE);
-                            translate([CUBE_WIDTH/2-margin+TOLERANCE-cube_diag*2, -cube_diag*2*.66, 0])
-                            sphere(d=ball_diameter-TOLERANCE);
+                            translate([CUBE_WIDTH/2-GRIPPER_MARGIN+TOLERANCE, 0, 0])
+                            sphere(d=GRIPPER_BALL_DIAMETER-TOLERANCE);
+                            translate([CUBE_WIDTH/2-GRIPPER_MARGIN+TOLERANCE-cube_diag*2, -cube_diag*2*.66, 0])
+                            sphere(d=GRIPPER_BALL_DIAMETER-TOLERANCE);
                         }
 
                     }
                     translate([d-cavity_w/2-cube_w/sqrt(2)-cavity_shift, 0, 0])
-                    cube([cavity_w, arm_width-cavity_w*2, thickness*2], center=true);
+                    cube([cavity_w, arm_width-cavity_w*2, GRIPPER_THICKNESS*2], center=true);
                 }
             }
+            translate([0, 0, -GRIPPER_THICKNESS/2])
+            cylinder(d=arm_width, h=GRIPPER_THICKNESS + GRIPPER_AXIS_EXTRA_HEIGHT);
         }
 
         // horn axis hole
-        translate([0, 0, -thickness/2-ATOM])
-        horn_cross(0.3/2, thickness+ATOM*2);
+        translate([0, 0, -GRIPPER_THICKNESS/2-ATOM])
+        horn_cross(0.3/2, GRIPPER_THICKNESS+ATOM*2 + GRIPPER_AXIS_EXTRA_HEIGHT);
         
         // hollowings
         for (i=[0:3]) {
             rotate([0, 0, i*90])
             translate([d/2, 0, 0])
-            cylinder(d=arm_width-5, thickness*2, center=true);
+            cylinder(d=arm_width-5, GRIPPER_THICKNESS*2, center=true);
         }
 
     }
 }
 
-thickness = 5;
-margin = 3;
-ball_diameter = 1.5;
 
-plate(thickness, margin, ball_diameter);
+crown(holes=true);
 
-if (0)
+if (1)
 translate([CUBE_WIDTH, 0, 0])
-gripper(thickness, margin, ball_diameter);
+gripper();

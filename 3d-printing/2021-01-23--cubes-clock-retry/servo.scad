@@ -64,8 +64,11 @@ module servo_cavities(short_cavity=false) {
           SERVO_BODY_HEIGHT+SERVO_CAVITY_BOTTOM_EXTENT]);
 
     // cable horizontal gallery
-    cavity_2_len = SUPPORT_DIAMETER/2 - (short_cavity ? SERVO_CABLE_CAVITY_OFFSET_FROM_BORDER : 0);
-    translate([-SUPPORT_DIAMETER/2 + (short_cavity ? SERVO_CABLE_CAVITY_OFFSET_FROM_BORDER : 0),
+    shift = CUBE_WIDTH/2 - SUPPORT_DIAMETER/2;
+    cavity_2_len = SUPPORT_DIAMETER/2 - (short_cavity
+                                         ? SERVO_CABLE_CAVITY_OFFSET_FROM_BORDER
+                                         : -shift);
+    translate([-SUPPORT_DIAMETER/2 + (short_cavity ? SERVO_CABLE_CAVITY_OFFSET_FROM_BORDER : -shift),
                -SERVO_CABLE_CAVITY_WIDTH/2,
                -SERVO_BODY_HEIGHT-SERVO_TAB_OFFSET_Z]) {
         rotate([0, 90, 0])

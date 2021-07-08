@@ -2,7 +2,8 @@
 // GENERAL
 //
 
-$fn = 96;
+//$fn = 96;
+$fn = 180;
 
 PLAY = 0.35; //0.40
 TOLERANCE = 0.12; //0.17
@@ -10,6 +11,7 @@ SPACING = 0.5;
 ATOM = 0.01;
 WALL_THICKNESS = 1;
 
+CHAMFER = 0.75;
 
 //
 // SERVO

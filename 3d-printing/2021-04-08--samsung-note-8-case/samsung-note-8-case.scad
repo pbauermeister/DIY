@@ -36,7 +36,7 @@ PREVIEW_FORCE_RENDER_HINGE = !true;
 SUPPRESS_HINGE = false;
 PREVIEW_CUTS = false;
 
-$fn = 40;
+$fn = 32;
 
 module partitionner(extra=0) {
     x_tweak = .6 + .2; //.4; //.5; //.6; //.8; //.75;
@@ -108,7 +108,30 @@ module camera_hollowing() {
 
         sphere(d=CUTS_D, $fn=60);
     }
+}
 
+module camera_hollowing2() {
+    CAMERA_WIDTH = 43;
+    w = CAMERA_WIDTH - CUTS_D;
+    h = 13.5 + 1.5;
+    pos = 139.5;
+    /* This leads to error and is replaced by hull of 4 spheres
+    minkowski() {
+        echo(CUTS_D/2);
+        translate([WIDTH/2 - w/2,
+                   THICKNESS + CUTS_D*2.5/2 + 1, pos -h/2])
+        cube([w, THICKNESS*2, h - CUTS_D]);
+
+        sphere(d=CUTS_D*2.5, $fn=60);
+    } */
+    
+    hull() {
+        d = CUTS_D*2.5;
+        translate([WIDTH/2 - w/2, THICKNESS + CUTS_D*2.5/2 + 1, pos -h/2]) sphere(d=d, $fn=60);
+        translate([WIDTH/2 + w/2, THICKNESS + CUTS_D*2.5/2 + 1, pos -h/2]) sphere(d=d, $fn=60);
+        translate([WIDTH/2 - w/2, THICKNESS + CUTS_D*2.5/2 + 1, pos +h-d]) sphere(d=d, $fn=60);
+        translate([WIDTH/2 + w/2, THICKNESS + CUTS_D*2.5/2 + 1, pos +h-d]) sphere(d=d, $fn=60);
+    }
 }
 
 module left_buttons_hollowing() {
@@ -172,11 +195,11 @@ module case() {
             minkowski() {
                 camera_hollowing();
                 scale([1.9, 1, 1.5])
-                cube(0.25, center=true);
+                cube(0.3, center=true);
             }
-            
             camera_hollowing();
         }
+        camera_hollowing2();
     }
 }
 
@@ -305,8 +328,8 @@ module support() {
         translate([THICKNESS/2 *1.2, -THICKNESS/2 -1 -2, 0])
         cube([WIDTH-THICKNESS*1.2, 2, thickness]);
 
-        if(0)
-        translate([THICKNESS/2 *1.2, +THICKNESS*.6  , 0])
+        if (1)
+        translate([THICKNESS/2 *1.2, +THICKNESS*.8  , 0])
         cube([WIDTH-THICKNESS*1.2, 2, thickness]);
     }
     
@@ -402,6 +425,6 @@ intersection() {
     all();
     
     if ($preview && PREVIEW_CUTS)
-        translate([-LENGTH, -LENGTH, 4.75]) //LENGTH*1.25 - LENGTH*2 + 3])
-        cube([LENGTH*2, LENGTH*2, 22]);
+        translate([LENGTH/4, -LENGTH, 4.75]) //LENGTH*1.25 - LENGTH*2 + 3])
+        cube([LENGTH, LENGTH*2, LENGTH]);
 }

@@ -15,7 +15,8 @@ module servo2(with_cavities=false, short_cavity=false) {
 }
 
 module servo3(with_cavities=false, short_cavity=false) {
-    translate([0, 0, CUBE_HEIGHT*2-SERVO_TAB_BOTTOM_TO_HORN_HEIGHT-SERVO_TOP_TO_CUBE_MARGIN])
+//    translate([0, 0, CUBE_HEIGHT*2-SERVO_TAB_BOTTOM_TO_HORN_HEIGHT-SERVO_TOP_TO_CUBE_MARGIN])
+    translate([0, 0, CUBE_HEIGHT])
     servo(with_cavities=with_cavities, short_cavity=short_cavity);
 }
 
@@ -30,8 +31,8 @@ module servos_from_stl() {
 }
 
 module servos() {
-    //servos_render();
-    servos_from_stl();
+    servos_render();
+    //servos_from_stl();
 }
 
 servos();
