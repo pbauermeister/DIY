@@ -95,10 +95,12 @@ module screw_cut() {
         bottom_cut();
     }
 }
+
 module cap() {
     difference() {
         head_0();
-        rotate([0, 0, 360/6 * .25]) screw_cut();
+        //rotate([0, 0, -360/6 * .25]) 
+        screw_cut();
 
         r = WALL_THICKNESS;
         diameter = INNER_DIAMETER + WALL_THICKNESS*2;

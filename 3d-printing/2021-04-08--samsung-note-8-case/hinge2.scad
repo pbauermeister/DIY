@@ -7,7 +7,7 @@ WALL_THICKNESS =  0.75;
 SUPPORT_D      =  0.50;
 
 ATOM           =  0.001;
-TOLERANCE2     = TOLERANCE +.5;
+TOLERANCE2     = TOLERANCE +.5 /5;
 
 module p0(h=LAYER_HEIGHT, is_top=false, is_bottom=false, is_left=false, is_right=false) {
     difference() {
@@ -117,23 +117,23 @@ module sample(extent=0) {
     cube([L, WALL_THICKNESS, LAYER_HEIGHT*6]);
 }
 
-module hinge(extent=0, x_shift=0, nb_layers=4) {
+module hinge(extent=0, x_shift=0, nb_layers=4, layer_height=LAYER_HEIGHT) {
     for (i=[0:nb_layers-1]) {
         translate([x_shift, -THICKNESS, 0])
         rotate([0, 0, 180])
         translate([-THICKNESS*2, 0, 0]) {
-            translate([0, 0, LAYER_HEIGHT*2*i]) p2(extent=extent, is_left=true,
+            translate([0, 0, layer_height*2*i]) p2(h=layer_height, extent=extent, is_left=true,
                                                    is_bottom=i==0, is_top=i==nb_layers-1);
         }
 
         translate([x_shift, -THICKNESS, 0])
         rotate([0, 0, 90]) {
-            translate([0, 0, LAYER_HEIGHT*2*i]) p2(extent=extent,
+            translate([0, 0, layer_height*2*i]) p2(h=layer_height, extent=extent,
                                                    is_bottom=i==0, is_top=i==nb_layers-1);
         }
 
         translate([x_shift, THICKNESS, 0]) {
-            translate([0, 0, LAYER_HEIGHT*2*i]) p2(extent=extent, is_right=true,
+            translate([0, 0, layer_height*2*i]) p2(h=layer_height, extent=extent, is_right=true,
                                                    is_bottom=i==0, is_top=i==nb_layers-1);
         }
     }

@@ -1,0 +1,33 @@
+Iris Door Box v3
+
+created by Sean Charlesworth
+sean@charlesworth-dynamics.com
+
+
+Print one of each part, my settings using ABS on a MakerBot 2X have been:
+
+Gear ring and slot ring - .2 layer/ 0%-5% fill/ 2 shells 
+Leaves - .2 layer/ 5-7% fill/ 1 shell 
+Base - .2 layer/ 0% fill/ 2 shells - the 0 fill is important here since the walls are so thin. I find that using anything other than 0 shakes the machine like crazy and tends to jam the nozzle.
+
+
+You will need 5 pan-head screws for each box: #4 x 1/4" (M3 x 5 or 6mm should work as well)
+
+
+1)  Depending on your printer and quality of prints you may have to clean up some of the parts to remove burrs and get holes to the correct size.   Along those lines I would recommend running a screw through each leaf pivot hole to ensure it's the correct size.  You may want to do this with the gear ring as well, but DO NOT screw them in too far or you will drive them through the top of the gear ring.
+
+2)  Next we need to set up the iris leaves.  Place the slot ring face up and put a quarter in the middle.  The quarter will hold up the tips of the leaves as we place them.   The channel on the bottom of each leaf goes on the pins of the slot ring.  Place all the leaves and tweak them so the are aligned with the edges of the slot ring and all the leaves fit together.  The leaves may need trimmed to improve the fit. Once the leaves are positioned, carefully put a piece of tape across the center to hold them together.
+
+*** OPTIONAL - print out the leaf_jig.stl to help assemble the leaves and slot ring.  It aids in alignment and holds up the leaf tips.  You should only need this if you plan on making a bunch of boxes. ***
+
+3)  The gear ring is next.  You may want to place a small amount of superglue in each hole so the screws have no chance of working their way loose once assembled.  Set it on top of the leaves/slot ring assembly and flip the whole thing over so the gear ring is on the bottom.
+
+4)  Due to variances in prints, assembly of the leaves, etc I have found that there is usually a sweet spot when lining up the leaves with the gear ring.  Rotate the leaves/slot ring assembly until all the holes line up as close as possible with the gear ring holes.  Now carefully start putting the screws in but do not over-tighten! 
+
+5)  Ideally the screws should have a slight gap betweem their heads and the slot ring.  Squeeze together the gear ring/leaves/slot ring sandwich and tighten screws accordingly.  Make sure to take the tape off that was holding the leaves.  Test the mechanism by inserting the 'keys' on the base into the pathways on the underside of the slot ring.  Firmly pressing the base against the mechanism, test by turning the gear ring.  IT SHOULD NOT be hard to turn.  If it is, stop and back off the screws a little.  The goal is to have some friction so the box stays close but is still easy to open and close.
+
+*** ALWAYS USE THE GEAR RING TO OPEN AND CLOSE THE BOX.  PUSHING ON THE LEAVES TO CLOSE IT WILL USUALLY SNAP OFF THE GUIDE PINS ***
+
+6)  Once the mechanism is adjusted to your liking, glue it to the base.  I generally use a 4-6 dabs of superglue around the edge of the base which holds it together well but also allows for prying it apart if needed.
+
+Now make a whole bunch because everyone will ask for one.
