@@ -250,7 +250,7 @@ module lid_hinge0() {
         difference() {
             translate([0, .1, 0]) // TWEAK
             translate([0, -LID_SPACING, -WALL_THICKNESS -10])
-            hinge(x_shift=shift, extent=xtd, nb_layers=9);
+            hinge(x_shift=shift, extent=xtd, nb_layers=9+4, layer_height=9.9*.8);
 
             translate([-.2, -LID_SPACING, 0])  // TWEAK?
             difference() {
