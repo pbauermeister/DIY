@@ -38,7 +38,7 @@ $fn = 90;
 // Globals
 PLAY  = 0.7;
 SPACE = PLAY/2;
-ATOM  = 0.001;
+ATOM  = 0.01;
 
 // Transform: Grow object, useful to carve another object with a play margin
 module grow_object() {
@@ -79,7 +79,7 @@ module hollow_buckle(height, wall_thickness, length, width) {
     translate([0, 0, height/2])
     difference() {
         full_buckle(0, height, length, width);
-        full_buckle(wall_thickness, height + ATOM*2, length, width);
+        full_buckle(wall_thickness, height + ATOM, length, width);
     }
 }
 
@@ -134,6 +134,7 @@ module unit(height, wall_thickness, length, width, prong_size) {
 move(SMALL_WIDTH/2)
 unit(SMALL_HEIGHT, SMALL_WALL_THICKNESS, SMALL_LENGTH, SMALL_WIDTH, SMALL_PRONG_SIZE);
 
+/*
 move(SMALL_WIDTH + MEDIUM_WIDTH/2 + 5)
 unit(MEDIUM_HEIGHT, MEDIUM_WALL_THICKNESS, MEDIUM_LENGTH, MEDIUM_WIDTH, MEDIUM_PRONG_SIZE);
 
@@ -142,3 +143,4 @@ unit(BIG_HEIGHT, BIG_WALL_THICKNESS, BIG_LENGTH, BIG_WIDTH, BIG_PRONG_SIZE);
 
 move(SMALL_WIDTH + MEDIUM_WIDTH + BIG_WIDTH + BIGGER_WIDTH/2 +15)
 unit(BIGGER_HEIGHT, BIGGER_WALL_THICKNESS, BIGGER_LENGTH, BIGGER_WIDTH, BIGGER_PRONG_SIZE);
+*/
