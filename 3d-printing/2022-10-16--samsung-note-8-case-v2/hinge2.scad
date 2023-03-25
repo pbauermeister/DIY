@@ -2,30 +2,38 @@ $fn            = 45;
 TOLERANCE      =  0.42;
 THICKNESS      =  3.975;
 LAYER_HEIGHT   =  9.9;
-LINE_THICKNESS =  0.84; // <== TUNE for a 1-line wall
+LINE_THICKNESS =  0.84 +0.26; // <== TUNE for a 1-line wall
 WALL_THICKNESS =  0.75;
 SUPPORT_D      =  0.50;
+
+HINGE_EXTRA_LENGTH = 1.2 + 1 -1;
 
 ATOM           =  0.001;
 TOLERANCE2     = TOLERANCE +.5 /5;
 
-module p0(h=LAYER_HEIGHT, is_top=false, is_bottom=false, is_left=false, is_right=false) {
+module p0(h=LAYER_HEIGHT, is_top=false, is_bottom=false, is_left=false, is_right=false, extra_length=0) {
     difference() {
         intersection() {
             union() {
                 // column
-                if (!is_left) cylinder(d=THICKNESS, h=h);
+                if (!is_left)
+                   cylinder(d=THICKNESS, h=h);
+                
                 // block
-                translate([0, -THICKNESS/2, 0]) cube([THICKNESS*1.5-TOLERANCE2, THICKNESS, h]);
+                translate([0, -THICKNESS/2, 0])
+                cube([THICKNESS*1.5-TOLERANCE2+extra_length, THICKNESS, h]);
             }
             
             // sharpen column
             translate([0, 0, -THICKNESS/4]){
                 d2 = h*6;
                 d1 = is_bottom || is_left ? d2 : 0;
+                
                 translate([0, 0, .2])  // <== FIXME: compute
                 cylinder(d1=d1, d2=d2, h=h*2);
-                translate([THICKNESS/2+TOLERANCE2, -THICKNESS/2, 0]) cube([THICKNESS/2*2, THICKNESS, h*2]);
+                
+                translate([THICKNESS/2+TOLERANCE2, -THICKNESS/2, 0])
+                cube([THICKNESS/2*2, THICKNESS, h*2]);
             }
         }
 
@@ -34,10 +42,16 @@ module p0(h=LAYER_HEIGHT, is_top=false, is_bottom=false, is_left=false, is_right
             d2 = THICKNESS - LINE_THICKNESS;
             d1 = d2;
             hh = d2*.7;
-            translate([0, 0, h-hh+ATOM]) cylinder(d1=d1, d2=d2, h=hh);
-            translate([0, -d2/2, h-hh+ATOM]) cube([d2/2, d2, hh]);
+            
+            translate([0, 0, h-hh+ATOM])
+            cylinder(d1=d1, d2=d2, h=hh);
+            
+            translate([0, -d2/2, h-hh+ATOM])
+            cube([d2/2, d2, hh]);
+            
             // shave 1-2 layers 
-            translate([-THICKNESS*1.5+TOLERANCE2, -THICKNESS, h-TOLERANCE]) cube([THICKNESS*2, THICKNESS*2, THICKNESS]);
+            translate([-THICKNESS*1.5+TOLERANCE2, -THICKNESS, h-TOLERANCE])
+            cube([THICKNESS*2, THICKNESS*2, THICKNESS]);
         }
     }
     
@@ -47,39 +61,56 @@ module p0(h=LAYER_HEIGHT, is_top=false, is_bottom=false, is_left=false, is_right
         dd = d - TOLERANCE*2;
         hh = dd*.7 - TOLERANCE -.5;
         z_adjust = .4 +.2; //+.3  -.1;
-        translate([0, 0, h+z_adjust-d]) cylinder(d1=0, d2=dd, h=hh);
-        translate([0, 0, h+z_adjust-d +hh]) cylinder(d=dd, h=dd);
-        translate([0, 0, h+z_adjust-d]) cylinder(d=SUPPORT_D, h=dd/2); // support pin
+        
+        translate([0, 0, h+z_adjust-d])
+        cylinder(d1=0, d2=dd, h=hh);
+        
+        translate([0, 0, h+z_adjust-d +hh])
+        cylinder(d=dd, h=dd);
+        
+        translate([0, 0, h+z_adjust-d])
+        cylinder(d=SUPPORT_D, h=dd/2); // support pin
     }
 }
 
-module p1(h=LAYER_HEIGHT, is_bottom=false, is_top=false, is_left=false, is_right=false) {
-    p0(h=h, is_bottom=is_bottom, is_left=is_left, is_right=is_right);
+module p1(h=LAYER_HEIGHT, is_bottom=false, is_top=false, is_left=false, is_right=false, extra_length=0) {
+    translate([-extra_length, 0, 0])
+    p0(h=h, is_bottom=is_bottom, is_left=is_left, is_right=is_right, extra_length=extra_length);
     
     if (!is_right)
-        translate([THICKNESS*2, 0, h]) rotate([0, 0, 180]) p0(h=h, is_top=is_top);
+        translate([THICKNESS*2, 0, h]) rotate([0, 0, 180])
+        p0(h=h, is_top=is_top, extra_length=extra_length);
     else 
         translate([THICKNESS/2+TOLERANCE2, -THICKNESS/2, h])
         cube([THICKNESS-TOLERANCE2*2, THICKNESS, h]);
 }
 
 module p2(h=LAYER_HEIGHT, extent=0,
-          is_bottom=false, is_top=false, is_left=false, is_right=false) {
+          is_bottom=false, is_top=false, is_left=false, is_right=false, extra_length=0) {
     difference() {
-        p1(h=h, is_bottom=is_bottom, is_top=is_top, is_left=is_left, is_right=is_right);
+        p1(h=h, is_bottom=is_bottom, is_top=is_top, is_left=is_left, is_right=is_right,
+           extra_length=extra_length);
+       
         if (is_left)
-            translate([-ATOM, -THICKNESS/2-ATOM, -ATOM]) cube([THICKNESS/2+ATOM, THICKNESS+ATOM*2, h*2+ATOM*2]);
+            translate([-ATOM, -THICKNESS/2-ATOM, -ATOM])
+            cube([THICKNESS/2+ATOM, THICKNESS+ATOM*2, h*2+ATOM*2]);
+        
         if (is_left)
-            translate([THICKNESS/2, -THICKNESS, -ATOM]) cube([THICKNESS/2, THICKNESS*2, h*2+ATOM*2]);
+            translate([THICKNESS/2, -THICKNESS, -ATOM])
+            cube([THICKNESS/2, THICKNESS*2, h*2+ATOM*2]);
+        
         if (is_right)
-            translate([THICKNESS, -THICKNESS, -ATOM]) cube([THICKNESS/2, THICKNESS*2, h*2+ATOM*2]);
+            translate([THICKNESS, -THICKNESS, -ATOM])
+            cube([THICKNESS/2, THICKNESS*2, h*2+ATOM*2]);
     }
 
     if (is_left)
-        translate([THICKNESS-extent, -THICKNESS/2, -ATOM]) cube([extent, THICKNESS, h*2]);
+        translate([THICKNESS-extent, -THICKNESS/2, -ATOM])
+        cube([extent, THICKNESS, h*2]);
 
     if (is_right)
-        translate([THICKNESS, -THICKNESS/2, -ATOM]) cube([extent, THICKNESS, h*2]);
+        translate([THICKNESS, -THICKNESS/2, -ATOM])
+        cube([extent, THICKNESS, h*2]);
 
 }
 
@@ -87,7 +118,10 @@ module cut() {
     if ($preview && false) {
         intersection() {
             d = 100;
-            translate([-d/2, 0, 0]) cube(d);
+            
+            translate([-d/2, 0, 0])
+            cube(d);
+            
             children();
         }
     }
@@ -117,39 +151,54 @@ module sample(extent=0) {
     cube([L, WALL_THICKNESS, LAYER_HEIGHT*6]);
 }
 
-module hinge(extent=0, x_shift=0, nb_layers=4, layer_height=LAYER_HEIGHT) {
+////////////////////////////////////////////////////////////////////////////////
+// Hinge 1
+
+module hinge(extent=0, x_shift=0, nb_layers=4, layer_height=LAYER_HEIGHT, extra_length=HINGE_EXTRA_LENGTH) {
+    
+    //x_shift = -3.48;
+    echo("hinge extent      :", extent);
+    echo("hinge x_shift     :", x_shift);
+    echo("hinge extra_length:", extra_length);
     for (i=[0:nb_layers-1]) {
+
         translate([x_shift, -THICKNESS, 0])
         rotate([0, 0, 180])
-        translate([-THICKNESS*2, 0, 0]) {
-            translate([0, 0, layer_height*2*i]) p2(h=layer_height, extent=extent, is_left=true,
-                                                   is_bottom=i==0, is_top=i==nb_layers-1);
-        }
+        translate([-THICKNESS*2, 0, 0])
+        translate([0, 0, layer_height*2*i])
+        p2(h=layer_height, extent=extent, is_left=true, is_bottom=i==0, is_top=i==nb_layers-1);
 
-        translate([x_shift, -THICKNESS, 0])
-        rotate([0, 0, 90]) {
-            translate([0, 0, layer_height*2*i]) p2(h=layer_height, extent=extent,
-                                                   is_bottom=i==0, is_top=i==nb_layers-1);
-        }
+        translate([x_shift, -THICKNESS+extra_length, 0])
+        rotate([0, 0, 90])
+        translate([0, 0, layer_height*2*i])
+        p2(h=layer_height, extent=extent, is_bottom=i==0, is_top=i==nb_layers-1,
+           extra_length=extra_length);
 
-        translate([x_shift, THICKNESS, 0]) {
-            translate([0, 0, layer_height*2*i]) p2(h=layer_height, extent=extent, is_right=true,
-                                                   is_bottom=i==0, is_top=i==nb_layers-1);
-        }
+        translate([0, 0, layer_height*2*i])
+        translate([-THICKNESS/2+x_shift, -THICKNESS/2+TOLERANCE, 0])
+        cube([THICKNESS, THICKNESS-TOLERANCE*2+extra_length, layer_height*2]);
+
+        translate([x_shift, THICKNESS+extra_length, 0])
+        translate([0, 0, layer_height*2*i])
+        p2(h=layer_height, extent=extent, is_right=true,
+           is_bottom=i==0, is_top=i==nb_layers-1);
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Hinge 2
 
 module hinge2_half1(extent=0, x_shift=0, nb_layers=3, layer_height=LAYER_HEIGHT) {
     intersection() {
         for (i=[0:nb_layers-1]) {
+
             translate([x_shift, 0, 0])
             rotate([0, 0, 180])
-            translate([-THICKNESS*2, 0, 0]) {
-                translate([0, 0, layer_height*2*i]) p2(extent=extent, is_left=true,
-                                                       h=layer_height,
-                                                       is_bottom=i==0, is_top=i==nb_layers-1);
-            }
+            translate([-THICKNESS*2, 0, 0])
+            translate([0, 0, layer_height*2*i])
+            p2(extent=extent, is_left=true, h=layer_height, is_bottom=i==0, is_top=i==nb_layers-1);
         }
+
         translate([-extent - THICKNESS/2, -THICKNESS/2, THICKNESS/2])
         cube([extent*2+THICKNESS, THICKNESS, layer_height*2*nb_layers-THICKNESS]);
     }
@@ -202,11 +251,9 @@ module hinge2_half2(extent=0, x_shift=0, nb_layers=3, layer_height=LAYER_HEIGHT,
             intersection() {
                 for (i=[0:nb_layers-1]) {
                     translate([x_shift, 0, 0])
-                    rotate([0, 0, 180]) {
-                        translate([0, 0, layer_height*2*i]) p2(extent=extent, is_right=true,
-                                                               h=layer_height,
-                                                               is_bottom=i==0, is_top=i==nb_layers-1);
-                    }
+                    rotate([0, 0, 180])
+                    translate([0, 0, layer_height*2*i])
+                    p2(extent=extent, is_right=true, h=layer_height, is_bottom=i==0, is_top=i==nb_layers-1);
                 }
                 translate([-extent - THICKNESS/2, -THICKNESS/2, THICKNESS/2])
                 cube([extent*2+THICKNESS, THICKNESS, layer_height*2*nb_layers-THICKNESS]);
@@ -239,17 +286,25 @@ module hinge2_half2(extent=0, x_shift=0, nb_layers=3, layer_height=LAYER_HEIGHT,
                     translate([0, 0, ztop])
                     sphere(d=THICKNESS);
                 }
-                if (!frame_only) translate([-THICKNESS*.5 - TOLERANCE2, -THICKNESS, layer_height*2*nb_layers-THICKNESS])
-                cube([THICKNESS*2, THICKNESS*2, THICKNESS]);
+                if (!frame_only) {
+                    translate([-THICKNESS*.5 - TOLERANCE2, -THICKNESS, layer_height*2*nb_layers-THICKNESS])
+                    cube([THICKNESS*2, THICKNESS*2, THICKNESS]);
+                }
             }
 
             hull() {
                 // enlarge laterally
-                translate([frame_only ? THICKNESS/4 -.5: -THICKNESS*2, 0, zbot]) sphere(d=THICKNESS);
-                translate([frame_only ? THICKNESS/4 -.5: -THICKNESS*2, 0, ztop]) sphere(d=THICKNESS);
+                translate([frame_only ? THICKNESS/4 -.5: -THICKNESS*2, 0, zbot])
+                sphere(d=THICKNESS);
+                
+                translate([frame_only ? THICKNESS/4 -.5: -THICKNESS*2, 0, ztop])
+                sphere(d=THICKNESS);
 
-                translate([-zside-THICKNESS/2, 0, zbot]) sphere(d=THICKNESS);
-                translate([-zside-THICKNESS/2, 0, ztop]) sphere(d=THICKNESS);
+                translate([-zside-THICKNESS/2, 0, zbot])
+                sphere(d=THICKNESS);
+                
+                translate([-zside-THICKNESS/2, 0, ztop])
+                sphere(d=THICKNESS);
 
                 translate([-zside - THICKNESS/2, 0, ztop - THICKNESS/2])
                 cylinder(d=THICKNESS, h=THICKNESS);
@@ -341,20 +396,28 @@ module hinge2(extent=0, x_shift=0, nb_layers=3, layer_height=LAYER_HEIGHT) {
 module hinge2_cutout(extent=0, x_shift=0, nb_layers=3, layer_height=LAYER_HEIGHT, extra=.3) {
     minkowski() {
         hinge2_half2_cutout(extent, x_shift, nb_layers, layer_height, frame_only=true);
+
         translate([-.1, 0, .05])
-        scale([1.25, 1, 1.4]) cube(extra, center=true);
+        scale([1.25, 1, 1.4])
+        cube(extra, center=true);
     }
     groove(extent, layer_height, nb_layers);
 }
+
+////////////////////////////////////////////////////////////////////////////////
 
 function get_hinge_thickness() = THICKNESS;
 
 function get_hinge_height(nb_layers=3, layer_height=LAYER_HEIGHT) = layer_height*2*nb_layers;
 //sample(extent=5);
 
-if(0) hinge(extent=10);
-
-%hinge2_cutout(extent=10, layer_height=6);
-
-//translate([0, -THICKNESS*3, 0])
-hinge2(extent=10, layer_height=6);
+if(1) {
+    intersection() {
+        hinge(extent=10, nb_layers=2);
+        cylinder(r=100, h=LAYER_HEIGHT*4+8+.3);
+    }
+} else {
+    %hinge2_cutout(extent=10, layer_height=6);
+    //translate([0, -THICKNESS*3, 0])
+    hinge2(extent=10, layer_height=6);
+}
