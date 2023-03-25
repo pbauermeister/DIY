@@ -25,16 +25,16 @@ CUTS_D         = 4+1;
 
 USB_PLUG_WIDTH = 15;
 
-POWER_BUTTON_POS = 107;
-POWER_BUTTON_HEIGHT = 16;
-POWER_BUTTON_OFFSET = -1;
+POWER_BUTTON_POS    = 107;
+POWER_BUTTON_HEIGHT =  16;
+POWER_BUTTON_OFFSET =  -1;
 
-SUPPORT_THICKNESS = 0.45;
-LID_SPACING = .15;
+SUPPORT_THICKNESS   =   0.45;
+LID_SPACING         =   0.15;
 
-PREVIEW_FORCE_RENDER_HINGE = !true;
-SUPPRESS_HINGE = false;
-PREVIEW_CUTS = false;
+PREVIEW_FORCE_RENDER_HINGE = true;  // false: use hinge STL precomputed file
+SUPPRESS_HINGE             = false;
+PREVIEW_CUTS               = false;
 
 $fn = 40;
 
@@ -248,7 +248,7 @@ module lid() {
             partitionner(LID_SPACING);
 
             // speaker
-            w = 10;
+            w = 10/2;
             translate([WIDTH/2 - w/2, -THICKNESS/2, 156])
             cube([w, THICKNESS, 2.5]);
             
@@ -266,6 +266,7 @@ module lid() {
         }
     }
     
+    if(0)
     {   // pillar to support case top edge overhang
         speaker_pos = 156;
         speaker_height = 2.5;
@@ -276,8 +277,8 @@ module lid() {
 
 }
 
-HINGE_NB_LAYERS = 9+4;
-HINGE_LAYER_HEIGHT = 9.9 *.8  *1.34;
+HINGE_NB_LAYERS    = 9+4           ;//    +1*0;
+HINGE_LAYER_HEIGHT = 9.9 *.8  *1.34;//    *.85*0;
 
 module lid_hinge0() {
     hth = get_hinge_thickness();
@@ -285,6 +286,7 @@ module lid_hinge0() {
     xtd = 3*3;
     intersection() {
         difference() {
+
             translate([0, .1, 0]) // TWEAK
             translate([0, -LID_SPACING, -WALL_THICKNESS -10])
             hinge(x_shift=shift, extent=xtd,
@@ -420,7 +422,7 @@ module support() {
     }
   
     // side fins
-    thickness2 = .7;
+    thickness2 = .5 +.5;
     translate([0, 0, -WALL_THICKNESS/2]) {
         for (x=[16, 58]) {
             difference() {
@@ -439,7 +441,7 @@ module support() {
 
 /******************************************************************************/
 
-FLAP_NB_LAYERS = PREVIEW_CUTS ? 2 : 6; //4;  //@@@
+FLAP_NB_LAYERS = PREVIEW_CUTS ? 2 : 7; //4;  //@@@
 FLAP_Z_POS     = 10;
 FLAP_X_ADJUST  = 1;
 FLAP_EXTEND_ADJUST  = -7;
@@ -447,7 +449,7 @@ FLAP_LAYER_HEIGHT = PREVIEW_CUTS ? 3.5 : 7; //@@@
 
 TOOL_WIDTH     = 24.5;
 TOOL_WIDTH2    = 23.9;
-TOOL_LENGTH    = 79.5 +1;
+TOOL_LENGTH    = 79.5 +1  + FLAP_LAYER_HEIGHT*2;
 TOOL_THICKNESS =  2.0;
 TOOL_RECESS    =  0.35;
 TOOL_LOCK      =  0.2;
