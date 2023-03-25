@@ -2,6 +2,19 @@
  * Shelf in fitness basement
  */
 
+/*
+Shelf        : 1660(TBC) x 250 x 28
+Back plate   : 1660(TBC) x 980 x 10
+
+Supports     : 2x : 1910 x 20 x 20
+Steel tube
+
+Wood screws      : 5 pc @ 28cm
+Concrete screws  : 4 pc
+Wood screws thin : 5 pc
+Wood screws thin : 6 pc
+*/
+
 
 ROOM_HEIGHT  = 2300;
 WALL_WIDTH   = 1660;
@@ -41,13 +54,14 @@ module floor() {
 }
 
 module room() {
-    color("#ccc") {
+    color("#ddd") {
         pillar();
         back_wall();
         side_wall();
         ceiling();
-        floor();
     }
+    color("#444")
+    floor();
 }
 
 module computer() {
@@ -73,6 +87,8 @@ SHELF_BACK_THICKNESS = 10;
 SHELF_SUPPORT_THICKNESS = 20;
 
 module shelf_top() {
+    echo(str("Shelf: ", SHELF_LENGTH, "(TBC) x ", SHELF_WIDTH, " x ", SHELF_THICKNESS));
+
     color("orange")
     cube([SHELF_LENGTH, SHELF_WIDTH, SHELF_THICKNESS]);
 }
@@ -89,7 +105,7 @@ module shelf_center() {
           SHELF_ALTITUDE-SHELF_THICKNESS2]);
 }
 
-BACK_COLOR = [1, 1, 1, .8];
+BACK_COLOR = "white";
 
 module shelf_back_narrow() {
     width  = WALL_WIDTH/2;
@@ -111,6 +127,14 @@ module shelf_back() {
 }
 
 module shelf_supports() {
+    echo(str("Supports: 2x : ", WALL_WIDTH+SHELF_WIDTH, " x ",
+                                SHELF_SUPPORT_THICKNESS, " x ", SHELF_SUPPORT_THICKNESS));
+    echo(    "Steel tube");
+    echo(str("Wood screws      : 5 pc @ ", ceil(WALL_WIDTH/(6)/10), "cm"));
+    echo(    "Concrete screws  : 4 pc");
+    echo(    "Wood screws thin : 5 pc");
+    echo(str("Wood screws thin : 6 pc"));
+    
     color("orange") {
         cube([WALL_WIDTH, SHELF_SUPPORT_THICKNESS, SHELF_SUPPORT_THICKNESS]);
 
