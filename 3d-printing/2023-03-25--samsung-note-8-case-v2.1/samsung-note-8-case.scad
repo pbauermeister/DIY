@@ -16,10 +16,10 @@
 use <hinge2.scad>
 //use <hinge2_mini.scad>
 
-//                              v1      v2 = v2.1 
+//                              v1      v2           v2.1 
 WALL_THICKNESS =   1.5  +.6 +   1       -1.5 +.4;
 WIDTH          =  74.8  +.5             +.1;
-LENGTH         = 163.0  +.5             +.5 -.25;
+LENGTH         = 163.0  +.5             +.5 -.25     +.7;
 THICKNESS      =   8.7  +.5 +   .6      +.2;
 CUTS_D         = 4+1;
 
@@ -422,7 +422,7 @@ module support() {
     }
   
     // side fins
-    thickness2 = .5 +.5;
+    thickness2 = .5 +.25 +.25;
     translate([0, 0, -WALL_THICKNESS/2]) {
         for (x=[16, 58]) {
             difference() {
@@ -436,6 +436,21 @@ module support() {
 
                 rotate([0, 90, 0]) cylinder(r=THICKNESS*3.125, h=WIDTH);
                 translate([0, 0, WIDTH*.705]) rotate([0, 90, 0]) cylinder(r=THICKNESS*2.05, h=WIDTH);
+            }
+        }
+
+        thickness3 = .5;
+        hull()
+        for (x=[16, 58]) {
+            difference() {
+                translate([x, -THICKNESS*.6, 0]) hull() {
+                    translate([0, -WIDTH*.7, 0])
+                    cube([thickness3, thickness3, thickness3]);
+
+                    translate([0, 0, WIDTH*1.25])
+                    cube([thickness3, thickness3, thickness3]);
+                }
+                translate([x-THICKNESS*2, -THICKNESS*4, WIDTH]) cube(THICKNESS*4);
             }
         }
     }
@@ -519,6 +534,8 @@ module flap() {
                 flap_cavity(TOOL_WIDTH2);
             }
         }
+
+        translate([0, 0, -1]) cylinder(d=1.5, h=TOOL_LENGTH); // pin, for adhesion
     }
 }
 
@@ -540,29 +557,37 @@ module all() {
                 case();
                 if (1) translate([0, -LID_SPACING, 0]) lid();
                 if (!SUPPRESS_HINGE) lid_hinge_maybe_cached();
-            }
+           }
             partitionner2();
         }
         flap_cut();
     }
-    flap();
 
-    translate([0, 0, -THICKNESS/6 -.3])
-    support();
+    flap();
+    translate([0, 0, -THICKNESS/6 -.3]) support();
+
+    // increase adhesion
+    l = 30;
+    translate([WIDTH-.1, 0, -.8]) cube([+3.5, 1, 7]);
+    translate([WIDTH + l/2+3, 0, -.8]) difference() {
+        cylinder(d=l, h=7);
+        translate([0, 0, .3*2])
+        cylinder(d=l-2, h=7);
+    }
+
 }
 
 module shave_bottom() {
     intersection() {
         children();
 
-        translate([0, 0, -.5])
-        cylinder(r=WIDTH*2, h=LENGTH*2);
+        translate([0, 0, -.5]) cylinder(r=WIDTH*2, h=LENGTH*2);
     }
 }
 
 
 intersection() {
-    %partitionner2();
+    //%partitionner2();
     shave_bottom() all();
 
     //cylinder(r=WIDTH*2, h=35);
