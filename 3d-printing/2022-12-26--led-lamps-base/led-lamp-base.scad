@@ -9,7 +9,7 @@ DIAMETER          =  85.5;
 THICKNESS         =   8.2 - CONTACT_THICKNESS*2;
 SPACING           =   5.0;
 BORDER            =   8.0;
-TOLERANCE         =   0.2;
+TOLERANCE         =   0.2  +.1;
 PLAY              =   0.5;
 
 BAR_LENGTH        =  DIAMETER+BORDER*2+SPACING;
@@ -33,6 +33,9 @@ HUB_W = 30.0 +1;
 HUB_H =  9.0 +1;
 
 CONTACTS_ROT = [90-30-15, 0, -90+30+15];
+
+SPAR_DIAMETER = 4.3;
+CABLE_CANAL_THICKNESS = 4;
 
 ATOM      = 0.01;
 $fn = 90;
@@ -92,7 +95,7 @@ module lamp_contact(rot) {
     }
 }
 
-module bar() {
+module bar(extra_shave=0) {
     difference() {
         // bar
         translate([0, -BAR_WIDTH/2, -ATOM])
@@ -118,7 +121,7 @@ module bar() {
             scale([1, 1, 2])
             disc();
         }
-        translate([DIAMETER + BORDER*2 + SPACING, 0, THICKNESS-1])
+        translate([DIAMETER + BORDER*2 + SPACING, 0, THICKNESS-1-extra_shave])
         disc();
 
     }
@@ -175,8 +178,12 @@ module base(first=false, last=false) {
             disc();
             translate([0, 0, THICKNESS]) half_disc(true);
 
-            if (!first)
-                bar();
+            if (!first) {
+                intersection() {
+                    bar(extra_shave=TOLERANCE*2);
+                    cube(DIAMETER*2-10, center=true);
+                }
+            }
             
             if (first)
                 handle(true);
@@ -194,7 +201,7 @@ module base(first=false, last=false) {
             translate([-BAR_LENGTH, 0, 0])
             minkowski() {
                 bar();
-                cube(TOLERANCE, center=true);
+                cube(TOLERANCE*2, center=true);
             }
         }
 
@@ -208,24 +215,27 @@ module base(first=false, last=false) {
                 translate([DIAMETER/2-CONTACT_LENGTH/2, 0, 0])
                 cylinder(d=10, h=HUB_H*2 +3, center=true);
 
+                if(a1 == 0)
+                translate([0, 0, HUB_H*.75])
                 hull() {
                     translate([DIAMETER/2-CONTACT_LENGTH/2, 0, 0])
-                    cylinder(d=3, h=HUB_H*2, center=true);
-                    cylinder(d=3, h=HUB_H*2, center=true);
+                    cylinder(d=3, h=HUB_H/2, center=true);
+                    cylinder(d=3, h=HUB_H/2, center=true);
                 }
             }
         }
 
         d = last||first? (DIAMETER/2+4) *(first?-1:1) : 0 ;
+
         // Cutout for all cables
-        translate([d, 0, 0])
+        translate([d, 0, 5])
         cube([DIAMETER*2, 2, 4], center=true);
 
         // Cutout for spar
         translate([d, 0, 4-.5])
         rotate([0, 90, 0])
-        cylinder(d=4.2, h=DIAMETER*2, center=true);
-        
+        cylinder(d=SPAR_DIAMETER, h=DIAMETER*2, center=true);
+
         // hub
         translate([0, 0, -ATOM*2])
         hub_cutout(plug=first);
@@ -259,6 +269,8 @@ module lamp_heel() {
 
         angle = 30;
         angle_offset = 15*1.5; //17 + .9;
+
+        translate([0, 0, .7])
         for (a=[0:angle*2:360])
             rotate([0, 0, a+angle_offset])
             rotate_extrude(angle=angle/2) {
@@ -285,21 +297,23 @@ module lamp_heel() {
 }
 
 module move_for_printing() {
-    translate([DIAMETER*.67, -DIAMETER*.25, LAMP_HEEL_HEIGHT])
+    translate([DIAMETER*.67*0, -DIAMETER*.25 -3, LAMP_HEEL_HEIGHT])
     rotate([0, 180, -90])
     children();
 }
 
 
 module all() {
-    base(first=true);
-    for (rot=CONTACTS_ROT) {
-        lamp_contact(rot);
+    union() {
+        base(first=true);
+        for (rot=CONTACTS_ROT) {
+            lamp_contact(rot);
+        }
     }
 
-    %translate([DIAMETER + BORDER*2 + SPACING, 0, 0]) {
+    translate([-DIAMETER-BORDER*2-SPACING, 0, 0]) { //translate([DIAMETER + BORDER*2 + SPACING, 0, 0]) {
         base();
-        translate([0, 0, THICKNESS]) lamp();
+        %translate([0, 0, THICKNESS]) lamp();
     }
 
 
@@ -308,7 +322,7 @@ module all() {
     lamp_heel();
 
 
-    if (1) % difference() {
+    if (0) % difference() {
         translate([0, 0, THICKNESS]) lamp();
         rotate([0, 0, 0])
         translate([-LAMP_HEIGHT/2, 0, -1])
@@ -318,5 +332,48 @@ module all() {
     //!bar();
 }
 
+module first() {
+    union() {
+        base(first=true);
+        %translate([0, 0, THICKNESS]) lamp();
+        for (rot=CONTACTS_ROT) {
+            lamp_contact(rot);
+        }
+    }
+
+    move_for_printing()
+    lamp_heel();
+}
+
+module second() {
+    x = -DIAMETER-BORDER*2-SPACING;
+    translate([x, 0, 0]) {
+        base();
+        %translate([0, 0, THICKNESS]) lamp();
+    }
+
+    translate([x, 0, 0]) 
+    move_for_printing()
+    lamp_heel();
+}
+
+module fourth() {
+    x = -DIAMETER-BORDER*2-SPACING;
+    translate([x*3, 0, 0]) {
+        base(last=true);
+        %translate([0, 0, THICKNESS]) lamp();
+    }
+
+    translate([x*3, 0, 0]) 
+    move_for_printing()
+    lamp_heel();
+}
+
 //rotate([0, 0, 30])
-all();
+//all();
+
+//first();
+second();
+//translate([-DIAMETER-BORDER*2-SPACING, 0, 0]) second();
+//fourth();
+
