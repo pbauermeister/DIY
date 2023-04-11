@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   sodipodi:docname="test-2.svg"
+   inkscape:version="1.2.2 (1:1.2.2+202212051552+b0a8486541)"
+   version="1.1"
+   id="svg27345"
+   height="1000"
+   width="3200"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35112271"
+     inkscape:cx="1167.6829"
+     inkscape:cy="652.19364"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1013"
+     inkscape:window-x="0"
+     inkscape:window-y="36"
+     inkscape:window-maximized="1"
+     inkscape:showpageshadow="2"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1" />
+  <defs
+     id="defs27347">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 612.60307 : 1"
+       inkscape:vp_y="0 : 1137.7778 : 0"
+       inkscape:vp_z="846.61417 : 612.60307 : 1"
+       inkscape:persp3d-origin="423.30708 : 413.04402 : 1"
+       id="perspective27353" />
+  </defs>
+  <metadata
+     id="metadata27350">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-59.576525)">
+    <rect
+       style="fill:none;fill-opacity:0.33;stroke-width:2;stroke-linecap:square;stroke-linejoin:round;stroke:#000000;stroke-opacity:1;stroke-dasharray:none"
+       id="rect242"
+       width="3200"
+       height="1000"
+       x="0"
+       y="59.576527" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 0,947.72645 H 3200"
+       id="path1036" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 0,59.576527 3200,917.01394"
+       id="path1038" />
+  </g>
+  <eggbot
+     serialport="/dev/ttyACM0"
+     layer="0"
+     node="0"
+     lastpath="0"
+     lastpathnc="0"
+     totaldeltax="0"
+     totaldeltay="0"
+     id="eggbot4228" />
+</svg>
