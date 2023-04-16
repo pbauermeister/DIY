@@ -1,6 +1,8 @@
 /* Charging base for LED lamps.
  */
 
+HAS_HEEL          = false;
+
 CONTACT_WIDTH     =   2.5;
 CONTACT_THICKNESS =   0.2;
 CONTACT_LENGTH    =  15.0;
@@ -14,7 +16,7 @@ PLAY              =   0.5;
 
 BAR_LENGTH        =  DIAMETER+BORDER*2+SPACING;
 BAR_WIDTH         =  DIAMETER*.75;
-BAR_DIST          =  16.0;
+BAR_DIST          =  16.0  + 8;
 
 LAMP_DIAMETER     = 102.5;
 LAMP_THICKNESS    =   8.2;
@@ -39,6 +41,9 @@ CABLE_CANAL_THICKNESS = 4;
 
 ATOM      = 0.01;
 $fn = 90;
+
+
+use <base-carver.scad>
 
 module hub_cutout(plug=false) {
     rotate([0, 0, -90])
@@ -95,26 +100,33 @@ module lamp_contact(rot) {
     }
 }
 
-module bar(extra_shave=0) {
+module bar(extra_shave=0, shave_base=false) {
     difference() {
         // bar
+        shorten = extra_shave ? .5 : 0;
         translate([0, -BAR_WIDTH/2, -ATOM])
-        cube([BAR_LENGTH-BAR_DIST, BAR_WIDTH, THICKNESS - 2*0]);
+        cube([BAR_LENGTH-BAR_DIST - shorten, BAR_WIDTH, THICKNESS - 2*0]);
 
         // joinery
-        th = 6;
+        th = 6+2.5;
         intersection() {
             // mortises
             union()
             for (y=[-DIAMETER/4-th:th*2:DIAMETER/4+th]) {
                 hull() {
-                    translate([-ATOM, y+.25-th/4, THICKNESS])
+                    translate([-ATOM, y+.25 - th/4, THICKNESS])
                     cube([BAR_LENGTH, th*1.5, .1]);
 
 
                     translate([-ATOM, y+.25 + th/4, -.5])
                     cube([BAR_LENGTH, th/2, .1]);
                 }
+
+                if (shave_base) {
+                    translate([-ATOM, y+.25 + th/4 -1, -.5])
+                    cube([BAR_LENGTH, th/2+2, THICKNESS]);
+                }
+
             }
             // limit mortises into cylinder
             translate([DIAMETER + BORDER*2 + SPACING, 0, -1])
@@ -179,10 +191,7 @@ module base(first=false, last=false) {
             translate([0, 0, THICKNESS]) half_disc(true);
 
             if (!first) {
-                intersection() {
-                    bar(extra_shave=TOLERANCE*2);
-                    cube(DIAMETER*2-10, center=true);
-                }
+                bar(extra_shave=TOLERANCE*2, shave_base=true);
             }
             
             if (first)
@@ -316,64 +325,65 @@ module all() {
         %translate([0, 0, THICKNESS]) lamp();
     }
 
-
     //translate([0, 0, THICKNESS+TOLERANCE]) 
     move_for_printing()
     lamp_heel();
-
-
-    if (0) % difference() {
-        translate([0, 0, THICKNESS]) lamp();
-        rotate([0, 0, 0])
-        translate([-LAMP_HEIGHT/2, 0, -1])
-        cube(LAMP_HEIGHT*2);
-    }
-
-    //!bar();
 }
 
 module first() {
     union() {
+        carve_base()
         base(first=true);
+
         %translate([0, 0, THICKNESS]) lamp();
+
         for (rot=CONTACTS_ROT) {
             lamp_contact(rot);
         }
     }
 
-    move_for_printing()
-    lamp_heel();
+    if (HAS_HEEL)
+        move_for_printing()
+        lamp_heel();
 }
 
 module second() {
     x = -DIAMETER-BORDER*2-SPACING;
     translate([x, 0, 0]) {
+        carve_base()
         base();
+
         %translate([0, 0, THICKNESS]) lamp();
     }
 
-    translate([x, 0, 0]) 
-    move_for_printing()
-    lamp_heel();
+    if (HAS_HEEL)
+        translate([x, 0, 0]) 
+        move_for_printing()
+        lamp_heel();
 }
 
 module fourth() {
     x = -DIAMETER-BORDER*2-SPACING;
     translate([x*3, 0, 0]) {
+        carve_base()
         base(last=true);
+
         %translate([0, 0, THICKNESS]) lamp();
     }
 
-    translate([x*3, 0, 0]) 
-    move_for_printing()
-    lamp_heel();
+    if (HAS_HEEL)
+        translate([x*3, 0, 0]) 
+        move_for_printing()
+        lamp_heel();
 }
 
-//rotate([0, 0, 30])
-//all();
 
-//first();
-second();
-//translate([-DIAMETER-BORDER*2-SPACING, 0, 0]) second();
-//fourth();
-
+intersection() {
+    translate([43+15, 0, 0]) union() {
+        first();
+        translate([-20, 0, 0])
+        second();
+    }
+    //if(0) translate([-10, 0, 0])
+    cube([80, 100, 17], true);
+}
