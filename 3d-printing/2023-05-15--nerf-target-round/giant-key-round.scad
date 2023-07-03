@@ -25,6 +25,9 @@ SWITCH_KNOB_DIAMETER    =  2.2;
 SWITCH_CONTACTS_DEPTH   =  3.5;
 SWITCH_CONTACTS_WIDTH   =  3.0;
 
+INNER_PIECE_DIAMETER    = DIAMETER - THICKNESS_H*2 - TOLERANCE*(2 + 1 + 1);
+INNER_PIECE_HEIGHT      = THICKNESS_V * 1.5;
+
 $fn = $preview ? 30 : 120;
 
 include <util.inc.scad>
@@ -57,10 +60,10 @@ module outer_ring() {
         if(0)
         hull() {
             translate([DIAMETER/2-THICKNESS_H-PLAY, 0, -ATOM])
-            cylinder(d=THICKNESS_V*1.5, h=HEIGHT+ATOM);
+            cylinder(d=INNER_PIECE_HEIGHT, h=HEIGHT+ATOM);
 
             translate([-DIAMETER/2+THICKNESS_H+PLAY, 0, -ATOM])
-            cylinder(d=THICKNESS_V*1.5, h=HEIGHT+ATOM);
+            cylinder(d=INNER_PIECE_HEIGHT, h=HEIGHT+ATOM);
         }
 
         d = DIAMETER/24;
@@ -142,17 +145,11 @@ module disc() {
 // Inner piece
 
 module inner_piece() {
-    h = THICKNESS_V * 1.5;
-    d = DIAMETER - THICKNESS_H*2 - TOLERANCE*(2 + 1 + 1);
+    h = INNER_PIECE_HEIGHT;
+    d = INNER_PIECE_DIAMETER;
 
     difference() {
         cylinder(d=d, h=h);
-        for (i=[0:3]) {
-            r = d/8 *1.2;
-            rotate([0, 0, 90*i +45])
-            translate([0, d/4 + d/32, 0])
-            cylinder(r=r, h=h*3, center=true);
-        }
 
         translate([0, 0, HEIGHT-THICKNESS_V - SWITCH_HEIGHT_WITH_KNOB])
         minkowski() {
@@ -166,17 +163,18 @@ module inner_piece() {
     if (!$preview)
       screw(SCREW_PITCH, h, d/2, SCREW_STEP, true, true);
     
+    // feet
     d2 = 6;
-    for (a=[0:90:270])
+    for (a=[0:120:240])
         rotate([0, 0, a])
         translate([DIAMETER/2 - THICKNESS_H -d2, 0, 0])
         sphere(d=d2);
 
-    for (a=[0:90:270])
-        rotate([0, 0, a+45])
-        translate([DIAMETER/12, 0, 0])
+    // small feet
+    for (a=[0:180:180])
+        rotate([0, 0, a+90])
+        translate([DIAMETER/20, 0, 0])
         sphere(d=d2-1);
-
 }
 
 module switch(with_knob=false) {
@@ -190,20 +188,42 @@ module switch(with_knob=false) {
 }
 
 module hollowings() {
-    translate([0, 0, HEIGHT-THICKNESS_V - SWITCH_HEIGHT_WITH_KNOB]) {
+    hollowings_circles();
+    hollowing_for_cable();
+    hollowing_for_hanging();
+    hollowing_for_springing();
+}
+
+module hollowings_circles() {
+    h = INNER_PIECE_HEIGHT;
+    d = INNER_PIECE_DIAMETER;
+    n = 3;
+    for (a=[0:360/n:360]) {
+        r = d/8 *1.2;
+        rotate([0, 0, a + 90])
+        translate([0, d/4 + d/32, 0])
+        cylinder(r=r, h=h*3, center=true);
+    }
+}
+
+module hollowing_for_cable() {
+    translate([SWITCH_KNOB_POS_X/2, 0, HEIGHT-THICKNESS_V - SWITCH_HEIGHT_WITH_KNOB]) {
+        sl = SWITCH_LENGTH*.8;
         w = 2;
         h = THICKNESS_V * 3;
-        l = SWITCH_LENGTH*4 + w*2;
+        l = sl*4 + w*2;
         translate([-l/2, -SWITCH_CONTACTS_WIDTH/2, -SWITCH_CONTACTS_DEPTH])
         cube([l, SWITCH_CONTACTS_WIDTH, SWITCH_CONTACTS_DEPTH]);
         
-        for (x=[-SWITCH_LENGTH*2:SWITCH_LENGTH: SWITCH_LENGTH*2])
+        for (x=[-sl*2:sl: sl*2])
         for (y=[-SWITCH_CONTACTS_WIDTH/2-w/2+ATOM, SWITCH_CONTACTS_WIDTH/2+w/2-ATOM])
             if(x)
                 translate([x, y, 0])
                 cube([w*2, w, h], center=true);
     }
+}
 
+module hollowing_for_hanging() {
     // hanging holes
     d = 5;
     aa = 9;
@@ -214,7 +234,20 @@ module hollowings() {
         translate([r * cos(a), r * sin(a), 0])
         cylinder(d=d, h=h, center=true);
     }
+}
 
+module hollowing_for_springing() {
+    margin = 6;
+    d = INNER_PIECE_DIAMETER - margin*2;
+    slit = 1;
+%
+    translate([0, 0, -INNER_PIECE_HEIGHT/2])
+    scale([1, 1, INNER_PIECE_HEIGHT*2]) {
+        difference() {
+            cylinder(d=d, h=1);
+            cylinder(d=d-slit*2, h=3, center=true);
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
