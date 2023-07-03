@@ -11,6 +11,20 @@ SCREW_PITCH =   2;
 SCREW_STEP  = $preview ? 500 : 15;
 ATOM        =   0.01;
 
+TRAVEL = 4;
+HUB_DIAMETER = 20;
+
+SWITCH_HEIGHT           =  9.6;
+SWITCH_WIDTH            =  6.4;
+SWITCH_LENGTH           = 19.9; 
+
+SWITCH_KNOB_POS_X       =  7.0;
+SWITCH_HEIGHT_WITH_KNOB = 11.7;
+SWITCH_KNOB_DIAMETER    =  2.2;
+
+SWITCH_CONTACTS_DEPTH   =  3.5;
+SWITCH_CONTACTS_WIDTH   =  3.0;
+
 $fn = $preview ? 30 : 120;
 
 include <util.inc.scad>
@@ -23,6 +37,9 @@ module cross_cut() {
 //        cylinder(d=DIAMETER*2, h=HEIGHT-2);
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Outer ring
 
 module outer_ring() {
     h = HEIGHT - THICKNESS_V;
@@ -62,8 +79,8 @@ module outer_ring() {
     }
 }
 
-TRAVEL = 4;
-HUB_DIAMETER = 20;
+////////////////////////////////////////////////////////////////////////////////
+// Disc
 
 module disc_outer() {
     translate([0, 0, -TRAVEL])
@@ -121,8 +138,8 @@ module disc() {
     }
 }
 
-echo(TOLERANCE*(2 + 1 + 1.5 -.25));
-echo(PLAY*2);
+////////////////////////////////////////////////////////////////////////////////
+// Inner piece
 
 module inner_piece() {
     h = THICKNESS_V * 1.5;
@@ -146,7 +163,8 @@ module inner_piece() {
         hollowings();
     }
 
-    screw(SCREW_PITCH, h, d/2, SCREW_STEP, true, true);
+    if (!$preview)
+      screw(SCREW_PITCH, h, d/2, SCREW_STEP, true, true);
     
     d2 = 6;
     for (a=[0:90:270])
@@ -161,19 +179,7 @@ module inner_piece() {
 
 }
 
-SWITCH_HEIGHT           =  9.6;
-SWITCH_WIDTH            =  6.4;
-SWITCH_LENGTH           = 19.9; 
-
-SWITCH_KNOB_POS_X       =  7.0;
-SWITCH_HEIGHT_WITH_KNOB = 11.7;
-SWITCH_KNOB_DIAMETER    =  2.2;
-
-SWITCH_CONTACTS_DEPTH   =  3.5;
-SWITCH_CONTACTS_WIDTH   =  3.0;
-
 module switch(with_knob=false) {
-
     if (with_knob)
       cylinder(d=SWITCH_KNOB_DIAMETER, h=SWITCH_HEIGHT_WITH_KNOB);
 
@@ -208,20 +214,15 @@ module hollowings() {
         translate([r * cos(a), r * sin(a), 0])
         cylinder(d=d, h=h, center=true);
     }
-    hull()
-    for (a=[-aa, 0, aa]) {
-        rr = r; //a==0 ? r0 -d : r;
-        translate([rr * cos(a), rr * sin(a), 0])
-        cylinder(d=d, h=2, center=true);
-    }
 
 }
 
+////////////////////////////////////////////////////////////////////////////////
 
 module all() {
-    outer_ring();
+//    outer_ring();
 //    translate([0, 0, HEIGHT-THICKNESS_V]) disc();
-//    inner_piece();
+!    inner_piece();
 
     %translate([0, 0, HEIGHT-THICKNESS_V - SWITCH_HEIGHT_WITH_KNOB]) switch(true);
 }
