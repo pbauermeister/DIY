@@ -21,8 +21,7 @@ void loop() {
     // turn LED on:
     digitalWrite(LED_BUILTIN, HIGH);
   } else {
-    // turn LED off:
-    digitalWrite(LED_BUILTIN, LOW);
+    // blink and stay off:
     blink();
   }
   return;
