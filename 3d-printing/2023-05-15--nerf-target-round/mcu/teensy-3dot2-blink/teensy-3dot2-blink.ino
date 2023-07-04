@@ -1,6 +1,14 @@
+/* Experimental sketch that detects hit on the target.
+ *
+ * Polls pin 2 which must be connected to the ground via the target
+ * switch. Upon impact, blinks 10 times.
+ *
+ * TODO: instead of polling the pin, connect an interrupt to it, which
+ * would set a flag; the flag would be read by loop periodically at a
+ * lower rate.
+ */
 
 #define BUTTON_PIN 2
-
 
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
@@ -17,7 +25,7 @@ void loop() {
     digitalWrite(LED_BUILTIN, LOW);
     blink();
   }
-  return; 
+  return;
 }
 
 void blink() {
