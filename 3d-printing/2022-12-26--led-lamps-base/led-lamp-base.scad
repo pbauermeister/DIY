@@ -39,6 +39,8 @@ CONTACTS_ROT = [90-30-15, 0, -90+30+15];
 SPAR_DIAMETER = 4.3;
 CABLE_CANAL_THICKNESS = 4;
 
+CARVE_R = 1.9;
+
 ATOM      = 0.01;
 $fn = 90;
 
@@ -259,6 +261,9 @@ module base(first=false, last=false) {
     if(!first)
         translate([BAR_LENGTH-DIAMETER/2, -3, 0])
         cube([th, 6, .25]);
+
+
+    translate([0, 0, -6]) cube([.1, .1, .2], true);
 }
 
 module lamp() {
@@ -332,7 +337,7 @@ module all() {
 
 module first() {
     union() {
-        carve_base()
+        carve_base(r=CARVE_R)
         base(first=true);
 
         %translate([0, 0, THICKNESS]) lamp();
@@ -350,7 +355,7 @@ module first() {
 module second() {
     x = -DIAMETER-BORDER*2-SPACING;
     translate([x, 0, 0]) {
-        carve_base()
+        carve_base(r=CARVE_R)
         base();
 
         %translate([0, 0, THICKNESS]) lamp();
@@ -387,3 +392,7 @@ intersection() {
     //if(0) translate([-10, 0, 0])
     cube([80, 100, 17], true);
 }
+
+
+// make flying, forcing support
+translate([0, 0, -8]) cube([.1, .1, .2], true);
