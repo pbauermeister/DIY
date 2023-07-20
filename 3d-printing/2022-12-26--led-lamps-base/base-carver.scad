@@ -6,7 +6,7 @@
  */
 
 
-module carve_base(h=1, r=2.5, world=1e5, fn=5, cylindric=true) {
+module carve_base(h=1.3, r=2, world=1e5, fn=5, cylindric=true) {
     //if(1) children(); else
     if (cylindric) {
        carve_base_cylinder(h, r, world) children();
@@ -20,7 +20,7 @@ module carve_base(h=1, r=2.5, world=1e5, fn=5, cylindric=true) {
 ATOM      = 0.01;
 
 
-module carve_base_minkowski(h=1, r=2.5, world=1e5, fn=4+1) {
+module carve_base_minkowski(h=1.5, r=2.5, world=1e5, fn=4+1) {
     difference() {
         // original
         children();
@@ -45,7 +45,7 @@ module carve_base_minkowski(h=1, r=2.5, world=1e5, fn=4+1) {
 }
 
 
-module carve_base_cylinder(h=1, r=2.5, world=1000) {
+module carve_base_cylinder(h=.4, r=2.5, world=1000) {
     difference() {
         // original
         children();
