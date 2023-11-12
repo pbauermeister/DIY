@@ -50,7 +50,11 @@ PARTITIONER_Y_TWEAK        = 1.7  -.5;
 
 HINGE_Z_SHIFT_TWEAK        = -1.2;
 HINGE_NB_LAYERS            = 9+4;
-HINGE_LAYER_HEIGHT         = 9.9 *.8  *1.34  -1.52  +.034;
+HINGE_LAYER_HEIGHT         = 9.9 *.8  *1.34  -1.52  +.036;
+
+HINGE_THICKNESS_ORIG       = get_hinge_thickness();  // 3.975
+HINGE_THICKNESS            =  4.5;
+HINGE_K = HINGE_THICKNESS / HINGE_THICKNESS_ORIG;
 
 
 CAM_SHUTTER_MARGIN         = 2;
@@ -114,12 +118,13 @@ module partitionner(extra=0) {
 
 module partitionner2() {
     intersection() {
-        delta_x = -1.5;
+        //delta_x = -1.5;
+        dx = HINGE_K *.2;
 
         hull()
         for (z=[THICKNESS/2-3, LENGTH-THICKNESS/2+WALL_THICKNESS+1]) {
             for (x=[-.5, WIDTH+THICKNESS]) {
-                translate([x, 0, z])
+                translate([x-dx, 0, z])
                 rotate([90, 0, 0])
                 cylinder(d=THICKNESS, h=THICKNESS*3, center=true);
             }
@@ -265,10 +270,18 @@ module case_full_0(extra_x=0, thickness=WALL_THICKNESS) {
 }
 
 module case_full(, thickness=WALL_THICKNESS) {
-    case_full_0(thickness=thickness);
+    dx = -WALL_THICKNESS/2 - .4 +.2;
+    
+    intersection() {
+        case_full_0(thickness=thickness);
+
+        translate ([dx, -THICKNESS/2, -LENGTH/2])
+        cube([WIDTH*2,
+              THICKNESS*2,
+              LENGTH*2]);
+    }
    
     intersection() {
-        dx = -WALL_THICKNESS/2 - .4 +.2;
         translate ([dx, -WALL_THICKNESS, -WALL_THICKNESS*2])
         cube([THICKNESS,
               THICKNESS + WALL_THICKNESS*2,
@@ -334,8 +347,7 @@ module case() {
         }
         
         // plyer
-        if (!$preview)
-            plyer();
+        //if (!$preview) plyer();
 
     }
 }
@@ -390,12 +402,14 @@ module lid0() {
 }
 
 module lid_hinge0() {
+    k = HINGE_K;
     hth = get_hinge_thickness();
     x_shift = -hth*.8 -.3;
-    xtd = THICKNESS/2*-1; //3*3 *2;
+    xtd = THICKNESS/2*-1;
     intersection() {
         difference() {
-            translate([0, .1, HINGE_Z_SHIFT_TWEAK]) // TWEAK
+            scale([k, k, 1])
+            translate([k*.2, .1, HINGE_Z_SHIFT_TWEAK]) // TWEAK
             translate([0, -LID_SPACING, -WALL_THICKNESS -10])
             hinge(x_shift=x_shift, extent=xtd,
                   nb_layers=HINGE_NB_LAYERS, layer_height=HINGE_LAYER_HEIGHT);
@@ -436,11 +450,12 @@ module lid_hinge_partitioner() {
 
 module lid_hinge() {
     intersection() {
+        lid_hinge0();
+
         lid_hinge_partitioner();
 
         partitionner2();
 
-        lid_hinge0();
     }
 }
 
@@ -460,6 +475,17 @@ module lid_hinge_maybe_cached(no_cache=false) {
 
 // To remake cache: uncomment, render and save as lid-hinge-exported.stl
 //!lid_hinge_maybe_cached(true);
+
+
+module lid() {
+    intersection() {
+        union() {
+            translate([0, -LID_SPACING, 0]) lid0();
+            lid_hinge_maybe_cached();
+        }
+        partitionner2();
+    }
+}
 
 /******************************************************************************/
 
@@ -670,16 +696,6 @@ module all_back_flap() {
     flap();
 }
 
-module lid() {
-    intersection() {
-        union() {
-            translate([0, -LID_SPACING, 0]) lid0();
-            lid_hinge_maybe_cached();
-        }
-        partitionner2();
-    }
-}
-
 module all() {
         all_back_flap();
         lid();
@@ -720,6 +736,8 @@ module upper_slice() {
 
 /******************************************************************************/
 
+//%partitionner2();
+
 //upper_slice() all_back();
 
 //flap(); // GOOD
@@ -728,9 +746,8 @@ module upper_slice() {
 //lid_hinge_maybe_cached(true);  // GOOD
 //all_back();  // GOOD
 //all_back_flap(); // GOOD
-//lid_hinge(); // GOOD
 
-//%partitionner2();
+//lid_hinge(); // GOOD
 
 all_back_flap(); lid();
 //all();
