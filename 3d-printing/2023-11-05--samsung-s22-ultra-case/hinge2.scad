@@ -39,7 +39,7 @@ module p0(h=LAYER_HEIGHT, is_top=false, is_bottom=false, is_left=false, is_right
         }
 
         // pin hole
-        if (!is_top &&!is_left) {
+        if (!is_top && !is_left) {
             d2 = THICKNESS - LINE_THICKNESS;
             d1 = d2;
             hh = d2*.7;
@@ -78,12 +78,14 @@ module p1(h=LAYER_HEIGHT, is_bottom=false, is_top=false, is_left=false, is_right
     translate([-extra_length, 0, 0])
     p0(h=h, is_bottom=is_bottom, is_left=is_left, is_right=is_right, extra_length=extra_length);
     
-    if (!is_right)
+    if (!is_right) {
         translate([THICKNESS*2, 0, h]) rotate([0, 0, 180])
         p0(h=h, is_top=is_top, extra_length=extra_length);
-    else 
+    }
+    else {
         translate([THICKNESS/2+TOLERANCE2, -THICKNESS/2, h])
         cube([THICKNESS-TOLERANCE2*2, THICKNESS, h]);
+    }
 }
 
 module p2(h=LAYER_HEIGHT, extent=0,
@@ -376,12 +378,16 @@ module hinge2_half2_cutout(extent=0, x_shift=0, nb_layers=3, layer_height=LAYER_
             translate([-w + THICKNESS/2 + TOLERANCE*2, 0, 0])
             cube([w, THICKNESS, ztop]);
 
+            translate([-w + THICKNESS/2 + TOLERANCE*2, -THICKNESS, 0])
+            cube([w, THICKNESS*3, ztop]);
+
+            /*
             hull() {
                 translate([-extent-THICKNESS, 0, 0])
                 cylinder(d=THICKNESS, h=ztop);
                 translate([-THICKNESS/2+TOLERANCE*2, -THICKNESS/2, 0])
                 cube([THICKNESS, THICKNESS, ztop]);
-            }
+            }*/
         }
 
         // chamfer
@@ -412,13 +418,21 @@ function get_hinge_thickness() = THICKNESS;
 function get_hinge_height(nb_layers=3, layer_height=LAYER_HEIGHT) = layer_height*2*nb_layers;
 //sample(extent=5);
 
-if(1) {
+if (0) {
     intersection() {
         hinge(extent=10, nb_layers=2);
         cylinder(r=100, h=LAYER_HEIGHT*4+8+.3);
     }
-} else {
+}
+
+if (0) {
     %hinge2_cutout(extent=10, layer_height=6);
     //translate([0, -THICKNESS*3, 0])
     hinge2(extent=10, layer_height=6);
 }
+
+if (0) {
+    hinge();
+}
+
+if (1) hinge2_cutout();
