@@ -1,4 +1,3 @@
-
 // TODO: 
 // - cam sliding shutter
 // - shift hinges
@@ -12,13 +11,8 @@
 use <hinge2.scad>
 //use <hinge2_mini.scad>
 
-//                      N10
 WALL_THICKNESS      =   2.0;
 CUTS_D              =   5.0;
-
-N10_WIDTH           =  75.4;
-N10_LENGTH          = 164.45;
-N10_THICKNESS       =  10.0;
 
 S22_WIDTH           =  75.4  + 2.5      +0.15;
 S22_LENGTH          = 164.45 + 1.2  -.4 -0.7;
@@ -86,8 +80,9 @@ TOOL_THICKNESS             =  2.0;
 TOOL_RECESS                =  0.35;
 TOOL_LOCK                  =  0.2;
 
-FLAP_HEIGHT = FLAP_LAYER_HEIGHT * FLAP_NB_LAYERS * 2;
+SPACING                    = 0.3;
 
+FLAP_HEIGHT = FLAP_LAYER_HEIGHT * FLAP_NB_LAYERS * 2;
 
 $fn  = 40;
 ATOM =  0.01;
@@ -116,34 +111,24 @@ module partitionner(extra=0) {
     }
 }
 
-module partitionner2() {
-    intersection() {
-        //delta_x = -1.5;
-        dx = HINGE_K *.2;
+HINGE_DX = -HINGE_K * .1;
 
-        hull()
-        for (z=[THICKNESS/2-3, LENGTH-THICKNESS/2+WALL_THICKNESS+1]) {
-            for (x=[-.5, WIDTH+THICKNESS]) {
-                translate([x-dx, 0, z])
-                rotate([90, 0, 0])
-                cylinder(d=THICKNESS, h=THICKNESS*3, center=true);
-            }
+module partitionner2() {
+    translate([HINGE_DX*7, 0, 0])
+
+    hull()
+    for (z=[THICKNESS/2-3, LENGTH-THICKNESS/2+WALL_THICKNESS+1]) {
+        for (x=[-.5, WIDTH+THICKNESS]) {
+            translate([x-HINGE_DX, 0, z])
+            rotate([90, 0, 0])
+            cylinder(d=THICKNESS, h=THICKNESS*3, center=true);
         }
     }
 }
 
 /******************************************************************************/
 
-module phone_n10() {
-    minkowski() {
-        translate([N10_THICKNESS/2, N10_THICKNESS/2, N10_THICKNESS/2])
-        cube([N10_WIDTH-THICKNESS, 0.00001, N10_LENGTH-THICKNESS]);
-
-        sphere(d=THICKNESS);
-    }
-}
-
-module phone_s22(extra_x=0, releaser=false) {
+module phone(extra_x=0, releaser=false) {
     minkowski() {
         translate([S22_THICKNESS/2, S22_THICKNESS/2, 0])
         cube([S22_WIDTH-S22_THICKNESS+extra_x, 0.00001, S22_LENGTH]);
@@ -178,44 +163,49 @@ module phone_releaser() {
     cube([WIDTH-THICKNESS*k, THICKNESS, LENGTH]);
 }
 
-module phone(extra_x=0, releaser=false) phone_s22(extra_x=extra_x, releaser=releaser);
+/******************************************************************************/
 
 module cam_cutoff() {
     hull()
     for (z=[0, S22_CAM_HEIGHT]) {
         for (x=[0, S22_CAM_WIDTH+CAM_SHUTTER_EXTRA_WIDTH]) {
-            translate([WIDTH-S22_CAM_OFFSET_X-x, 0, z + S22_CAM_POS_Z])
-            rotate([-90, 0, 0]) cylinder(d=CUTS_D, h=THICKNESS*2);
+            translate([WIDTH-S22_CAM_OFFSET_X-x, THICKNESS, z + S22_CAM_POS_Z])
+            rotate([-90, 0, 0]) cylinder(d=CUTS_D, h=THICKNESS*2, center=true);
         }
+
+        x = S22_CAM_WIDTH+CAM_SHUTTER_EXTRA_WIDTH;
+        translate([WIDTH-S22_CAM_OFFSET_X-x, THICKNESS, z + S22_CAM_POS_Z])
+        cube(CUTS_D, center=true);
     }
 }
 
-module cam_shutter(cavity=false, th=0, kextra=1) {
-    w = cavity ? CAM_SHUTTER_WIDTH*2 + CUTS_D : CAM_SHUTTER_WIDTH;
-    d = cavity ? CUTS_D + CAM_SHUTTER_MARGIN*2 + 1 : CUTS_D + CAM_SHUTTER_MARGIN*2*kextra;
-    t = cavity ? CAM_SHUTTER_THICKNESS * 2: CAM_SHUTTER_THICKNESS;
-    pos_y = THICKNESS/2 + WALL_THICKNESS*2 - CAM_SHUTTER_POS_Y;
+module camera_flap() {
+    x = S22_CAM_WIDTH+CAM_SHUTTER_EXTRA_WIDTH;
+    z = S22_CAM_POS_Z-CUTS_D/2;
 
-    hull()
-    translate([0, pos_y, 0])
-    for (z=[0, S22_CAM_HEIGHT]) {
-        for (x=[0, w]) {
-            translate([WIDTH-S22_CAM_OFFSET_X-x, 0, z + S22_CAM_POS_Z])
-            rotate([-90, 0, 180])
-            cylinder(d=d, h=t+th);
-        }
-    }
-    
-    if (!cavity && kextra) {
-        translate([WIDTH-S22_CAM_OFFSET_X + CAM_SHUTTER_MARGIN, pos_y, S22_CAM_POS_Z])
-        scale([.5, 1, 1])
-        intersection() {
-            cylinder(d=CAM_SHUTTER_HANDLE_D, h=S22_CAM_HEIGHT);
-            translate([0, CAM_SHUTTER_HANDLE_D/2, 0])
-            cube([CAM_SHUTTER_HANDLE_D, CAM_SHUTTER_HANDLE_D, S22_CAM_HEIGHT*2.5], true);
-        }
+    nb_layers = 5;
+    extent = 5;
+    layer_height = (S22_CAM_HEIGHT + CUTS_D - SPACING*2) / (nb_layers*2);
+
+    translate([WIDTH-S22_CAM_OFFSET_X-x, THICKNESS/2+WALL_THICKNESS, z+SPACING])
+    union(){
+        hinge2(extent=extent, x_shift=0,
+               nb_layers=nb_layers, layer_height=layer_height,
+               flat_bottom=true, slim=true, z_extent=SPACING);
+
+        dx = get_hinge_thickness() * 2 + 1;
+        translate([dx, 0, 0])
+        rotate([0, 0, 180])
+        hinge2(extent=extent, x_shift=0,
+               nb_layers=nb_layers, layer_height=layer_height,
+               flat_bottom=false, slim=true);
     }
 }
+
+//!camera_flap();
+
+
+/******************************************************************************/
 
 module texturer() {    
     intersection() {
@@ -244,18 +234,6 @@ module texturer() {
 
     }
 }
-
-module plyer() {    
-    intersection() {
-        difference() {
-            case_full(thickness=WALL_THICKNESS/2);
-            case_full(thickness=WALL_THICKNESS/2 - PLYER_THICKNESS);
-        }
-        cylinder(d=WIDTH*3, h=LENGTH);
-    }
-}
-
-//!plyer();
 
 /******************************************************************************/
 
@@ -292,7 +270,7 @@ module case_full(, thickness=WALL_THICKNESS) {
     }
 }
 
-module case() {
+module case1() {
     translate([0, -THICKNESS/2, 0])
     difference() {
 
@@ -308,8 +286,8 @@ module case() {
         // bottom  hollowings
         minkowski() {
             extra = 20;
-            translate([THICKNESS*.6, -WALL_THICKNESS*2, -LENGTH/2])
-            cube([WIDTH-THICKNESS*1.25 -extra, THICKNESS, LENGTH]);
+            translate([THICKNESS*.6-1, -WALL_THICKNESS*2, -LENGTH/2])
+            cube([WIDTH-THICKNESS*1.25 -extra +1, THICKNESS, LENGTH]);
             sphere(d=CUTS_D, $fn=6*3);
         }
 
@@ -345,29 +323,37 @@ module case() {
         if (!$preview) {
             texturer();
         }
-        
-        // plyer
-        //if (!$preview) plyer();
-
     }
 }
 
-module buttons_hollowing(button_pos, button_height, button_x_offset) {
+
+module case() {
+    difference() {
+        case1();
+ 
+        translate([0, -THICKNESS/2, 0])
+        if (!$preview)
+            texturer();
+    }
+}
+
+module buttons_hollowing(button_pos, button_height, button_y_offset) {
     minkowski() {
         translate([WIDTH-WIDTH/4,
-                   THICKNESS/2 + button_x_offset + WALL_THICKNESS/2 - THICKNESS,
+                   THICKNESS/2 + button_y_offset + WALL_THICKNESS - THICKNESS,
                    button_pos-CUTS_D])
         cube([WIDTH/2, THICKNESS, button_height - CUTS_D]);
         sphere(d=CUTS_D/2, $fn=60);
     }
 
     minkowski() {
-        translate([WIDTH+CUTS_D*1.5 + .6,
-                   THICKNESS/2 + button_x_offset + WALL_THICKNESS/2  -1,
+        translate([WIDTH+CUTS_D*1.5 + 1.6,
+                   THICKNESS/2 + button_y_offset + WALL_THICKNESS/2  -1,
                    button_pos-CUTS_D])
         cube([WIDTH/2, .00001, button_height - CUTS_D]);
+ 
         scale([1, 1, .5])
-        sphere(d=CUTS_D*3, $fn=60);
+        sphere(d=CUTS_D*3.5, $fn=60);
     }
 }
 
@@ -401,7 +387,7 @@ module lid0() {
     }
 }
 
-module lid_hinge0() {
+module lid_hinge0(dx=HINGE_DX) {
     k = HINGE_K;
     hth = get_hinge_thickness();
     x_shift = -hth*.8 -.3;
@@ -409,7 +395,7 @@ module lid_hinge0() {
     intersection() {
         difference() {
             scale([k, k, 1])
-            translate([k*.2, .1, HINGE_Z_SHIFT_TWEAK]) // TWEAK
+            translate([dx, .1, HINGE_Z_SHIFT_TWEAK]) // TWEAK
             translate([0, -LID_SPACING, -WALL_THICKNESS -10])
             hinge(x_shift=x_shift, extent=xtd,
                   nb_layers=HINGE_NB_LAYERS, layer_height=HINGE_LAYER_HEIGHT);
@@ -453,15 +439,15 @@ module lid_hinge() {
         lid_hinge0();
 
         lid_hinge_partitioner();
-
         partitionner2();
-
     }
 }
 
+force_render=true;
+
 module lid_hinge_maybe_cached(no_cache=false) {
     difference() {
-        if (no_cache || !$preview) {
+        if (no_cache || !$preview || force_render) {
             lid_hinge();
         }
         else {
@@ -476,7 +462,6 @@ module lid_hinge_maybe_cached(no_cache=false) {
 // To remake cache: uncomment, render and save as lid-hinge-exported.stl
 //!lid_hinge_maybe_cached(true);
 
-
 module lid() {
     intersection() {
         union() {
@@ -490,36 +475,6 @@ module lid() {
 /******************************************************************************/
 
 module support() {
-    // anti-supports
-    /*
-    thickness = .15;
-    translate([0, 0, -WALL_THICKNESS/2]) {
-
-        // hinge
-        translate([-5 -5.0 -1, -THICKNESS, 0])
-        cube([5, THICKNESS*2, thickness]);
-        
-        translate([-10, -THICKNESS*.75 -.3, 0])
-        translate([0, -1, 0])
-        cube([10, 2, thickness]);
-
-        translate([-10, +THICKNESS*.75 +.5, 0])
-        translate([0, -1, 0])
-        cube([10, 2, thickness]);
-
-        // center
-        translate([THICKNESS/2 * .9, -THICKNESS/2*.5, 0])
-        cube([WIDTH*.61, THICKNESS*.5, thickness]);
-
-        // sides
-        translate([THICKNESS/2 *1.2, -THICKNESS/2 -1 -2 -2, 0])
-        cube([WIDTH-THICKNESS*1.2, 3, thickness]);
-
-        translate([THICKNESS/2 *1.2, +THICKNESS*.8 +1 , 0])
-        cube([WIDTH-THICKNESS*1.2, 3, thickness]);
-    }
-    */
-
     // side fins
     thickness2 = .5 +.25 +.25;
     translate([0, 0, -WALL_THICKNESS/2]) {
@@ -534,7 +489,9 @@ module support() {
                 translate([x-THICKNESS*2, -THICKNESS*4, WIDTH]) cube(THICKNESS*4);
 
                 rotate([0, 90, 0]) cylinder(r=THICKNESS*3.125, h=WIDTH);
-                translate([0, 0, WIDTH*.705]) rotate([0, 90, 0]) cylinder(r=THICKNESS*2.05, h=WIDTH);
+
+                translate([0, 0, WIDTH*.705]) rotate([0, 90, 0])
+                cylinder(r=THICKNESS*2.05, h=WIDTH);
             }
         }
 
@@ -641,13 +598,15 @@ module flap0() {
         difference() {
             hinge2(extent=WIDTH/2 + FLAP_EXTEND_ADJUST,
                    layer_height=FLAP_LAYER_HEIGHT,
-                   nb_layers=FLAP_NB_LAYERS);
+                   nb_layers=FLAP_NB_LAYERS,
+                   z_extent_2=1
+            );
 
             translate([-TOOL_WIDTH-6.5, -2 + TOOL_RECESS, 3.5]) {
                 flap_cavity(TOOL_WIDTH);
             }
  
-            translate([5, -THICKNESS/2, 0])
+            translate([5, -THICKNESS/2, -LENGTH/4])
             cube([WIDTH/2, THICKNESS, LENGTH]);
 
             // apply texture to flap door
@@ -664,6 +623,8 @@ module flap0() {
         translate([0, 0, -1]) cylinder(d=1.5, h=TOOL_LENGTH); // pin, for adhesion
     }
 }
+
+//!flap0();
 
 module flap() {
     difference() {
@@ -694,6 +655,8 @@ module all_back() {
 module all_back_flap() {
     all_back();
     flap();
+    
+    camera_flap();
 }
 
 module all() {
@@ -746,6 +709,7 @@ module upper_slice() {
 //lid_hinge_maybe_cached(true);  // GOOD
 //all_back();  // GOOD
 //all_back_flap(); // GOOD
+//camera_flap();
 
 //lid_hinge(); // GOOD
 
