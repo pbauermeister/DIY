@@ -9,7 +9,9 @@
 
 
 use <hinge2.scad>
-//use <hinge2_mini.scad>
+use <hinge3.scad>
+$fn  = 40;
+ATOM =  0.01;
 
 WALL_THICKNESS      =   2.0;
 CUTS_D              =   5.0;
@@ -50,7 +52,6 @@ HINGE_THICKNESS_ORIG       = get_hinge_thickness();  // 3.975
 HINGE_THICKNESS            =  4.5;
 HINGE_K = HINGE_THICKNESS / HINGE_THICKNESS_ORIG;
 
-
 CAM_SHUTTER_MARGIN         = 2;
 CAM_SHUTTER_THICKNESS      = 0.4;
 CAM_SHUTTER_EXTRA_WIDTH    = 2;
@@ -67,15 +68,14 @@ TEXTURE_WIDTH              = 1.5;
 
 PLYER_THICKNESS            = 0.065;
 
-
 FLAP_NB_LAYERS             = 8;
 FLAP_Z_POS                 = 10;
 FLAP_X_ADJUST              = 1;
 FLAP_EXTEND_ADJUST         = -7;
-FLAP_LAYER_HEIGHT          = 7.25*6/8;
+FLAP_LAYER_HEIGHT          = 7.25*6 / FLAP_NB_LAYERS;
 
 TOOL_WIDTH                 = 24.5;
-TOOL_LENGTH                = 79.5 +1  + FLAP_LAYER_HEIGHT*0;
+TOOL_LENGTH                = 79.5 +1  + FLAP_LAYER_HEIGHT*0 + 3 + ATOM*0;
 TOOL_THICKNESS             =  2.0;
 TOOL_RECESS                =  0.35;
 TOOL_LOCK                  =  0.2;
@@ -84,8 +84,6 @@ SPACING                    = 0.3;
 
 FLAP_HEIGHT = FLAP_LAYER_HEIGHT * FLAP_NB_LAYERS * 2;
 
-$fn  = 40;
-ATOM =  0.01;
 
 /******************************************************************************/
 
@@ -203,7 +201,6 @@ module camera_flap() {
 }
 
 //!camera_flap();
-
 
 /******************************************************************************/
 
@@ -392,37 +389,45 @@ module lid_hinge0(dx=HINGE_DX) {
     hth = get_hinge_thickness();
     x_shift = -hth*.8 -.3;
     xtd = THICKNESS/2*-1;
-    intersection() {
-        difference() {
-            scale([k, k, 1])
-            translate([dx, .1, HINGE_Z_SHIFT_TWEAK]) // TWEAK
-            translate([0, -LID_SPACING, -WALL_THICKNESS -10])
-            hinge(x_shift=x_shift, extent=xtd,
-                  nb_layers=HINGE_NB_LAYERS, layer_height=HINGE_LAYER_HEIGHT);
+    difference() {
+        scale([k, k, 1])
+        translate([dx, .1, HINGE_Z_SHIFT_TWEAK]) // TWEAK
+        translate([0, -LID_SPACING, -WALL_THICKNESS -10])
+        hinge(x_shift=x_shift, extent=xtd,
+              nb_layers=HINGE_NB_LAYERS, layer_height=HINGE_LAYER_HEIGHT);
 
-            translate([-.2, -LID_SPACING, 0])  // TWEAK?
-            difference() {
-                translate([0, -THICKNESS/2, -LENGTH/2])
-                scale([1, 1, 2])
-                partitionner();
-
-                translate([-WIDTH/2, 0, -LENGTH/2])
-                cube([WIDTH*2, THICKNESS, LENGTH*2]);
-            }
-
-            translate([0, -THICKNESS/2, 0]) {
-                translate([0, -LID_SPACING, 0])
-                translate([0, 0, -LENGTH/2])
-                scale([1, 1, 2])
-                phone();
-                
-                translate([0, 0, -LENGTH/2])
-                scale([1, 1, 2])
-                phone();
-            }
-        }
+        lid_inner_carver();
     }
 }
+
+module lid_inner_carver() {
+    translate([-.2, -LID_SPACING, 0])  // TWEAK?
+    difference() {
+        translate([0, -THICKNESS/2, -LENGTH/2])
+        scale([1, 1, 2])
+        partitionner();
+
+        translate([-WIDTH/2, 0, -LENGTH/2])
+        cube([WIDTH*2, THICKNESS, LENGTH*2]);
+    }
+
+    translate([0, -THICKNESS/2, 0]) {
+        translate([0, -LID_SPACING, 0])
+        translate([0, 0, -LENGTH/2])
+        scale([1, 1, 2])
+        phone();
+        
+        translate([0, 0, -LENGTH/2])
+        scale([1, 1, 2])
+        phone();
+    }
+}
+
+
+module lid_hinge0_new(dx=HINGE_DX) {
+    main_hinge();
+}
+
 
 module lid_hinge_partitioner() {
     union() {
@@ -443,12 +448,28 @@ module lid_hinge() {
     }
 }
 
+module lid_hinge_new() {
+    difference() {
+        intersection() {
+            lid_hinge0_new();
+
+            lid_hinge_partitioner();
+            partitionner2();
+        }
+        lid_inner_carver();
+    }
+}
+
+
 force_render=true;
 
-module lid_hinge_maybe_cached(no_cache=false) {
+module lid_hinge_maybe_cached(no_cache=false, new=true) {
     difference() {
         if (no_cache || !$preview || force_render) {
-            lid_hinge();
+            if (new)
+                lid_hinge_new();
+            else
+                lid_hinge();
         }
         else {
             import("lid-hinge-exported.stl");
@@ -574,9 +595,11 @@ module flap0() {
     dx = WIDTH/2 + FLAP_X_ADJUST;
     translate([dx, y, z]) {
         translate([-TOOL_WIDTH-6.5, -2 + TOOL_RECESS, 3.5])
+
+        // supports
+        translate([0, 0, -SPACING])
         intersection() {
             flap_cavity(TOOL_WIDTH);
-            //%translate([0, 0, -1]) cube([TOOL_WIDTH, TOOL_THICKNESS, TOOL_LENGTH]);
             
             l = TOOL_WIDTH/3.5;
             l2 = TOOL_WIDTH/1.5;
@@ -595,17 +618,31 @@ module flap0() {
                 }
             }
         }
+
+        // door
         difference() {
+            if(0)
             hinge2(extent=WIDTH/2 + FLAP_EXTEND_ADJUST,
                    layer_height=FLAP_LAYER_HEIGHT,
                    nb_layers=FLAP_NB_LAYERS,
                    z_extent_2=1
             );
 
+            union() {
+                flap_hinge(flap_height=FLAP_HEIGHT, nb_layers=FLAP_NB_LAYERS);
+
+//                translate([-WIDTH/2, -WALL_THICKNESS/2, SPACING])
+//                cube([WIDTH/2, WALL_THICKNESS, FLAP_HEIGHT-SPACING*2]);
+                translate([-WIDTH/2 -FLAP_X_ADJUST, 0, 0])
+                flap_door();
+            }
+
+            // tool cavity
             translate([-TOOL_WIDTH-6.5, -2 + TOOL_RECESS, 3.5]) {
                 flap_cavity(TOOL_WIDTH);
             }
  
+            // hinge limiter
             translate([5, -THICKNESS/2, -LENGTH/4])
             cube([WIDTH/2, THICKNESS, LENGTH]);
 
@@ -620,7 +657,14 @@ module flap0() {
             }
         }
 
-        translate([0, 0, -1]) cylinder(d=1.5, h=TOOL_LENGTH); // pin, for adhesion
+        // pin for adhesion
+        translate([0, 0, -1])
+        cylinder(d=1.5, h=TOOL_LENGTH); 
+
+        // fin for adhesion
+        th = .3;
+        dx = WIDTH/2 - WALL_THICKNESS*1.5;
+        translate([-dx, -th/2, -1]) cube([6, th, 1]);
     }
 }
 
@@ -629,19 +673,93 @@ module flap0() {
 module flap() {
     difference() {
         flap0();
+
         card_cavity();
     }
+}
+
+module flap_cut0(with_groove=true) {
+    y = THICKNESS/2*2 + get_hinge_thickness()/2;
+    extra_w = WALL_THICKNESS*3;
+
+    /*
+    if (0) %translate([WIDTH/2 + FLAP_X_ADJUST, y-.1, z])
+    hinge2_cutout(extent=WIDTH/2 + FLAP_EXTEND_ADJUST,
+                  layer_height=FLAP_LAYER_HEIGHT,
+                  nb_layers=FLAP_NB_LAYERS);
+    */
+
+    h = FLAP_LAYER_HEIGHT*FLAP_NB_LAYERS*2;
+    translate([FLAP_X_ADJUST*2, -WALL_THICKNESS*2.25, 0]) {
+        difference() {
+            cube([WIDTH/2+extra_w, WALL_THICKNESS*6, h]);
+            w = WALL_THICKNESS*2;
+            translate([-w*.03, w/2.6, -h])
+            scale([.3, 1, 1])
+            rotate([0, 0, 45])
+            cube([w, w, h*3]);
+        }
+
+        if (with_groove)
+            translate([WALL_THICKNESS*3, WALL_THICKNESS*2+.3, 0])
+            groove(0, FLAP_LAYER_HEIGHT, FLAP_NB_LAYERS);
+   }
 }
 
 module flap_cut() {
     y = THICKNESS/2*2 + get_hinge_thickness()/2;
     z = FLAP_Z_POS;
+    extra_w = WALL_THICKNESS*3;
 
-    translate([WIDTH/2 + FLAP_X_ADJUST, y-.1, z])
+    translate([0, WALL_THICKNESS*4 +WALL_THICKNESS*2.25, z])
+    flap_cut0();
+
+}
+
+module flap_cut_old() {
+    y = THICKNESS/2*2 + get_hinge_thickness()/2;
+    z = FLAP_Z_POS;
+    extra_w = WALL_THICKNESS*3;
+
+    /*
+    if (0) %translate([WIDTH/2 + FLAP_X_ADJUST, y-.1, z])
     hinge2_cutout(extent=WIDTH/2 + FLAP_EXTEND_ADJUST,
                   layer_height=FLAP_LAYER_HEIGHT,
                   nb_layers=FLAP_NB_LAYERS);
+    */
+
+    h = FLAP_LAYER_HEIGHT*FLAP_NB_LAYERS*2;
+    translate([FLAP_X_ADJUST*2, WALL_THICKNESS*4, z]) {
+        difference() {
+            cube([WIDTH/2+extra_w, WALL_THICKNESS*6, h]);
+            w = WALL_THICKNESS*2;
+            translate([-w*.03, w/2.6, -h])
+            scale([.3, 1, 1])
+            rotate([0, 0, 45])
+            cube([w, w, h*3]);
+        }
+
+        translate([WALL_THICKNESS*3, WALL_THICKNESS*2+.3, 0])
+        groove(0, FLAP_LAYER_HEIGHT, FLAP_NB_LAYERS);
+   }
 }
+
+
+module flap_door() {
+    if(0) 
+    translate([WIDTH/2, 0, 0])
+    flap_hinge(flap_height=FLAP_HEIGHT, nb_layers=FLAP_NB_LAYERS);
+
+    intersection() {
+        translate([SPACING, 0, 0]) flap_cut0(with_groove=false);
+
+        w = WIDTH/2 - WALL_THICKNESS*1.5;
+        translate([0, -WALL_THICKNESS, SPACING])
+        cube([w, WALL_THICKNESS*2, FLAP_HEIGHT-SPACING*2]);
+    }
+}
+
+//!flap_door();
 
 /******************************************************************************/
 
@@ -703,15 +821,18 @@ module upper_slice() {
 
 //upper_slice() all_back();
 
-//flap(); // GOOD
 //lid(); // GOOD
 //case_full(); // GOOD
-//lid_hinge_maybe_cached(true);  // GOOD
-//all_back();  // GOOD
+
+//%translate([20, 20, 0]) lid_hinge_maybe_cached(true, new=false);  // GOOD
+//lid_hinge_maybe_cached(true, new=true);  // GOOD
+
+%all_back();  // GOOD
+flap(); // GOOD
 //all_back_flap(); // GOOD
 //camera_flap();
 
 //lid_hinge(); // GOOD
 
-all_back_flap(); lid();
+//all_back_flap(); lid();
 //all();
