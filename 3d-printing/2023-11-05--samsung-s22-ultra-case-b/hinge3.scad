@@ -140,14 +140,15 @@ FLAP_EXTEND_ADJUST         = -7;
 FLAP_HEIGHT                = 7.25*6 + LID_SPACING*1.5;
 FLAP_LAYER_HEIGHT          = FLAP_HEIGHT/FLAP_NB_LAYERS;
 
-module flap_hinge(flap_height=FLAP_HEIGHT, nb_layers=FLAP_NB_LAYERS) {
+module flap_hinge(flap_height=FLAP_HEIGHT, nb_layers=FLAP_NB_LAYERS,
+                  thickness=THICKNESS) {
     layer_height = flap_height/nb_layers/2;
 
     translate([0, 0, -LID_SPACING])
     hinge_new(nb_layers=nb_layers, layer_height=layer_height,
               shave_bottom1 = SPACING,
               shave_top1 = SPACING,
-              thickness=2);
+              thickness=thickness);
 }
 
 //!hinge_new();
