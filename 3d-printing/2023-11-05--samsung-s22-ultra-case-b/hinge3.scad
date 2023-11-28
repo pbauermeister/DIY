@@ -125,39 +125,6 @@ module p2_new(h=LAYER_HEIGHT, extent=0, thickness=THICKNESS,
         cube([extent, thickness, h*2]);
 }
 
-
-
-////////////////////////////////////////////////////////////////////////////////
-// Hinge
-
-LID_SPACING                =   0.15;
-SPACING                    = 0.3;
-
-FLAP_NB_LAYERS             = 8;
-FLAP_Z_POS                 = 10;
-FLAP_X_ADJUST              = 1;
-FLAP_EXTEND_ADJUST         = -7;
-FLAP_HEIGHT                = 7.25*6 + LID_SPACING*1.5;
-FLAP_LAYER_HEIGHT          = FLAP_HEIGHT/FLAP_NB_LAYERS;
-
-module flap_hinge(flap_height=FLAP_HEIGHT, nb_layers=FLAP_NB_LAYERS,
-                  thickness=THICKNESS) {
-    layer_height = flap_height/nb_layers/2;
-
-    translate([0, 0, -LID_SPACING])
-    hinge_new(nb_layers=nb_layers, layer_height=layer_height,
-              shave_bottom1 = SPACING,
-              shave_top1 = SPACING,
-              thickness=thickness);
-}
-
-//!hinge_new();
-//!hinge_new(shave_bottom1=1);
-//!hinge_new(shave_bottom2=1);
-//!hinge_new(layer_imbalance=3);
-//!hinge_new(shave_top1=1);
-//!hinge_new(shave_bottom1=1, shave_top1=1);
-
 ////////////////////////////////////////////////////////////////////////////////
 
 module hinge_new(nb_layers=4, layer_height=LAYER_HEIGHT,
@@ -170,7 +137,7 @@ module hinge_new(nb_layers=4, layer_height=LAYER_HEIGHT,
     height = nb_layers * layer_height *2;
 
     if (only_axis) {
-        cylinder(d=thickness, h=height);
+        cylinder(d=thickness+thickness/2, h=height);
     }
     else {
         intersection() {
@@ -235,12 +202,22 @@ module hinge_new(nb_layers=4, layer_height=LAYER_HEIGHT,
     }
 }
 
+//!hinge_new();
+//!hinge_new(shave_bottom1=1);
+//!hinge_new(shave_bottom2=1);
+//!hinge_new(layer_imbalance=3);
+//!hinge_new(shave_top1=1);
+//!hinge_new(shave_bottom1=1, shave_top1=1);
+
+////////////////////////////////////////////////////////////////////////////////
+
 function get_hinge_thickness() = THICKNESS;
 
 function get_hinge_height(nb_layers=3,
                           layer_height=LAYER_HEIGHT) = layer_height*2*nb_layers;
 
 ////////////////////////////////////////////////////////////////////////////////
+// Main hinge
 
 module main_hinge() {
     z = -14.25  + .9;
@@ -260,6 +237,61 @@ module main_hinge() {
               width1=w2, width2=w1, angle2=-90);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// Flap hinge
+
+LID_SPACING                =  0.15;
+SPACING                    =  0.3;
+
+FLAP_NB_LAYERS             =  8;
+FLAP_Z_POS                 = 10;
+FLAP_X_ADJUST              =  0;
+FLAP_EXTEND_ADJUST         = -7;
+FLAP_HEIGHT                =  7.25*6 + LID_SPACING*1.5;
+FLAP_LAYER_HEIGHT          = FLAP_HEIGHT/FLAP_NB_LAYERS;
+
+module flap_hinge0(flap_height=FLAP_HEIGHT, nb_layers=FLAP_NB_LAYERS,
+                   thickness=THICKNESS, only_axis=false) {
+    layer_height = flap_height/nb_layers/2;
+
+    translate([0, 0, -LID_SPACING])
+    hinge_new(nb_layers=nb_layers, layer_height=layer_height,
+              shave_bottom1 = SPACING,
+              shave_top1 = SPACING,
+              thickness=thickness,
+              only_axis=only_axis);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+CAM_LAYER_HEIGHT = 5.04;
+CAM_NB_LAYERS = 5;
+CAM_HEIGHT = CAM_NB_LAYERS * CAM_LAYER_HEIGHT * 2;
+
+module camera_hinge(nb_layers=CAM_NB_LAYERS, height=CAM_HEIGHT, thickness=4,
+                    only_axis=false)
+{
+    hinge_new(nb_layers=nb_layers, layer_height=height/2/nb_layers,
+              shave_bottom2=SPACING, shave_top2=SPACING,
+              width2=thickness*.75,
+              thickness=thickness,
+              only_axis=only_axis);
+
+
+    translate([thickness*1.5, 0, 0])
+    rotate([0, 0, 180])
+    hinge_new(nb_layers=nb_layers, layer_height=height/2/nb_layers,
+              shave_bottom1=SPACING, shave_top1=SPACING,
+              shave_bottom2 = SPACING, shave_top2 = SPACING,
+              width2=thickness*.75,
+              thickness=thickness,
+              only_axis=only_axis);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 
 //main_hinge();
-flap_hinge();
+//flap_hinge0(only_axis=true);
+
+camera_hinge();
+%camera_hinge(only_axis=true);

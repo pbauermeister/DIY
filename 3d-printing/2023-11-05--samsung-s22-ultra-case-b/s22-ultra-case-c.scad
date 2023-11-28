@@ -13,32 +13,32 @@ use <hinge3.scad>
 $fn  = 40 - 5;
 ATOM =  0.01;
 
-WALL_THICKNESS      =   2.0;
-CUTS_D              =   5.0;
+WALL_THICKNESS             =   2.0;
+CUTS_D                     =   5.0;
 
-S22_WIDTH           =  75.4  + 2.5      +0.15;
-S22_LENGTH          = 164.45 + 1.2  -.4 -0.7;
-S22_THICKNESS       =  10.0  + 0.5;
+S22_WIDTH                  =  75.4  + 2.5      +0.15;
+S22_LENGTH                 = 164.45 + 1.2  -.4 -0.7;
+S22_THICKNESS              =  10.0  + 0.5;
 
-S22_CAM_POS_Z       = 107  +3           +1.5;
-S22_CAM_HEIGHT      =  48  -2;
-S22_CAM_WIDTH       =  28  -2           -1.0;
-S22_CAM_OFFSET_X    =   9               +0.5;
+S22_CAM_POS_Z              = 107  +3           +1.5;
+S22_CAM_HEIGHT             =  48  -2;
+S22_CAM_WIDTH              =  28  -2           -1.0;
+S22_CAM_OFFSET_X           =   9               +0.5;
 
-S22_TOP_HOLE_POS    =  48;
+S22_TOP_HOLE_POS           =  48;
 
-WIDTH               = S22_WIDTH;
-LENGTH              = S22_LENGTH;
-THICKNESS           = S22_THICKNESS;
+WIDTH                      = S22_WIDTH;
+LENGTH                     = S22_LENGTH;
+THICKNESS                  = S22_THICKNESS;
 
-USB_PLUG_WIDTH      =  15.0;
+USB_PLUG_WIDTH             =  15.0;
 
-POWER_BUTTON_POS    = 107.0    -5.5 - 1.5;
-POWER_BUTTON_HEIGHT =  46           + 1;
-POWER_BUTTON_OFFSET =  -1.0         ;
+POWER_BUTTON_POS           = 107.0    -5.5 - 1.5;
+POWER_BUTTON_HEIGHT        =  46           + 1;
+POWER_BUTTON_OFFSET        =  -1.0;
 
-SUPPORT_THICKNESS   =   0.45;
-LID_SPACING         =   0.15;
+SUPPORT_THICKNESS          =   0.45;
+LID_SPACING                =   0.15;
 
 PREVIEW_CUTS               = false;
 
@@ -60,11 +60,13 @@ CAM_SHUTTER_POS_Y          = 1;
 CAM_SHUTTER_WIDTH          = S22_CAM_WIDTH + CAM_SHUTTER_EXTRA_WIDTH;
 CAM_SHUTTER_WIDTH_EXT      = CAM_SHUTTER_WIDTH + CAM_SHUTTER_MARGIN*2;
 CAM_SHUTTER_HANDLE_D       = 3;
+CAM_NB_LAYERS              = 5;
+CAM_FLAP_HEIGHT            = S22_CAM_HEIGHT + CUTS_D;
 
-TEXTURE_STEP               = 10;
-TEXTURE_ANGLE              = 70;
-TEXTURE_DEPTH              = .85  -.2 -.2;
-TEXTURE_WIDTH              = 1.5;
+TEXTURE_STEP               = 10     -  2;
+TEXTURE_ANGLE              = 70     - 10;
+TEXTURE_DEPTH              =  0.45  -  0.2;
+TEXTURE_WIDTH              =  1.5   -  1;
 
 PLYER_THICKNESS            = 0.065;
 
@@ -78,7 +80,7 @@ FLAP_POS_X                 = WIDTH/2 + FLAP_X_ADJUST;
 FLAP_POS_Z                 = 10;
 
 TOOL_WIDTH                 = 24.5;
-TOOL_LENGTH                = 79.5 +1  + FLAP_LAYER_HEIGHT*0 + 3 + ATOM*0;
+TOOL_LENGTH                = 79.5 +1 + 3;
 TOOL_THICKNESS             =  2.0;
 TOOL_RECESS                =  0.35;
 TOOL_LOCK                  =  0.2;
@@ -86,7 +88,6 @@ TOOL_LOCK                  =  0.2;
 SPACING                    = 0.3;
 
 FLAP_HEIGHT = FLAP_LAYER_HEIGHT * FLAP_NB_LAYERS * 2;
-
 
 /******************************************************************************/
 
@@ -169,38 +170,30 @@ module phone_releaser() {
 module cam_cutoff() {
     hull()
     for (z=[0, S22_CAM_HEIGHT]) {
+        // rounded angles
         for (x=[0, S22_CAM_WIDTH+CAM_SHUTTER_EXTRA_WIDTH]) {
             translate([WIDTH-S22_CAM_OFFSET_X-x, THICKNESS, z + S22_CAM_POS_Z])
             rotate([-90, 0, 0]) cylinder(d=CUTS_D, h=THICKNESS*2, center=true);
         }
 
+        // square angles
         x = S22_CAM_WIDTH+CAM_SHUTTER_EXTRA_WIDTH;
         translate([WIDTH-S22_CAM_OFFSET_X-x, THICKNESS, z + S22_CAM_POS_Z])
         cube(CUTS_D, center=true);
     }
 }
 
-module camera_flap() {
+
+module camera_flap(only_axis=false) {
     x = S22_CAM_WIDTH+CAM_SHUTTER_EXTRA_WIDTH;
     z = S22_CAM_POS_Z-CUTS_D/2;
 
-    nb_layers = 5;
+    nb_layers = CAM_NB_LAYERS;
     extent = 5;
-    layer_height = (S22_CAM_HEIGHT + CUTS_D - SPACING*2) / (nb_layers*2);
 
-    translate([WIDTH-S22_CAM_OFFSET_X-x, THICKNESS/2+WALL_THICKNESS, z+SPACING])
-    union(){
-        hinge2(extent=extent, x_shift=0,
-               nb_layers=nb_layers, layer_height=layer_height,
-               flat_bottom=true, slim=true, z_extent=SPACING);
-
-        dx = get_hinge_thickness() * 2 + 1;
-        translate([dx, 0, 0])
-        rotate([0, 0, 180])
-        hinge2(extent=extent, x_shift=0,
-               nb_layers=nb_layers, layer_height=layer_height,
-               flat_bottom=false, slim=true);
-    }
+    translate([WIDTH-S22_CAM_OFFSET_X-x, THICKNESS/2+WALL_THICKNESS, z])
+    camera_hinge(nb_layers=CAM_NB_LAYERS, height=CAM_FLAP_HEIGHT,
+                 thickness=WALL_THICKNESS*2, only_axis=only_axis);
 }
 
 //!camera_flap();
@@ -211,6 +204,7 @@ module texturer() {
     translate([0, -THICKNESS/2, 0])
     intersection() {
         difference() {
+            // lattice
             translate([0, 0, -3.5])
             union() {
                 for (z=[-LENGTH*1.5:TEXTURE_STEP:LENGTH*1.2])
@@ -228,19 +222,26 @@ module texturer() {
                     cube([WIDTH*5, TEXTURE_WIDTH, TEXTURE_WIDTH], center=true);
 
             }
+            // keep half of lattice thickness
             translate([-WIDTH/2, WALL_THICKNESS*2 - TEXTURE_DEPTH, -LENGTH/2])
             cube([WIDTH*2, THICKNESS, LENGTH*2]);
+
+            // keep flap hinge axis
+            translate([0, THICKNESS/2, 0])
+            position_flap() flap_hinge(only_axis=true);
+
+            // keep camera hinge axis
+            translate([0, THICKNESS/2, 0])
+            camera_flap(only_axis=true);
+            
         }
-        //case_full(thickness=WALL_THICKNESS+1);
-translate([0, THICKNESS/2, 0])
-flap0();
-
+        
+        // keep within case
+        case_full(thickness=WALL_THICKNESS+1);
     }
-
-    //translate([0, THICKNESS/2, 0])
-//    %flap();
-
 }
+
+//!texturer();
 
 /******************************************************************************/
 
@@ -602,12 +603,26 @@ module card_cavity() {
     cube([w, THICKNESS/2, CARD_HEIGHT]);
 }
 
+module position_flap() {
+    y = FLAP_POS_Y;
+    z = FLAP_POS_Z;
+    dx = FLAP_POS_X;
+    
+    translate([dx, y, z])
+    children();
+}
+
+module flap_hinge(only_axis=false) {
+    flap_hinge0(flap_height=FLAP_HEIGHT +  SPACING/2, nb_layers=FLAP_NB_LAYERS,
+                thickness = WALL_THICKNESS*2, only_axis=only_axis);
+}
+
 module flap0() {
     y = FLAP_POS_Y;
     z = FLAP_POS_Z;
     dx = FLAP_POS_X;
     
-    translate([dx, y, z]) {
+    position_flap() {
         translate([-TOOL_WIDTH-6.5, -2 + TOOL_RECESS, 3.5])
 
         // supports
@@ -636,8 +651,7 @@ module flap0() {
         // door
         difference() {
             union() {
-                flap_hinge(flap_height=FLAP_HEIGHT +  SPACING/2, nb_layers=FLAP_NB_LAYERS,
-                           thickness = WALL_THICKNESS*2);
+                flap_hinge();
 
                 translate([-WIDTH/2 -FLAP_X_ADJUST, 0, 0])
                 flap_door();
@@ -853,12 +867,14 @@ module upper_slice() {
 
 //all_back();  // GOOD
 //flap(); // GOOD
-//all_back_flap(); // GOOD
 //camera_flap();
 
 //lid_hinge(); // GOOD
 
-texturer();
+all_back_flap(); // GOOD
+//texturer();
+
+//%translate([0, -THICKNESS/2, 0]) cam_cutoff();
 
 //all_back_flap(); lid();
 //all();
