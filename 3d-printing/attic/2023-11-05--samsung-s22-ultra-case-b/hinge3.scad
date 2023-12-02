@@ -282,6 +282,7 @@ module camera_hinge(nb_layers=CAM_NB_LAYERS, height=CAM_HEIGHT, thickness=4,
     rotate([0, 0, 180])
     hinge_new(nb_layers=nb_layers, layer_height=height/2/nb_layers,
               shave_bottom1=SPACING, shave_top1=SPACING,
+              width1=thickness*1.5,
               shave_bottom2 = SPACING, shave_top2 = SPACING,
               width2=thickness*.75,
               thickness=thickness,
