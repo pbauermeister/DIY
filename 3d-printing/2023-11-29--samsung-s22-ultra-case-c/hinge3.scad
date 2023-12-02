@@ -268,25 +268,32 @@ CAM_LAYER_HEIGHT = 5.04;
 CAM_NB_LAYERS = 5;
 CAM_HEIGHT = CAM_NB_LAYERS * CAM_LAYER_HEIGHT * 2;
 
+module maybe_hull(use_hull=false) {
+    if (use_hull) hull() children();
+    else children();
+}
+
 module camera_hinge(nb_layers=CAM_NB_LAYERS, height=CAM_HEIGHT, thickness=4,
                     only_axis=false)
 {
-    hinge_new(nb_layers=nb_layers, layer_height=height/2/nb_layers,
-              shave_bottom2=SPACING, shave_top2=SPACING,
-              width2=thickness*.75,
-              thickness=thickness,
-              only_axis=only_axis);
+    maybe_hull(only_axis) {
+        hinge_new(nb_layers=nb_layers, layer_height=height/2/nb_layers,
+                  shave_bottom2=SPACING, shave_top2=SPACING,
+                  width2=thickness*.75,
+                  thickness=thickness,
+                  only_axis=only_axis);
 
 
-    translate([thickness*1.5, 0, 0])
-    rotate([0, 0, 180])
-    hinge_new(nb_layers=nb_layers, layer_height=height/2/nb_layers,
-              shave_bottom1=SPACING, shave_top1=SPACING,
-              width1=thickness*1.5,
-              shave_bottom2 = SPACING, shave_top2 = SPACING,
-              width2=thickness*.75,
-              thickness=thickness,
-              only_axis=only_axis);
+        translate([thickness*1.5, 0, 0])
+        rotate([0, 0, 180])
+        hinge_new(nb_layers=nb_layers, layer_height=height/2/nb_layers,
+                  shave_bottom1=SPACING, shave_top1=SPACING,
+                  width1=thickness*1.5,
+                  shave_bottom2 = SPACING, shave_top2 = SPACING,
+                  width2=thickness*.75,
+                  thickness=thickness,
+                  only_axis=only_axis);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
