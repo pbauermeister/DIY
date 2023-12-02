@@ -1,15 +1,22 @@
-// TODO:
-// - cam sliding shutter
-// - shift hinges
+/* Case for smartphone Samsung Galaxy S22 Ultra.
+ *
+ * Features:
+ * - Frontside lid on long edge with double hinge allowing 180° rotation.
+ *
+ * - Backside flap that can:
+ *    - contain a multitool,
+ *    - give access to credit card storage
+ *    - serves as easel in vertical orientation (one angle possible),
+ *    - serve as easel in horizontal orientation (with grooves in the lid
+ *      holding the chosen angle).
+ *
+ * - Backside camera shutter with double hinge and hole for the flash.
+ *
+ * - Textured backside for anti-slip and (debatable) fashion.
+ */
 
-// DONE:
-// - strut: half cylinder
-// - back: anti-slip pattern (X diagonals)
-// - inner tubes to reinforce sides
-
-
-//use <hinge2.scad>
 use <hinge3.scad>
+
 $fn  = 40 - 5;
 ATOM =  0.01;
 
@@ -144,7 +151,7 @@ module phone(extra_x=0, releaser=false) {
         cube([S22_WIDTH-S22_THICKNESS+extra_x, 0.00001, S22_LENGTH]);
         cylinder(d=S22_THICKNESS, 0.00001);
     }
-    
+
     if (releaser) {
         phone_releaser();
     }
@@ -211,7 +218,7 @@ module cam_cutoff() {
 
     // gripper
     cam_gripper();
-    
+
     // snappers
     x0 = WIDTH-S22_CAM_OFFSET_X;
     y = THICKNESS+WALL_THICKNESS;
@@ -251,17 +258,17 @@ module camera_flap(only_axis=false) {
                 translate([-x, 0, 0])
                 camera_hinge(nb_layers=CAM_NB_LAYERS, height=CAM_FLAP_HEIGHT,
                              thickness=WALL_THICKNESS*2, only_axis=only_axis);
-            
+
                 // door
                 if (!only_axis) {
                     intersection() {
                         // make door
                         hull() {
-                            translate([0, 0, CUTS_D/2]) 
+                            translate([0, 0, CUTS_D/2])
                             rotate([-90, 0, 0])
                             cylinder(d=CUTS_D-SPACING*2, h=WALL_THICKNESS*2, center=true);
 
-                            translate([0, 0, S22_CAM_HEIGHT + CUTS_D/2]) 
+                            translate([0, 0, S22_CAM_HEIGHT + CUTS_D/2])
                             rotate([-90, 0, 0])
                             cylinder(d=CUTS_D-SPACING*2, h=WALL_THICKNESS*2, center=true);
 
@@ -271,7 +278,7 @@ module camera_flap(only_axis=false) {
                             translate([-w, 0, S22_CAM_HEIGHT + WALL_THICKNESS*1.5-SPACING])
                             cube(WALL_THICKNESS*2, center=true);
                         }
-                        
+
                         // rounded bottom
                         hull() {
                             translate([-S22_CAM_WIDTH, 0, WALL_THICKNESS+SPACING])
@@ -282,10 +289,10 @@ module camera_flap(only_axis=false) {
                             cube([S22_CAM_WIDTH*2, WALL_THICKNESS*2, S22_CAM_HEIGHT*2]);
                         }
                     }
-                    
+
                     // snappers
                     camera_flap_snapper();
-                    
+
                     // support for adhesion
                     th = .3;
                     w2 = w/2;
@@ -293,7 +300,7 @@ module camera_flap(only_axis=false) {
                     cube([w2, th, 1]);
                 }
             }
-            
+
             // hole for flash
             translate([CUTS_D/2 - CAM_FLASH_POS_X, 0, CAM_FLASH_POS_Z])
             if(0) cube([CAM_FLASH_D, WALL_THICKNESS*4, CAM_FLASH_D], center=true);
@@ -323,7 +330,7 @@ module camera_flap(only_axis=false) {
 
 /******************************************************************************/
 
-module texturer() {    
+module texturer() {
     translate([0, -THICKNESS/2, 0])
     intersection() {
         difference() {
@@ -356,9 +363,9 @@ module texturer() {
             // keep camera hinge axis
             translate([0, THICKNESS/2, 0])
             camera_flap(only_axis=true);
-            
+
         }
-        
+
         // keep within case
         case_full(thickness=WALL_THICKNESS+1);
     }
@@ -380,7 +387,7 @@ module case_full_0(extra_x=0, thickness=WALL_THICKNESS) {
 
 module case_full(, thickness=WALL_THICKNESS) {
     dx = -WALL_THICKNESS/2 - .4 +.2;
-    
+
     intersection() {
         case_full_0(thickness=thickness);
 
@@ -389,7 +396,7 @@ module case_full(, thickness=WALL_THICKNESS) {
               THICKNESS*2,
               LENGTH*2]);
     }
-   
+
     intersection() {
         translate ([dx, -WALL_THICKNESS, -WALL_THICKNESS*2])
         cube([THICKNESS,
@@ -441,7 +448,7 @@ module case1() {
         flap_cut();
         translate([0, THICKNESS/2, 0])
         card_cavity();
-        
+
         // top hole
         hull() {
             translate([S22_TOP_HOLE_POS-1, THICKNESS/2, LENGTH/2])
@@ -461,7 +468,7 @@ module case1() {
 module case() {
     difference() {
         case1();
- 
+
  //       translate([0, -THICKNESS/2, 0])
  //       if (!$preview)
  //           texturer();
@@ -482,7 +489,7 @@ module buttons_hollowing(button_pos, button_height, button_y_offset) {
                    THICKNESS/2 + button_y_offset + WALL_THICKNESS/2  -1,
                    button_pos-CUTS_D])
         cube([WIDTH/2, .00001, button_height - CUTS_D]);
- 
+
         scale([1, 1, .5])
         sphere(d=CUTS_D*3.5, $fn=60);
     }
@@ -502,7 +509,7 @@ module lid0() {
 
             // keep face
             partitionner(LID_SPACING);
-            
+
             // stripes for flap
             h_marg = 1;
             _h = get_hinge_height(nb_layers=FLAP_NB_LAYERS,
@@ -552,7 +559,7 @@ module lid_inner_carver() {
         translate([0, 0, -LENGTH/2])
         scale([1, 1, 2])
         phone();
-        
+
         translate([0, 0, -LENGTH/2])
         scale([1, 1, 2])
         phone();
@@ -685,7 +692,7 @@ module support() {
             translate([0, 0, -ATOM])
             cylinder(d=d-1, h=LENGTH*.6+ATOM*2);
         }
-        translate([0, -THICKNESS/2 - WALL_THICKNESS + 1.4, -2]) 
+        translate([0, -THICKNESS/2 - WALL_THICKNESS + 1.4, -2])
         cube([WIDTH*2, THICKNESS + WALL_THICKNESS*1.6, LENGTH]);
 
         translate([0, WALL_THICKNESS*.6+.1, LENGTH*.15])
@@ -732,7 +739,7 @@ module position_flap() {
     y = FLAP_POS_Y;
     z = FLAP_POS_Z;
     dx = FLAP_POS_X;
-    
+
     translate([dx, y, z])
     children();
 }
@@ -746,7 +753,7 @@ module flap0() {
     y = FLAP_POS_Y;
     z = FLAP_POS_Z;
     dx = FLAP_POS_X;
-    
+
     position_flap() {
         translate([-TOOL_WIDTH-6.5, -2 + TOOL_RECESS, 3.5])
 
@@ -754,7 +761,7 @@ module flap0() {
         translate([0, 0, -SPACING])
         intersection() {
             flap_cavity(TOOL_WIDTH);
-            
+
             l = TOOL_WIDTH/3.5;
             l2 = TOOL_WIDTH/1.5;
             l3 = TOOL_WIDTH/3;
@@ -786,7 +793,7 @@ module flap0() {
             translate([-TOOL_WIDTH-6.5, -2 + TOOL_RECESS, 3.5]) {
                 flap_cavity(TOOL_WIDTH);
             }
- 
+
             // hinge limiter
             translate([5, -THICKNESS/2, -LENGTH/4])
             cube([WIDTH/2, THICKNESS, LENGTH]);
@@ -794,7 +801,7 @@ module flap0() {
 
         // pin for adhesion
         translate([0, 0, -1])
-        cylinder(d=1.5, h=TOOL_LENGTH); 
+        cylinder(d=1.5, h=TOOL_LENGTH);
 
         // fin for adhesion
         th = .3;
@@ -854,14 +861,14 @@ module groove(extent, layer_height, nb_layers) {
     hull() {
         translate([-zside -THICKNESS*.9, THICKNESS/2.5, up])
         sphere(d=THICKNESS*.7);
-        
+
         translate([-zside -THICKNESS*.9, THICKNESS/2.5, down])
         sphere(d=THICKNESS*.7);
 
 
         translate([-zside -THICKNESS*1.5, THICKNESS/2.5, up])
         sphere(d=THICKNESS*.7);
-        
+
         translate([-zside -THICKNESS*1.5, THICKNESS/2.5, down])
         sphere(d=THICKNESS*.7);
     }
@@ -913,11 +920,11 @@ module flap_door() {
         union() {
             w = WIDTH/2 - WALL_THICKNESS*1.5 +.1;
             d = WALL_THICKNESS*2;
-            
+
             translate([0, 0, d/2 + SPACING/2])
             rotate([0, 90, 0])
             cylinder(d=d, h= w);
-            
+
             translate([0, -WALL_THICKNESS, SPACING + d/2])
             cube([w, d, FLAP_HEIGHT-SPACING*2 - d/2 - SPACING/2]);
         }
