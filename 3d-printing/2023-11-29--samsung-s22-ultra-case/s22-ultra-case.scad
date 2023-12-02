@@ -1,4 +1,4 @@
-// TODO: 
+// TODO:
 // - cam sliding shutter
 // - shift hinges
 
@@ -940,10 +940,9 @@ module all_back_flap() {
         union() {
             all_back();
             flap();
-            
             camera_flap();
         }
-        
+
         if (!$preview)
         texturer();
     }
