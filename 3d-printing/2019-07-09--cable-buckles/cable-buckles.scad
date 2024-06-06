@@ -138,7 +138,7 @@ module buckle(height, wall_thickness, length, width, prong_size) {
 
     // friction lock
     r = height/4;
-    translate([0, width/2 - wall_thickness/2 + r/2 - PLAY*.85, height*.45]) hull() {
+    translate([0, width/2 - wall_thickness/2 + r/2 - PLAY*1, height*.45]) hull() {
         translate([ height/2, 0, 0]) sphere(d=r);
         translate([-height/2, 0, 0]) sphere(d=r);
     }

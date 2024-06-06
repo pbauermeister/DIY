@@ -10,9 +10,11 @@ CHAMFER           =   2;
 TURNS             = INNER_HEIGHT / SCREW_STEP;
 FN                = $preview? 180/25*2 : 180/2;
 
+K                 = 1.333;
+
 SOAP_W            = 20;
 SOAP_L            = 30;
-SOAP_BRAND_HEIGHT = .4;
+SOAP_BRAND_HEIGHT = .6;
 SOAP_R            =  1;
 SOAP_MIN_HEIGHT   =  5;
 
@@ -25,6 +27,7 @@ ATOM              = 0.01;
 
 function get_bottom_thickness() = BOTTOM_THICKNESS;
 function get_screw_head_width() = SCREW_HEAD_WIDTH;
+function get_k() = K;
 
 module screw_el(angle, extra=0) {
     z = INNER_HEIGHT / ANGLE_MAX * angle;
@@ -167,11 +170,11 @@ module soap_piston() {
     
         for (i=[-1, 1])
         hull() {
-            translate([SOAP_W*.35*i, 0, INNER_HEIGHT])
-            sphere(d=SOAP_W*.55);
+            translate([SOAP_W*.38*i, 0, INNER_HEIGHT])
+            sphere(d=SOAP_W*.65);
 
-            translate([SOAP_W*.35*i, 0, INNER_HEIGHT/2])
-            sphere(d=SOAP_W*.55);
+            translate([SOAP_W*.38*i, 0, INNER_HEIGHT/2])
+            sphere(d=SOAP_W*.65);
         }
     }
     brand(false);

@@ -298,8 +298,8 @@ module camera_hinge(nb_layers=CAM_NB_LAYERS, height=CAM_HEIGHT, thickness=4,
 
 ////////////////////////////////////////////////////////////////////////////////
 
-//main_hinge();
+main_hinge();
 //flap_hinge0(only_axis=true);
 
-camera_hinge();
-%camera_hinge(only_axis=true);
+//camera_hinge();
+//%camera_hinge(only_axis=true);

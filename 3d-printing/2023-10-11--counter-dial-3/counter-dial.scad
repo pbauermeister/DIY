@@ -1,6 +1,7 @@
 include <values.inc.scad>;
+use <ratchet.scad>;
 
-$fn  = $preview ? 10 : 60;
+$fn  = $preview ? 15 : 60;
 
 module gripper(height, diameter, n, m, k) {
     cylinder(d=diameter, h=height);
@@ -49,40 +50,7 @@ module knob(for_hollowing=false) {
         cube(KNOB_DIAMETER);
     }
 
-    dd = for_hollowing ? PLAY*2 : 0;
-
-    // ring
-    h = KNOB_HEIGHT/8;
-    translate([0, 0, KNOB_HEIGHT/4 - h*.75])
-    hull() {
-        cylinder(d=KNOB_DIAMETER + dd, h=h*2);
-        translate([0, 0, h/2])
-        cylinder(d=KNOB_DIAMETER+h  + dd, h=h);
-    }
-
-    // body and ratchet
-    difference() {
-        union() {
-            // body
-            translate([0, 0, for_hollowing ? -.1 : 0])
-            cylinder(d=KNOB_DIAMETER+dd, h=KNOB_HEIGHT + .1);
-
-            // ratchet
-            d = h*.66;
-            translate([KNOB_DIAMETER/2, 0, d/2 + 1])
-            sphere(d=d + dd*2);
-        }
-        
-        if(!for_hollowing)
-        rotate([0, 0, -7*0]) {
-            h = KNOB_HEIGHT/7;
-            translate([KNOB_DIAMETER*.35, -KNOB_DIAMETER*.2, -ATOM])
-            cube([1, KNOB_DIAMETER, h]);
-
-            translate([KNOB_DIAMETER*.35, -KNOB_DIAMETER*.25, h-ATOM*2])
-            cube([10, KNOB_DIAMETER, .2]);
-            }
-    }
+    ratchet();
 }
 
 
@@ -104,24 +72,30 @@ module box_body() {
     }
 }
 
+
+module box_letters() {
+    for (i=[0:TURNS-1]) {
+        rotate([0, 0, 360/(TURNS)*i]) {
+            translate([0, 0, BOX_HEIGHT - LETTER_DEPTH])
+            linear_extrude(5)
+            rotate([0, 0, -90])
+            translate([-5.7, 18+2, 0])
+            text(str(i), size=13, font="helvetica:bold");
+        }
+    }
+}
+
+
 module box() {
     difference() {
         box_body();
-        
-        for (i=[0:TURNS]) {
-            rotate([0, 0, 360/(TURNS+1)*i]) {
-                knob(for_hollowing=true);
+        box_letters();
 
-                translate([0, 0, BOX_HEIGHT - LETTER_DEPTH])
-                linear_extrude(5)
-                rotate([0, 0, -90])
-                translate([-5.7, 18+2, 0])
-                text(str(i), size=13, font="helvetica:bold");
-            }
-        }
-        
+        translate([0, 0, -ATOM])
+        ratchet_cavity();
     }
 }
+
 
 module all() {
     knob();
@@ -131,5 +105,6 @@ module all() {
 
 difference() {
     all();
-    if ($preview) translate([-BOX_SIZE, 0, -ATOM]) cube(BOX_SIZE);
+    if ($preview) translate([BOX_SIZE*0, 0, -ATOM]) cube(BOX_SIZE);
+//    if ($preview) translate([0, 0, -BOX_SIZE+2.25]) cube(BOX_SIZE*2, true);
 }
