@@ -31,7 +31,7 @@ _ = 0; // no block
 // this to true, so the calibration pieces will not be printed again:
 DID_CALIBRATION = true; 
 
-GRID = !DID_CALIBRATION
+GRID = DID_CALIBRATION
 ? [ // All pentominos:
     [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
     [_, 1, 1, 1, 1, _, _, 1, _, 1, 1, 1, _, _, _, _, _],
@@ -62,7 +62,6 @@ GRID = !DID_CALIBRATION
     [_, 1, 1, _, _, 1, 1, 1, _, 0, 0, 0, _, 0, 0, _, _],
     [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
 ];
-
 
 make_all();
 

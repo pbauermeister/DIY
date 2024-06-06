@@ -1,10 +1,10 @@
 $fn       = 36;
 ROUNDED   = 2;
 TOLERANCE = .2;
-
-WIDTH     = 170 + TOLERANCE*2 - 6    + 4;
+                                            // Samsung S22 Ultra
+WIDTH     = 170 + TOLERANCE*2 - 6    + 4       +5;
 HEIGHT    =  83 + TOLERANCE*2;
-THICKNESS =  18 + TOLERANCE*2;
+THICKNESS =  18 + TOLERANCE*2                  +2;
 
 SHORTEN   =  10;
 
@@ -35,6 +35,11 @@ module attachment_hole() {
 module attachment_hole2() {
     translate([0, 33.057+WALL+10, -50])
     cylinder(d=6, h=50, $fn=36);
+
+    // screw head chamfer
+    translate([0, 33.057+WALL+10, -3.25])
+    cylinder(d1=6, d2 = 12, h=3, $fn=36);
+
 }
 
 module attachment_hack() {
@@ -120,6 +125,7 @@ module case() {
         // cutoff back
         translate([WIDTH*.2, (HEIGHT-SHORTEN)/2, -WALL*3])
         cylinder(d=HEIGHT*.55, h=WALL*4);
+
         translate([WIDTH*.8, (HEIGHT-SHORTEN)/2, -WALL*3])
         cylinder(d=HEIGHT*.55, h=WALL*4);
         
@@ -149,5 +155,21 @@ module case() {
 
 }
 
-rotate([0, 45, 0]) translate([-WIDTH/2, 0, WALL])
+module strut(d, dh=0) {
+    h = d - WALL*2 +.5 + dh;
+    y = HEIGHT*.17;
+    z = - WALL * sqrt(2) +.1;
+    hull() {
+        translate([-d      , y, h]) cube(.5);
+        translate([-d * 1.5, y, z]) cube(.5);
+        translate([-d*  .75, y, z]) cube(.5);
+    }
+}
+
+// Here we go
+
+rotate([0, 45, 0]) translate([-WIDTH, -HEIGHT/2, WALL])
 case();
+
+strut(WIDTH * .23, 1);
+strut(WIDTH * .45);

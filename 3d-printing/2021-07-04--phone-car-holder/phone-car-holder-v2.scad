@@ -2,9 +2,9 @@ $fn       = 36;
 ROUNDED   = 2;
 TOLERANCE = .2;
 
-WIDTH     = 170 + TOLERANCE*2;
+WIDTH     = 170 + TOLERANCE*2     + 5;
 HEIGHT    =  83 + TOLERANCE*2;
-THICKNESS =  18 + TOLERANCE*2;
+THICKNESS =  18 + TOLERANCE*2     + 2;
 
 SHORTEN   =  10;
 

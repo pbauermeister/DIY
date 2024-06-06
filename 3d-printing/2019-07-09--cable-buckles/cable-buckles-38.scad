@@ -5,7 +5,7 @@
  *
  * See https://github.com/pbauermeister/DIY/tree/master/3d-printing/2019-07-09--earphone-buckles
 */
-use <cable-buckles-v2.scad>;
+use <cable-buckles.scad>;
 
 // Object sizes
 HEIGHT         =  8.4;
