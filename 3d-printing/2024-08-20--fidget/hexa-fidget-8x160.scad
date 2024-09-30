@@ -12,4 +12,11 @@ DIAMETER  = 160;
 RADIUS_MAX = DIAMETER/2;
 RADIUS_MIN = 3.5; //3;
 
-fidget(RADIUS_MIN, RADIUS_MAX, BASE, HEIGHT, SHIFT, GAP);
+module make_fidget() {
+    fidget(RADIUS_MIN, RADIUS_MAX, BASE, HEIGHT, SHIFT, GAP);
+}
+
+function get_diameter() = DIAMETER;
+function get_height() = HEIGHT;
+
+make_fidget();

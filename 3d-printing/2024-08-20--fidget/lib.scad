@@ -44,7 +44,7 @@ module piece(radius, base, height, shift) {
 
 module fidget(radius_min, radius_max, base, height, shift, gap) {
     step = base + gap;
-    rotate([0, 0, 30])
+    rotate([0, 0, $preview ? 0 : 30])
     for (r=[radius_min:step:radius_max]) piece(r, base, height, shift);
 }
 
