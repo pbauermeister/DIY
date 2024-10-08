@@ -1,7 +1,7 @@
 /*
-This piece is to be inserted into the bottom lid of the Dyson V7's dust container,
-and secured with a central screw, to form a resting spacer when a battery adapter
-for Dewalt battery is used.
+This piece is to be inserted into the bottom lid of the Dyson V7's
+dust container, and secured with a central screw, to form a resting
+spacer when an adapter for Dewalt battery is used.
 */
 
 
