@@ -1,3 +1,7 @@
+/*
+This piece is to be screwed to the dyson-v7-holder.scad so that the v7
+will hold without rotating.
+*/
 
 R = 50;
 RR = 120/2                     +2.5;
@@ -27,7 +31,7 @@ module screw_hole(only_head=false) {
     l = 50;
     rotate([0, 0, 0]) {
         cylinder(d=SCREW_HEAD, h=l, $fn=fn);
-      
+
        if (!only_head) {
             translate([0, 0, -TH]) {
                 translate([0, 0, 1])
@@ -108,18 +112,18 @@ module all() {
     difference() {
         ring();
         cutouts();
-        
+
         c = R*4;
         translate([-c/2 + R*.7, 0, 0])
         cube(c, true);
-        
+
         screws();
     }
 }
 
 module all_test() {
     th = .6;
-    
+
     difference() {
         union() {
             cutouts(th);

@@ -1,3 +1,7 @@
+/*
+Holder for Dyson v7.
+*/
+
 CONTAINER_D1   = 120;
 CONTAINER_H1   =  73;
 CONE_D         =  54; //65;
@@ -23,9 +27,6 @@ ATOM = 0.01;
 $fn = 60; //$preview ? 20 : 10;
 
 
-//!sphere(9, $fn=12);
-
-
 module chamfer_bit(r) {
     if (1) {
         sphere(r, $fn=8);
@@ -37,7 +38,6 @@ module chamfer_bit(r) {
     }
 }
 
- 
 module chamferer(r) {
     if (!r) {
         children();
@@ -113,7 +113,7 @@ module support_0() {
                 cube([CONTAINER_D1/2 + MARGIN, CONTAINER_D1/2 + MARGIN, H]);
             }
         }
-        
+
         translate([0, CONTAINER_D1/2, 0])
         cube([CONTAINER_D1/2 + MARGIN + EXTENT, MARGIN + SPACING, H]);
     }
@@ -133,7 +133,7 @@ module support_1() {
 module support_2() {
     difference() {
         support_1();
-        
+
         // Freeings
         translate([-ATOM, -CONTAINER_D1, CONTAINER_H1])
         cube([CONTAINER_D1, CONTAINER_D1, CONE_D]);
@@ -157,7 +157,7 @@ module support() {
     difference() {
         chamferer(CHAMFER)
         support_3();
-        
+
         // screw holes
         for (z=[CONTAINER_H1, CONTAINER_H1+CONE_D]) {
             translate([SCREW_DISTANCE*.67, CONTAINER_D1/2 + MARGIN+SPACING-SCREW_REST, z])
@@ -187,8 +187,6 @@ intersection() {
         cube([100, 205, 1000]);
     }
 
-    //%body();
-    
     if (0) %
     translate([0, 0, 106-5.5])
     rotate([0, 90, 0])

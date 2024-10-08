@@ -1,3 +1,7 @@
+/*
+Holder for Dyson v7 accessories.
+*/
+
 $fn = $preview ? 12 : 180;
 ATOM = 0.1;
 PLAY = .6;
