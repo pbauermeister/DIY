@@ -93,7 +93,6 @@ module servo_support_holes() {
     circle(d=SERVO_HOLE_DIAMETER);
 }
 
-
 module servo() {
     color("blue") {
         difference() {
@@ -139,10 +138,9 @@ module upper_cube_body() {
     cube_inner_cylinder(CUBE_HEIGHT, SUPPORT_PLATE_DIAMETER_UPPER);
 }
 
-module servo_shaft_fixture(size, h, z, step) {
+module servo_shaft_fixture(size, h, z, step, arm_w) {
     border = 1;
     d = (size - border*2) / sqrt(2);
-    arm_w = 8;
     union() {
         // outer crown
         translate([0, 0, z])
@@ -154,7 +152,7 @@ module servo_shaft_fixture(size, h, z, step) {
         }
 
         // inner wheel
-        //color("red")
+        color("red")
         translate([0, 0, z]) {
             difference() {
                 union() {
@@ -170,12 +168,15 @@ module servo_shaft_fixture(size, h, z, step) {
             
             difference() {
                 // cross
-                union() {
-                    l = size - border*(4.5-ATOM*2);
-                    translate([0, 0, h/2])
-                    cube([arm_w, l, h], center=true);
-                    translate([0, 0, h/2])
-                    cube([l, arm_w, h], center=true);
+                intersection() {
+                    union() {
+                        l = size - border*(4.5-ATOM*2);
+                        translate([0, 0, h/2])
+                        cube([arm_w, l, h], center=true);
+                        translate([0, 0, h/2])
+                        cube([l, arm_w, h], center=true);
+                    }
+                    cylinder(d=size - border*4.5 + ATOM, h=h*3, center=true);
                 }
 
                 // shaft
@@ -191,7 +192,7 @@ module servo_shaft_fixture(size, h, z, step) {
 }
 
 module upper_servo_shaft_fixture() {
-    servo_shaft_fixture(SUPPORT_PLATE_DIAMETER_UPPER, 7, -7, 1);
+    servo_shaft_fixture(SUPPORT_PLATE_DIAMETER_UPPER, 7, -7, 1, 8);
 }
 
 module lower_cube_body() {
@@ -215,18 +216,32 @@ module lower_cube_body() {
 
     // servo shaft fixture
     h = 4;
+    extra_h = 1;
+    extra_h2 = 4;
     w = 12;
     marg = 5;
-    d = 30;
+    d = 30 - 6;
     translate([0, 0, CUBE_HEIGHT-h-marg]) {
         difference() {
-            translate([0, -w/2, 0])
-            cube([CUBE_WIDTH/2-ATOM, w, h]);
+            union() {
+                translate([0, -w/2, 0])
+                cube([CUBE_WIDTH/2-ATOM, w, h+extra_h]);
+
+                translate([-ATOM*2, 0, 0])
+                hull() {
+                    translate([d/2, -w/2, 0])
+                    cube([ATOM, w, h+extra_h]);
+
+                    translate([CUBE_WIDTH/2, -w/2, -extra_h2])
+                    cube([ATOM, w, h+extra_h]);
+                }
+            }
             cylinder(d=d, h=h*3, center=true);
         }
-
-        servo_shaft_fixture(d, h, 0, 2);
-
+        servo_shaft_fixture(d, h, 0, 2, 5.5);
+        
+        translate([0, 0, h])
+        cylinder(d=d, h=extra_h);
     }
 }
 
