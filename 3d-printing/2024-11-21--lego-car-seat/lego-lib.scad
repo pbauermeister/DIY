@@ -21,8 +21,11 @@ module lego_op(args) {
     base = abs(base0);
 
     difference() {
+        
         // basic form
+        if (base!=0)
         scale([UU, UU, HH])
+
         translate([.5, .5, .5])
         intersection() {
             if (base0>=0)
@@ -107,7 +110,7 @@ module lego_op(args) {
 
                 translate([UU/2, UU/2, HH/2])
                 rotate([90, 0, 0])
-                cylinder(d=d1, h=HH*2, center=true);
+                cylinder(d=d1, h=HH, center=true);
 
                 translate([UU/2, UU+ATOM, HH/2])
                 rotate([90, 0, 0])
@@ -123,7 +126,7 @@ module lego_op(args) {
                 d1 = 5.1;
                 d2 = 6.3;
                 translate([UU/2, UU/2, HH/2])
-                cylinder(d=d1, h=HH*2, center=true);
+                cylinder(d=d1, h=HH, center=true);
 
                 translate([UU/2, UU/2, -ATOM])
                 cylinder(d1=d2, d2=d1, h=h);
@@ -131,60 +134,81 @@ module lego_op(args) {
                 translate([UU/2, UU/2, HH-h+ATOM])
                 cylinder(d2=d2, d1=d1, h=h);
             }
-            // cross
-            xl = 4.2 +.15 +.4;
-            xw = 1.7 +.15 +.4;
+            // crosses
+            xl = 4.2 +.15 +.12;
+            xw = 1.7 +.15 +.12;
             xo = .15;
             // x/y cross
             if (hole==3) {
-                translate([0, UU/2, HH/2]) {
-                    cube([HH*3, xl+xo, xw+xo], center=true);
-                    cube([HH*3, xw+xo, xl+xo], center=true);
+                translate([UU/2-ATOM, UU/2, HH/2]) {
+                    cube([UU+ATOM*3, xl+xo, xw+xo], center=true);
+                    cube([UU+ATOM*3, xw+xo, xl+xo], center=true);
                 }            
             }
             // z cross
             if (hole==4) {
-                translate([UU/2, UU/2, 0]) {
-                    cube([xl, xw, HH*3], center=true);
-                    cube([xw, xl, HH*3], center=true);
+                translate([UU/2, UU/2, HH/2-ATOM]) {
+                    cube([xl, xw, HH+ATOM*3], center=true);
+                    cube([xw, xl, HH+ATOM*3], center=true);
                 }            
             }
             // grill
             if (hole==5) {
-                for (h=[.25, .75]) {
-                    translate([UU*.1, -UU/2, HH*h])
-                    rotate([0, 180+45, 0])
-                    cube([UU, UU*2, UU]);
+                intersection() {
+                    for (h=[.25, .75]) {
+                        translate([UU*.1, -UU/2, HH*h])
+                        rotate([0, 180+45, 0])
+                        cube([UU, UU*2, UU]);
+                    }
+                    translate([-ATOM, -ATOM, 0])
+                    cube([UU, UU+ATOM*2, HH]);
                 }
+                
             }
             // z long hole
             if (hole==6) {
-                h = 1.2;
-                d1 = 5.1;
-                d2 = 6.3;
-                
-                hull() for(x=[0, -UU]) translate([x, 0, 0])
-                translate([UU/2, UU/2, HH/2])
-                cylinder(d=d1, h=HH*2, center=true);
+                intersection() {
+                    union() {
+                        h = 1.2;
+                        d1 = 5.1;
+                        d2 = 6.3;
+                        
+                        hull() for(x=[0, -UU]) translate([x, 0, 0])
+                        translate([UU/2, UU/2, HH/2])
+                        cylinder(d=d1, h=HH*2, center=true);
 
-                hull() for(x=[0, -UU]) translate([x, 0, 0])
-                translate([UU/2, UU/2, -ATOM])
-                cylinder(d1=d2, d2=d1, h=h);
+                        hull() for(x=[0, -UU]) translate([x, 0, 0])
+                        translate([UU/2, UU/2, -ATOM])
+                        cylinder(d1=d2, d2=d1, h=h);
 
-                hull() for(x=[0, -UU]) translate([x, 0, 0])
-                translate([UU/2, UU/2, HH-h+ATOM])
-                cylinder(d2=d2, d1=d1, h=h);
+                        hull() for(x=[0, -UU]) translate([x, 0, 0])
+                        translate([UU/2, UU/2, HH-h+ATOM])
+                        cylinder(d2=d2, d1=d1, h=h);
+                    }
+                    translate([-ATOM, 0, -ATOM])
+                    cube([UU+ATOM, UU, HH+ATOM*2]);
+                }
             }
             // top grind
             if (hole==7) {
-                translate([0, 0, HH*.8])
-                cylinder(r=UU*2, h=HH);
+                intersection() {
+                    translate([0, 0, HH*.8])
+                    cylinder(r=UU*2, h=HH);
+                    
+                    translate([-ATOM, -ATOM, 0])
+                    cube([UU+ATOM*2, UU+ATOM*2, HH+ATOM]);
+                }                    
             }
             // z tiny hole
             if (hole==8) {
-                d = 3;
-                translate([UU/2, UU/2, HH/2])
-                cylinder(d=d, h=HH*2, center=true);
+                intersection() {
+                    d = 3;
+                    translate([UU/2, UU/2, HH/2-ATOM])
+                    cylinder(d=d, h=HH+ATOM*3, center=true);
+
+                    translate([-ATOM, -ATOM, -ATOM])
+                    cube([UU+ATOM*2, UU+ATOM*2, HH+ATOM*2]);
+                }
             }
         }
     }
@@ -217,3 +241,27 @@ module lego_build(map) {
         }
     }
 }
+
+
+if(1) {
+    $fn = 90;
+    arr = [
+        [0, 0, 0, 0, 0, 0, 0, 1, 0],
+        [0, 0, 0, 0, 0, 0, 0, 2, 0],
+        [0, 0, 0, 0, 0, 0, 0, 3, 0],
+        [0, 0, 0, 0, 0, 0, 0, 4, 0],
+        [0, 0, 0, 0, 0, 0, 0, 5, 0],
+        [0, 0, 0, 0, 0, 0, 0, 6, 0],
+        [0, 0, 0, 0, 0, 0, 0, 7, 0],
+        [0, 0, 0, 0, 0, 0, 0, 8, 0],
+    ];
+    
+    for (i=[0:len(arr)-1]) {
+        block = arr[i];
+        lego_block(block, i*2, 0, 0);
+        block2 = [for(i=[0:len(block)-1]) if(i==0) 1 else block[i]];
+        lego_block(block2, i*2, 2, 0);
+    }
+}
+
+
