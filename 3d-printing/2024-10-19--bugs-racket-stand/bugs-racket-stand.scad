@@ -118,7 +118,7 @@ module cap() {
     }
 }
 
-if(1)
+if(0)
     cap();
 else
 rotate([0,180, 0])

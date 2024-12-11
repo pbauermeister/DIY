@@ -6,6 +6,8 @@ License: Creative Commons Attribution-NonCommercial-ShareAlike 2.5 Generic (CC B
 
 Summary: 3D-printed cup holder for 6 espresso cups.
 
+See also: https://www.instructables.com/Espresso-Cups-Holder-Weyland-Yutani-Corp/
+
 ![Cups holder](cups-holder-med.jpg?raw=true "Cups holder")
 
 ## Design

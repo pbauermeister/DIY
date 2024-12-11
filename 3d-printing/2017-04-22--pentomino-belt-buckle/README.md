@@ -6,6 +6,8 @@ License: Creative Commons Attribution-NonCommercial-ShareAlike 2.5 Generic (CC B
 
 Summary: 3D-printed belt buckle makeover, resulting in a playable pentomino buckle.
 
+See also: https://www.instructables.com/Pentomino-Belt-Buckle/
+
 ## What are pentominos
 https://en.wikipedia.org/wiki/Pentomino.
 
