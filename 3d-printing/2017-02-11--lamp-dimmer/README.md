@@ -6,7 +6,9 @@ License: Creative Commons Attribution-NonCommercial-ShareAlike 2.5 Generic (CC B
 
 Summary: 3D-printed mechanical iris, to dim LED lamps.
 
-![Lamp dimmer before and after](summary.png?raw=true "Mechanical Iris Dimmer")
+See also: https://www.instructables.com/Mechanical-Iris-Dimmer/
+
+![Lamp dimmer before and after](_summary.png?raw=true "Mechanical Iris Dimmer")
 
 ## Instructions
 
