@@ -123,8 +123,8 @@ module lego_op(args) {
             // z hole
             if (hole==2) {
                 h = 1.2;
-                d1 = 5.1;
-                d2 = 6.3;
+                d1 = 5.1 -.1;
+                d2 = 6.3 +.2;
                 translate([UU/2, UU/2, HH/2])
                 cylinder(d=d1, h=HH, center=true);
 
@@ -210,6 +210,49 @@ module lego_op(args) {
                     cube([UU+ATOM*2, UU+ATOM*2, HH+ATOM*2]);
                 }
             }
+            // x tiny hole
+            if (hole==8.1) {
+                intersection() {
+                    d = 3;
+                    translate([UU/2-ATOM, UU/2, HH/2])
+                    rotate([0, 90, 0])
+                    cylinder(d=d, h=UU+ATOM*3, center=true);
+
+                    translate([-ATOM, -ATOM, -ATOM])
+                    cube([UU+ATOM*2, UU+ATOM*2, HH+ATOM*2]);
+                }
+            }
+            // stair
+            if (hole==9) {
+                intersection() {
+                    translate([-UU/2, -ATOM, HH/2])
+                    cube([UU, UU+ATOM*2, HH]);
+                    translate([-ATOM, -ATOM, -ATOM])
+                    cube([UU+ATOM*2, UU+ATOM*2, HH+ATOM*2]);
+                }
+            }
+            // triangle
+            if (hole==10) {
+                d = UU/2;
+                intersection() {
+                    translate([d, d, HH/2])
+                    rotate([90, 0, -45])
+                    cylinder(r=UU, h=UU*2);
+                    translate([-ATOM, -ATOM, -ATOM])
+                    cube([UU+ATOM*2, UU+ATOM*2, HH+ATOM*2]);
+                }
+            }
+            // triangle
+            if (hole==11) {
+                d = UU/2;
+                intersection() {
+                    translate([d, d, HH/2])
+                    rotate([0, -45, 0])
+                    cylinder(r=UU, h=UU*2);
+                    translate([-ATOM, -ATOM, -ATOM])
+                    cube([UU+ATOM*2, UU+ATOM*2, HH+ATOM*2]);
+                }
+            }
         }
     }
 }
@@ -254,6 +297,10 @@ if(1) {
         [0, 0, 0, 0, 0, 0, 0, 6, 0],
         [0, 0, 0, 0, 0, 0, 0, 7, 0],
         [0, 0, 0, 0, 0, 0, 0, 8, 0],
+        [0, 0, 0, 0, 0, 0, 0, 8.1, 0],
+        [0, 0, 0, 0, 0, 0, 0, 9, 0],
+        [0, 0, 0, 0, 0, 0, 0, 10, 0],
+        [0, 0, 0, 0, 0, 0, 0, 11, 0],
     ];
     
     for (i=[0:len(arr)-1]) {
