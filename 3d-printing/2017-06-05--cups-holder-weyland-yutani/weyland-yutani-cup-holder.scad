@@ -4,14 +4,8 @@
  * License: Creative Commons Attribution-NonCommercial-ShareAlike 2.5.
  */
 
+include <defs.scad>
 
-LENGTH = 220;
-HEIGHT = 83;
-WIDTH = 81;
-RECESS = 3; // 5 is too deep
-CUP_DIAMETER = 62; // in mm
-
-RATIO = CUP_DIAMETER / 65;
 scale(RATIO)
 rotate([90, 0, 0])
 all();
@@ -24,7 +18,6 @@ module main() {
     linear_extrude(h=1)
     import("logo.dxf");
 
-       
     translate([0, RECESS, HEIGHT-12])
     cube([LENGTH, WIDTH - RECESS, 12]);    
 }
