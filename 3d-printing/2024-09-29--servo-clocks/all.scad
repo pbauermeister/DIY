@@ -30,6 +30,9 @@ SERVO_UPPER_Z_POS            =  5;
 
 // SERVO HOLDER
 SERVO_HOLDER_BORDER          =  4;
+SERVO_FIXTURE_ARM_W          = 12 -4;
+SERVO_FIXTURE_ARM_D          = 30.6  - 14;
+SERVO_FIXTURE_ARM_H          = 4;
 
 // CUBE
 CUBE_WIDTH                   = 60 - 3;
@@ -194,7 +197,7 @@ module servo_shaft_fixture_inner(size, h, z, step, arm_w) {
     }
 }
 
-module upper_servo_shaft_fixture(inner=true, outer=true) {
+module upper_servo_fixture(inner=true, outer=true) {
     if (inner)
         servo_shaft_fixture_inner(SUPPORT_PLATE_DIAMETER_UPPER, 7, -7, 1, 8);
     if (outer)
@@ -220,14 +223,20 @@ module lower_cube_body() {
         cube([CUBE_WIDTH, CUBE_WIDTH, CUBE_HEIGHT]);
     }
 
-    // servo shaft fixture
-    h = 4;
+    // fixture
+    lower_servo_fixture_arm();
+    lower_servo_fixture(inner=false, outer=true);
+}
+
+module lower_servo_fixture_arm(dropped=false) {
+    // servo shaft fixture - arm
+    h = SERVO_FIXTURE_ARM_H;
     extra_h = 1;
     extra_h2 = 4;
-    w = 12;
+    w = SERVO_FIXTURE_ARM_W;
     marg = 5;
-    d = 30 - 6;
-    translate([0, 0, CUBE_HEIGHT-h-marg]) {
+    d = SERVO_FIXTURE_ARM_D;
+    translate([0, 0, dropped ? 0 : CUBE_HEIGHT-h-marg]) {
         difference() {
             union() {
                 translate([0, -w/2, 0])
@@ -250,16 +259,31 @@ module lower_cube_body() {
     }
 }
 
-module lower_servo_shaft_fixture(inner=true, outer=true) {
-    h = 4;
-    d = 30 - 6;
+module lower_servo_fixture(inner=true, outer=true, dropped=false, enveloppe=false) {
+    h = SERVO_FIXTURE_ARM_H;
+    d = SERVO_FIXTURE_ARM_D;
     marg = 5;
 
-    translate([0, 0, CUBE_HEIGHT-h-marg]) {
+    if (enveloppe) {
+        cylinder(d=d+3, h=h);
+        
+    }
+    else translate([0, 0, dropped ? 0 : CUBE_HEIGHT-h-marg]) {
         if (inner)
-            servo_shaft_fixture_inner(d, h, 0, 2, 5.5);
+            servo_shaft_fixture_inner(d, h, 0, 2, 5.5-1);
         if (outer)
-            servo_shaft_fixture_outer(d, h, 0, 2, 5.5);
+            servo_shaft_fixture_outer(d, h, 0, 2, 5.5-1);
+    }
+}
+
+module lower_servo_fixture_arm_passage() {
+    union() {
+        linear_extrude(CUBE_HEIGHT)
+        offset(1)
+        projection(cut=false) {
+            lower_servo_fixture(enveloppe=true);
+            lower_servo_fixture_arm(dropped=true);
+        }
     }
 }
 
@@ -357,7 +381,7 @@ module reinforcement_cracks() {
                 translate([0, y, 0])
                 cube([CUBE_WIDTH*2, .05, CUBE_HEIGHT*5], center=true);
         }
-        cylinder(d=COLUMN_RADIUS-4, h=CUBE_HEIGHT*5, center=true);
+        cylinder(d=COLUMN_RADIUS-.3, h=CUBE_HEIGHT*5, center=true);
         column();
     }
 }
@@ -376,10 +400,8 @@ module lower_servo_holder() {
             // column
             column();
         }
-
     }
 }
-
 
 module holder_upper() {
     difference() {
@@ -391,8 +413,8 @@ module holder_upper() {
             upper_cube_body();
 
             translate([0, 0, CUBE_HEIGHT - CUBE_WALL*1.5])
-            upper_servo_shaft_fixture(inner=true, outer=false);
-            upper_servo_shaft_fixture(inner=false, outer=true);
+            upper_servo_fixture(inner=true, outer=false);
+            upper_servo_fixture(inner=false, outer=true);
 
             upper_servo_holder();
         }
@@ -400,10 +422,6 @@ module holder_upper() {
         // servo holes
         translate([0, 0, SERVO_UPPER_Z_POS + UPPER_Z - SERVO_HOLE_DIAMETER/4])
         servo_support_holes();
-        
-        // reinforcement
-        if(!$preview)
-            reinforcement_cracks();
     }
 }
 
@@ -416,8 +434,7 @@ module holder_lower() {
             lower_cube_body();
             lower_servo_holder();
 
-            lower_servo_shaft_fixture(inner=true, outer=false);
-            lower_servo_shaft_fixture(inner=false, outer=true);
+            lower_servo_fixture(inner=true, outer=false);
         }
 
         // servo holes
@@ -436,6 +453,7 @@ module holders() {
 }
 
 module crosscut() {
+    rotate([0, 0, 90]) 
     difference() {
         children();
         if ($preview) {
@@ -450,6 +468,47 @@ module crosscut() {
     }
 }
 
+module printing_cube_lower() {
+    translate([0, 0, CUBE_HEIGHT])
+    rotate([180, 0, 0])
+    lower_cube_body();
+}
+
+module printing_cube_lower_fixture() {
+    translate([0, CUBE_HEIGHT, 0])
+    lower_servo_fixture(inner=true, outer=false, dropped=true);
+}
+
+module printing_servos_holder() {
+    difference() {
+        union() {
+            lower_servo_holder();
+            translate([0, 0, UPPER_Z]) upper_servo_holder();
+        }
+
+        // servo holes
+        translate([0, 0, SERVO_UPPER_Z_POS - SERVO_HOLE_DIAMETER/4])
+        servo_support_holes();
+        translate([0, 0, SERVO_UPPER_Z_POS + UPPER_Z - SERVO_HOLE_DIAMETER/4])
+        servo_support_holes();
+
+        // passage
+        translate([0, 0, CUBE_HEIGHT*.9])
+        rotate([0, 0, 90*2]) {
+            lower_servo_fixture_arm_passage();
+            //%lower_servo_fixture_arm_passage();
+        }
+
+        // reinforcement
+        if(!$preview)
+            reinforcement_cracks();
+    }
+}
+
+printing_servos_holder();
+//printing_cube_lower();
+//printing_cube_lower_fixture();
+
 //crosscut() holders();
 //crosscut() holder_upper();
-crosscut() holder_lower();
+//crosscut() holder_lower();
