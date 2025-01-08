@@ -6,50 +6,49 @@
 // SERVO
 
 // - shaft
-SERVO_SHAFT_CROSS_WIDTH     =  5.0;
-SERVO_SHAFT_CROSS_THICKNESS =  1.8;
-SERVO_SHAFT_HEIGH           = 34.5;
+SERVO_SHAFT_CROSS_WIDTH      =  5.0;
+SERVO_SHAFT_CROSS_THICKNESS  =  1.8;
+SERVO_SHAFT_HEIGH            = 34.5;
 
 // - body
-SERVO_BODY_WIDTH            =  16;
-SERVO_L1_HEIGHT             =  9.5;
-SERVO_L2_HEIGHT             =  9.5;
-SERVO_L2_LENGTH             = 40;
-SERVO_BODY_HEIGHT           = 26.6;
-SERVO_BODY_X_SHIFT          =  7;
-SERVO_BODY_LENGTH           = 24;
+SERVO_BODY_WIDTH             =  16;
+SERVO_L1_HEIGHT              =  9.5;
+SERVO_L2_HEIGHT              =  9.5;
+SERVO_L2_LENGTH              = 40;
+SERVO_BODY_HEIGHT            = 26.6;
+SERVO_BODY_X_SHIFT           =  7;
+SERVO_BODY_LENGTH            = 24;
 // - misc
-SERVO_COLUMN_HEIGH          = 28.9;
-SERVO_COLUMN_DIAMETER       = 12;
-SERVO_HOLE_DIAMETER         =  4.5;
-SERVO_HOLE_Z                = 15;
-SERVO_HOLE_DIST             = 31.5;
+SERVO_COLUMN_HEIGH           = 28.9;
+SERVO_COLUMN_DIAMETER        = 12;
+SERVO_HOLE_DIAMETER          =  4.5;
+SERVO_HOLE_Z                 = 15;
+SERVO_HOLE_DIST              = 31.5;
 
 // SERVOS POSITIONS
-
-SERVO_UPPER_Z_POS           =  5;
+SERVO_UPPER_Z_POS            =  5;
 
 // SERVO HOLDER
-
-SERVO_HOLDER_BORDER         =  4;
+SERVO_HOLDER_BORDER          =  4;
 
 // CUBE
-
-CUBE_WIDTH                  = 60 - 3;
-CUBE_WALL                   =  1;
-CUBE_HEIGHT                 = 45; 
-CUBE_H_GAP                  =  0.25;
+CUBE_WIDTH                   = 60 - 3;
+CUBE_WALL                    =  1;
+CUBE_HEIGHT                  = 45; 
+CUBE_H_GAP                   =  0.25;
 
 SUPPORT_PLATE_DIAMETER_LOWER = CUBE_WIDTH - CUBE_WALL*2;
 SUPPORT_PLATE_DIAMETER_UPPER = SUPPORT_PLATE_DIAMETER_LOWER - CUBE_WALL*2;
 
+// COMPUTED
+UPPER_Z                      = CUBE_HEIGHT + CUBE_H_GAP;
 
 // MISC
 TOLERANCE = 0.13;
-ATOM = 0.02;
-$fn = $preview ? 40 : 60;
-FINE_FN = $preview ? 40 : 360;
- 
+ATOM      = 0.02;
+$fn       = $preview ? 40 : 60;
+FINE_FN   = $preview ? 40 : 360;
+
 ////////////////////////////////////////////////////////////////////////////////
 
 module servo_shaft() {
@@ -138,61 +137,68 @@ module upper_cube_body() {
     cube_inner_cylinder(CUBE_HEIGHT, SUPPORT_PLATE_DIAMETER_UPPER);
 }
 
-module servo_shaft_fixture(size, h, z, step, arm_w) {
+module servo_shaft_fixture_outer(size, h, z, step, arm_w) {
     border = 1;
     d = (size - border*2) / sqrt(2);
-    union() {
-        // outer crown
-        translate([0, 0, z])
+
+    // outer crown
+    translate([0, 0, z])
+    difference() {
+        cylinder(d=size+ATOM*4, h=h);
+        for(a=[0:step:360-1])
+            rotate([0, 0, a])
+            cube([d, d, h*3], center=true);
+    }
+}
+
+module servo_shaft_fixture_inner(size, h, z, step, arm_w) {
+    border = 1;
+    d = (size - border*2) / sqrt(2);
+
+    // inner wheel
+    color("red")
+    translate([0, 0, z]) {
         difference() {
-            cylinder(d=size+ATOM*4, h=h);
-            for(a=[0:step:360-1])
-                rotate([0, 0, a])
-                cube([d, d, h*3], center=true);
-        }
+            union() {
+                // teeth
+                translate([0, 0, h/2])
+                cube([d, d, h], center=true);
 
-        // inner wheel
-        color("red")
-        translate([0, 0, z]) {
-            difference() {
-                union() {
-                    // teeth
-                    translate([0, 0, h/2])
-                    cube([d, d, h], center=true);
-
-                    // crown
-                    cylinder(d=size - border*2.75, h=h);
-                }
-                cylinder(d=size - border*4.5, h=h*3, center=true);
+                // crown
+                cylinder(d=size - border*2.75, h=h);
             }
-            
-            difference() {
-                // cross
-                intersection() {
-                    union() {
-                        l = size - border*(4.5-ATOM*2);
-                        translate([0, 0, h/2])
-                        cube([arm_w, l, h], center=true);
-                        translate([0, 0, h/2])
-                        cube([l, arm_w, h], center=true);
-                    }
-                    cylinder(d=size - border*4.5 + ATOM, h=h*3, center=true);
+            cylinder(d=size - border*4.5, h=h*3, center=true);
+        }
+        
+        difference() {
+            // cross
+            intersection() {
+                union() {
+                    l = size - border*(4.5-ATOM*2);
+                    translate([0, 0, h/2])
+                    cube([arm_w, l, h], center=true);
+                    translate([0, 0, h/2])
+                    cube([l, arm_w, h], center=true);
                 }
+                cylinder(d=size - border*4.5 + ATOM, h=h*3, center=true);
+            }
 
-                // shaft
-                for(i=[-1, 1]) {
-                    for(j=[-1, 1]) {
-                        translate([i*TOLERANCE,j*TOLERANCE, -h*2])
-                        servo_shaft();
-                    }
+            // shaft
+            for(i=[-1, 1]) {
+                for(j=[-1, 1]) {
+                    translate([i*TOLERANCE,j*TOLERANCE, -h*2])
+                    servo_shaft();
                 }
             }
         }
     }
 }
 
-module upper_servo_shaft_fixture() {
-    servo_shaft_fixture(SUPPORT_PLATE_DIAMETER_UPPER, 7, -7, 1, 8);
+module upper_servo_shaft_fixture(inner=true, outer=true) {
+    if (inner)
+        servo_shaft_fixture_inner(SUPPORT_PLATE_DIAMETER_UPPER, 7, -7, 1, 8);
+    if (outer)
+        servo_shaft_fixture_outer(SUPPORT_PLATE_DIAMETER_UPPER, 7, -7, 1, 8);
 }
 
 module lower_cube_body() {
@@ -238,10 +244,22 @@ module lower_cube_body() {
             }
             cylinder(d=d, h=h*3, center=true);
         }
-        servo_shaft_fixture(d, h, 0, 2, 5.5);
         
         translate([0, 0, h])
         cylinder(d=d, h=extra_h);
+    }
+}
+
+module lower_servo_shaft_fixture(inner=true, outer=true) {
+    h = 4;
+    d = 30 - 6;
+    marg = 5;
+
+    translate([0, 0, CUBE_HEIGHT-h-marg]) {
+        if (inner)
+            servo_shaft_fixture_inner(d, h, 0, 2, 5.5);
+        if (outer)
+            servo_shaft_fixture_outer(d, h, 0, 2, 5.5);
     }
 }
 
@@ -362,60 +380,76 @@ module lower_servo_holder() {
     }
 }
 
-module holders() {
+
+module holder_upper() {
     difference() {
-        upper_z = CUBE_HEIGHT + CUBE_H_GAP;
+        translate([0, 0, UPPER_Z])
         union() {
-            // upper part
-if (0)
-            translate([0, 0, upper_z])
-            union() {
+            if ($preview)
                 translate([0, 0, SERVO_UPPER_Z_POS]) servo();
 
-                upper_cube_body();
+            upper_cube_body();
 
-                translate([0, 0, CUBE_HEIGHT - CUBE_WALL*1.5])
-                upper_servo_shaft_fixture();
+            translate([0, 0, CUBE_HEIGHT - CUBE_WALL*1.5])
+            upper_servo_shaft_fixture(inner=true, outer=false);
+            upper_servo_shaft_fixture(inner=false, outer=true);
 
-                upper_servo_holder();
-            }
-
-            // lower part
-//if (0)
-            union() {
-                translate([0, 0, SERVO_UPPER_Z_POS]) servo();
-                lower_cube_body();
-                lower_servo_holder();
-            }
+            upper_servo_holder();
         }
 
         // servo holes
-        for (z=[0, upper_z])
-        translate([0, 0, SERVO_UPPER_Z_POS+z - SERVO_HOLE_DIAMETER/4]) {
-            servo_support_holes();
-
-        }
+        translate([0, 0, SERVO_UPPER_Z_POS + UPPER_Z - SERVO_HOLE_DIAMETER/4])
+        servo_support_holes();
         
         // reinforcement
-//if (0)
         if(!$preview)
             reinforcement_cracks();
-
     }
 }
 
+module holder_lower() {
+    difference() {
+        upper_z = CUBE_HEIGHT + CUBE_H_GAP;
+        union() {
+            if ($preview)
+                translate([0, 0, SERVO_UPPER_Z_POS]) servo();
+            lower_cube_body();
+            lower_servo_holder();
 
+            lower_servo_shaft_fixture(inner=true, outer=false);
+            lower_servo_shaft_fixture(inner=false, outer=true);
+        }
 
-difference() {
-    holders();
-
-    if (1 && $preview) {
-        if (1)
-            translate([-CUBE_WIDTH*.75, -CUBE_WIDTH, -CUBE_WIDTH/2])
-            cube([CUBE_WIDTH, CUBE_WIDTH, CUBE_WIDTH*10]);
-        if (0)
-            cylinder(r=CUBE_WIDTH, h=CUBE_HEIGHT*.87, center=true);
+        // servo holes
+        translate([0, 0, SERVO_UPPER_Z_POS - SERVO_HOLE_DIAMETER/4])
+        servo_support_holes();
+        
+        // reinforcement
+        if(!$preview)
+            reinforcement_cracks();
     }
 }
 
+module holders() {
+    holder_upper();
+    holder_lower();
+}
 
+module crosscut() {
+    difference() {
+        children();
+        if ($preview) {
+            // cut quarter
+            if (1)
+                translate([-CUBE_WIDTH*.75, -CUBE_WIDTH, -CUBE_WIDTH/2])
+                cube([CUBE_WIDTH, CUBE_WIDTH, CUBE_WIDTH*10]);
+            // cut bottom
+            if (0)
+                cylinder(r=CUBE_WIDTH, h=CUBE_HEIGHT*.87, center=true);
+        }
+    }
+}
+
+//crosscut() holders();
+//crosscut() holder_upper();
+crosscut() holder_lower();
