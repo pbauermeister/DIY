@@ -6,50 +6,49 @@
 // SERVO
 
 // - shaft
-SERVO_SHAFT_CROSS_WIDTH     =  5.0;
-SERVO_SHAFT_CROSS_THICKNESS =  1.8;
-SERVO_SHAFT_HEIGH           = 34.5;
+SERVO_SHAFT_CROSS_WIDTH      =  5.0;
+SERVO_SHAFT_CROSS_THICKNESS  =  1.8;
+SERVO_SHAFT_HEIGH            = 34.5;
 
 // - body
-SERVO_BODY_WIDTH            =  16;
-SERVO_L1_HEIGHT             =  9.5;
-SERVO_L2_HEIGHT             =  9.5;
-SERVO_L2_LENGTH             = 40;
-SERVO_BODY_HEIGHT           = 26.6;
-SERVO_BODY_X_SHIFT          =  7;
-SERVO_BODY_LENGTH           = 24;
+SERVO_BODY_WIDTH             =  16;
+SERVO_L1_HEIGHT              =  9.5;
+SERVO_L2_HEIGHT              =  9.5;
+SERVO_L2_LENGTH              = 40;
+SERVO_BODY_HEIGHT            = 26.6;
+SERVO_BODY_X_SHIFT           =  7;
+SERVO_BODY_LENGTH            = 24;
 // - misc
-SERVO_COLUMN_HEIGH          = 28.9;
-SERVO_COLUMN_DIAMETER       = 12;
-SERVO_HOLE_DIAMETER         =  4.5;
-SERVO_HOLE_Z                = 15;
-SERVO_HOLE_DIST             = 31.5;
+SERVO_COLUMN_HEIGH           = 28.9;
+SERVO_COLUMN_DIAMETER        = 12;
+SERVO_HOLE_DIAMETER          =  4.5;
+SERVO_HOLE_Z                 = 15;
+SERVO_HOLE_DIST              = 31.5;
 
 // SERVOS POSITIONS
-
-SERVO_UPPER_Z_POS           =  5;
+SERVO_UPPER_Z_POS            =  5;
 
 // SERVO HOLDER
-
-SERVO_HOLDER_BORDER         =  4;
+SERVO_HOLDER_BORDER          =  4;
 
 // CUBE
-
-CUBE_WIDTH                  = 60 - 3;
-CUBE_WALL                   =  1;
-CUBE_HEIGHT                 = 45; 
-CUBE_H_GAP                  =  0.25;
+CUBE_WIDTH                   = 60 - 3;
+CUBE_WALL                    =  1;
+CUBE_HEIGHT                  = 45; 
+CUBE_H_GAP                   =  0.25;
 
 SUPPORT_PLATE_DIAMETER_LOWER = CUBE_WIDTH - CUBE_WALL*2;
 SUPPORT_PLATE_DIAMETER_UPPER = SUPPORT_PLATE_DIAMETER_LOWER - CUBE_WALL*2;
 
+// COMPUTED
+UPPER_Z                      = CUBE_HEIGHT + CUBE_H_GAP;
 
 // MISC
 TOLERANCE = 0.13;
-ATOM = 0.02;
-$fn = $preview ? 40 : 60;
-FINE_FN = $preview ? 40 : 360;
- 
+ATOM      = 0.02;
+$fn       = $preview ? 40 : 60;
+FINE_FN   = $preview ? 40 : 360;
+
 ////////////////////////////////////////////////////////////////////////////////
 
 module servo_shaft() {
@@ -362,13 +361,12 @@ module lower_servo_holder() {
     }
 }
 
-module holders() {
+
+module holder_upper() {
     difference() {
-        upper_z = CUBE_HEIGHT + CUBE_H_GAP;
         union() {
             // upper part
-if (0)
-            translate([0, 0, upper_z])
+            translate([0, 0, UPPER_Z])
             union() {
                 translate([0, 0, SERVO_UPPER_Z_POS]) servo();
 
@@ -379,9 +377,23 @@ if (0)
 
                 upper_servo_holder();
             }
+        }
 
+        // servo holes
+        translate([0, 0, SERVO_UPPER_Z_POS + UPPER_Z - SERVO_HOLE_DIAMETER/4])
+        servo_support_holes();
+        
+        // reinforcement
+        if(!$preview)
+            reinforcement_cracks();
+    }
+}
+
+module holder_lower() {
+    difference() {
+        upper_z = CUBE_HEIGHT + CUBE_H_GAP;
+        union() {
             // lower part
-//if (0)
             union() {
                 translate([0, 0, SERVO_UPPER_Z_POS]) servo();
                 lower_cube_body();
@@ -390,32 +402,34 @@ if (0)
         }
 
         // servo holes
-        for (z=[0, upper_z])
-        translate([0, 0, SERVO_UPPER_Z_POS+z - SERVO_HOLE_DIAMETER/4]) {
-            servo_support_holes();
-
-        }
+        translate([0, 0, SERVO_UPPER_Z_POS - SERVO_HOLE_DIAMETER/4])
+        servo_support_holes();
         
         // reinforcement
-//if (0)
         if(!$preview)
             reinforcement_cracks();
-
     }
 }
 
+module holders() {
+    holder_upper();
+    holder_lower();
+}
 
-
-difference() {
-    holders();
-
-    if (1 && $preview) {
-        if (1)
-            translate([-CUBE_WIDTH*.75, -CUBE_WIDTH, -CUBE_WIDTH/2])
-            cube([CUBE_WIDTH, CUBE_WIDTH, CUBE_WIDTH*10]);
-        if (0)
-            cylinder(r=CUBE_WIDTH, h=CUBE_HEIGHT*.87, center=true);
+module crosscut() {
+    difference() {
+        children();
+        if ($preview) {
+            // cut quarter
+            if (1)
+                translate([-CUBE_WIDTH*.75, -CUBE_WIDTH, -CUBE_WIDTH/2])
+                cube([CUBE_WIDTH, CUBE_WIDTH, CUBE_WIDTH*10]);
+            // cut bottom
+            if (0)
+                cylinder(r=CUBE_WIDTH, h=CUBE_HEIGHT*.87, center=true);
+        }
     }
 }
 
-
+//crosscut() holders();
+crosscut() holder_lower();
