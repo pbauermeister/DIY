@@ -59,10 +59,6 @@ module buckle() {
             translate([length/2+THICKNESS/2, 0, 0])
             cylinder(d=THICKNESS, h=STRAP_WIDTH);
         }
-        if(0)
-        translate([length-ATOM, 0, STRAP_WIDTH/2+passage_dz])
-        rotate([passage_angle, 0, 0])
-        cube([length, passage_thickness, STRAP_WIDTH], center=true);
 
         // passage
         gap = .3;

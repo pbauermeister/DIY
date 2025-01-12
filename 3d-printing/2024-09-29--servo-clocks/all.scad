@@ -447,7 +447,7 @@ module holder_lower() {
     }
 }
 
-module holders() {
+module all() {
     holder_upper();
     holder_lower();
 }
@@ -505,10 +505,10 @@ module printing_servos_holder() {
     }
 }
 
-printing_servos_holder();
+//printing_servos_holder();
 //printing_cube_lower();
 //printing_cube_lower_fixture();
 
-//crosscut() holders();
+crosscut() all();
 //crosscut() holder_upper();
 //crosscut() holder_lower();
