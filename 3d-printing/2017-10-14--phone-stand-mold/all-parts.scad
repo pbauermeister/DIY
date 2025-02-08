@@ -133,7 +133,7 @@ module diagonal_end_rest_raw(flat=false, with_hole=false) {
 
 module diagonal_end_rest(flat=false, with_hole=false) {
     thickness = REST_LENGTH;
-    dz = REST_HEIGHT + thickness/2 +REST_HEIGHT/2;
+    //dz = REST_HEIGHT + thickness/2 +REST_HEIGHT/2;
     dz = WALL_THICKNESS*2;
     rotate([0, flat?-45:0, 0])
     translate([0, 0, flat?-elevation-dz:0])
@@ -218,6 +218,124 @@ module diagonal_end(flat=false) {
         diagonal_end_holes(false);
     }
 }
+
+GRIP_HEIGHT = 20 + .5;
+GRIP_PLATE_THICKNESS = 2;
+GRIP_WALL_THICKNESS = 2;
+GRIP_WEDGE = 2.5;
+GRIP_WEDGE_ANGLE = 45/5;
+
+module diagonal_grip_raw() {
+    translate([0, 0, elevation])
+    rotate([0, 45, 0]) {
+        difference() {
+            union() {
+                wl = PIPE_DIAMETER_INNER* S2 + REST_HEIGHT*S2;
+                ww = PIPE_DIAMETER_INNER;
+                wh = GRIP_HEIGHT;
+
+                translate([-wl/2 - REST_LENGTH, -ww/2, -REST_HEIGHT/2])
+                cube([wl, ww, wh]);
+            }
+
+            // make wall thinner
+            w = PIPE_DIAMETER_INNER* S2 + REST_HEIGHT*S2 +6-GRIP_WALL_THICKNESS;
+            l = PIPE_DIAMETER_INNER;
+            h = GRIP_HEIGHT - GRIP_WEDGE;
+
+            translate([-REST_LENGTH - WALL_THICKNESS*1.25, 0, -REST_HEIGHT/2-ATOM])
+            translate([-w/2, -l/2, 0])
+            cube([w, l, h]);
+
+            // keep wedge
+            translate([-REST_LENGTH-WALL_THICKNESS*1.25, 0, -REST_HEIGHT/2])
+            translate([-w/2, -l/2, 0])
+            translate([w, 0, h])
+            rotate([0, GRIP_WEDGE_ANGLE, 0])
+            translate([-w, 0, -h])
+            cube([w, l, h]);
+
+            translate([-REST_LENGTH-WALL_THICKNESS, 0, -REST_HEIGHT/2])
+            translate([-w/2, -l/2, 0])
+            translate([w, 0, h])
+            translate([-w - GRIP_WALL_THICKNESS*3, 0, -h])
+            cube([w, l, h*2]);
+            
+            //remove extraneous
+            translate([-PIPE_DIAMETER_INNER*.3, 0, 0 ])
+            cube([PIPE_DIAMETER_INNER, PIPE_DIAMETER_INNER, PIPE_DIAMETER_INNER], center=true);
+            
+            // cable
+            cw = PLUG_GROVE_WIDTH + 4;
+            translate([-REST_LENGTH-WALL_THICKNESS, 0, - GRIP_WEDGE/2 + REST_HEIGHT])
+            translate([0, -cw/2, -h/2])
+            translate([w, 0, h])
+            translate([-w - GRIP_WALL_THICKNESS*3, 0, -h])
+            cube([w, cw, h*2]);
+            
+            // shavespikes
+            /*
+            for(y=[-1, 1])
+                translate([50, 30.2*y, 16])
+                cube([20, 10, 10], center=true);
+            */
+        }
+    }
+}
+
+module diagonal_grip_leg() {
+    translate([0, 0, elevation])
+    rotate([0, 45, 0]) {
+        difference() {
+            // cable grove
+            cl = PIPE_DIAMETER_INNER* S2 + REST_HEIGHT*S2;
+            cw = PLUG_GROVE_WIDTH;
+            ch = GRIP_PLATE_THICKNESS;   
+            w = PIPE_DIAMETER_INNER* S2 + REST_HEIGHT*S2 +6-GRIP_WALL_THICKNESS;
+            l = PIPE_DIAMETER_INNER;
+            h = GRIP_HEIGHT - GRIP_WEDGE;
+
+            hull() {
+                translate([-cl/2, -cw/2, -REST_HEIGHT/2])
+                cube([cl, cw, ch*.75], !true);   
+
+                translate([-cl/2 - REST_LENGTH, -cw/2, -REST_HEIGHT/2])
+                cube([cl, cw, ch*1.67], !true);   
+            }
+            
+            translate([-REST_LENGTH - WALL_THICKNESS*1.25, 0, -REST_HEIGHT/2-ATOM])
+            translate([-w/2, -l/2, 0])
+            cube([w, l, h]);
+        }
+    }
+}
+
+
+module diagonal_grip(flat=false) {
+    sink = flat ? -elevation + REST_HEIGHT / S2 : 0;
+    rot = flat ? -45 : 0;
+    
+    rotate([0, rot, 0])
+    translate([0, 0, sink]) {
+        intersection() {
+            diagonal_grip_raw();
+
+    //%        barrel(PIPE_DIAMETER_INNER/2, 0, PIPE_HEIGHT);
+
+            // clip sides
+            cube([300, 72.5+2, 300], center=true);
+        }
+
+        intersection() {
+            diagonal_grip_leg();
+            barrel(PIPE_DIAMETER_INNER/2, 0, PIPE_HEIGHT);
+        }
+
+    }
+
+}
+
+!diagonal_grip(true);
 
 module perpendicular_end_raw(recess) {
     // small chamber
@@ -345,8 +463,8 @@ fplate();
 ///////////////////////
 
 perpendicular_end();
-//diagonal_end();
-//%barrel(PIPE_DIAMETER_OUTER/2, PIPE_DIAMETER_INNER/2, PIPE_HEIGHT);
+%diagonal_end();
+%barrel(PIPE_DIAMETER_OUTER/2, PIPE_DIAMETER_INNER/2, PIPE_HEIGHT);
 
 translate([150, 0, 0])
 diagonal_end(flat=true);
