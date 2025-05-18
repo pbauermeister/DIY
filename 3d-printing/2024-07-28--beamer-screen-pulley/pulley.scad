@@ -1,7 +1,13 @@
 use <lib.scad>
 
-pulley();
+dist = 30;
 
-if(0)
-translate([30, 0, 0])
-pulley();
+/*
+pulleys(dist);
+translate([dist*.5, dist*.5, 10.65])
+scale([1, 1, -1])
+rivets(dist);
+*/
+
+scale([1, 1, -1])
+rivet2();
