@@ -9,6 +9,10 @@ SUPPORT_D      =  0.50;
 //                   V2.0   V2.1
 HINGE_EXTRA_LENGTH = 1.2  - 1.2;
 
+// Hole in hinge for steel pin:
+PIN_D          =  1.75;
+PIN_HEIGHT_K   =  4.65;
+
 ATOM           =  0.001;
 TOLERANCE2     = TOLERANCE +.5 /5;
 
@@ -127,7 +131,7 @@ module p2_new(h=LAYER_HEIGHT, extent=0, thickness=THICKNESS,
 
 ////////////////////////////////////////////////////////////////////////////////
 
-module hinge_new(nb_layers=4, layer_height=LAYER_HEIGHT,
+module hinge_new0(nb_layers=4, layer_height=LAYER_HEIGHT,
              layer_imbalance=0,
              thickness=THICKNESS,
              width1=THICKNESS, shave_bottom1=0, shave_top1=0,
@@ -202,6 +206,36 @@ module hinge_new(nb_layers=4, layer_height=LAYER_HEIGHT,
     }
 }
 
+module hinge_new(nb_layers=4, layer_height=LAYER_HEIGHT,
+             layer_imbalance=0,
+             thickness=THICKNESS,
+             width1=THICKNESS, shave_bottom1=0, shave_top1=0,
+             width2=THICKNESS, shave_bottom2=0, shave_top2=0, angle2=0,
+             only_axis=false) {
+    difference() {
+        hinge_new0(
+            nb_layers, layer_height,
+            layer_imbalance,
+            thickness,
+            width1, shave_bottom1, shave_top1,
+            width2, shave_bottom2, shave_top2, angle2,
+            only_axis);
+
+        pin_h = layer_height * PIN_HEIGHT_K;
+        //pin_h = LAYER_HEIGHT * nb_layers *2;
+        for(z=[-ATOM, nb_layers*layer_height*2 - pin_h + ATOM*2])
+            translate([0, 0, z - ATOM])
+            cylinder(d=PIN_D, h=pin_h);
+
+        %translate([0, 20, 0])
+        for(z=[-ATOM, nb_layers*layer_height*2 - pin_h + ATOM*2])
+            translate([0, 0, z - ATOM])
+            cylinder(d=PIN_D, h=pin_h);
+
+    }
+}
+
+
 //!hinge_new();
 //!hinge_new(shave_bottom1=1);
 //!hinge_new(shave_bottom2=1);
@@ -222,6 +256,24 @@ function get_hinge_height(nb_layers=3,
 module main_hinge() {
     z = -14.25  + .9;
     n =   9     + 1;
+    w1 =  5;
+    w2 = 10;
+    th =  4.5;
+    h =  10     - .9;
+    translate([-4.0, th, z])
+    rotate([0, 0, 180])
+    hinge_new(nb_layers=n, layer_height=h, thickness=th,
+              width1=w2, width2=w1, angle2=90);
+
+    translate([-4.0, -th, z])
+    rotate([0, 0,  180])
+    hinge_new(nb_layers=n, layer_height=h, thickness=th,
+              width1=w2, width2=w1, angle2=-90);
+}
+
+module main_hinge_test() {
+    z = -14.25  + .9;
+    n =   2;
     w1 =  5;
     w2 = 10;
     th =  4.5;

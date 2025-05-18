@@ -623,6 +623,12 @@ module lid_hinge_maybe_cached(no_cache=false) {
 
         translate([0, -THICKNESS/2, 0])
         flap_cut();
+        
+        translate([-THICKNESS, -THICKNESS, -THICKNESS - WALL_THICKNESS*.75])
+        cube([THICKNESS, THICKNESS*2, THICKNESS]);
+
+        translate([-THICKNESS, -THICKNESS, +WALL_THICKNESS*.75 + S22_LENGTH])
+        cube([THICKNESS, THICKNESS*2, THICKNESS]);
     }
 }
 
@@ -688,10 +694,10 @@ module support() {
     difference() {
         translate([WIDTH/2-1.75, 0, -.8])
         difference() {
-            scale([1, 1.3, 1])
+            scale([1, 1.3 *2, 1])
             cylinder(d=d, h=LENGTH*.6);
 
-            scale([1, 1.32, 1])
+            scale([1, 1.32 *2, 1])
             translate([0, 0, -ATOM])
             cylinder(d=d-1, h=LENGTH*.6+ATOM*2);
         }
@@ -1032,11 +1038,12 @@ module upper_slice() {
 
 //case_full(); // GOOD
 
-intersection() {
-
 //lid1();
 //lid(); // GOOD
 //lid_hinge_maybe_cached(true);  // GOOD
+
+//intersection() { lid_hinge_maybe_cached(true); cylinder(d=50, h= 40); }
+
 //lid_hinge(); // GOOD
 //upper_slice() all_back();
 
@@ -1050,6 +1057,10 @@ intersection() {
 
 //camera_flap_texture();
 
-    all();
-    //cylinder(r=1000, h=30);
-}
+//cylinder(r=1000, h=30);
+
+// hinge portion
+//intersection() { all(); translate([0, 0, -3]) cylinder(d=20, h=40); }
+
+//all();
+lid_hinge0_new();
