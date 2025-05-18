@@ -1,20 +1,20 @@
-PULLEY_DIAMETER = 22;
-PULLEY_EXTRA = 3;
-PULLEY_AXIS_DIAMETER = 8;
+PULLEY_DIAMETER      =  22;
+PULLEY_EXTRA         =   3         -2;
+PULLEY_AXIS_DIAMETER =   8;
 
-BALL_DIAMETER = 4.5;
-BALLS_PER_TURN = 14;
-BALLS_SPACING = 19 / 3;
+BALL_DIAMETER        =   4.5;
+BALLS_PER_TURN       =  14;
+BALLS_SPACING        =  19 / 3;
 
-WALL_THICKNESS = 3;
+WALL_THICKNESS       =   3;
+HANDLE_LENGTH        = 100;
+PLAY                 =   0.13;
 
-HANDLE_LENGTH = 100;
-
-PLAY = .13;
-ATOM = 0.01;
-
+// computed
 R = PULLEY_DIAMETER/2 + BALL_DIAMETER/2;
+PULLEYS_DISTANCE = HANDLE_LENGTH - PULLEY_DIAMETER*.75;
 
+ATOM = 0.01;
 $fn = 120;
 
 
@@ -30,20 +30,18 @@ module pulley_struct() {
     
     difference() {
         cylinder(d=PULLEY_DIAMETER + PULLEY_EXTRA*2, h= BALL_DIAMETER*5-ATOM, center=true);
-        cylinder(d=PULLEY_DIAMETER-th , h=BALL_DIAMETER*5, center=true);
+        cylinder(d=PULLEY_DIAMETER-th*1.5 , h=BALL_DIAMETER*5, center=true);
     }    
 }
 
 module pulley_teeth() {
     difference() {
-        cylinder(d=PULLEY_DIAMETER + PULLEY_EXTRA, h= BALL_DIAMETER+PLAY*2);
+        cylinder(d=PULLEY_DIAMETER + PULLEY_EXTRA, h= BALL_DIAMETER+PLAY*2*0);
 
         for (i=[0:1:BALLS_PER_TURN-1]) {
-            r = PULLEY_DIAMETER/2 + BALL_DIAMETER/2 -.4;
             rotate([0, 0, 360/BALLS_PER_TURN*i])
-            translate([R, 0, BALL_DIAMETER/2+PLAY]) {
+            translate([R-.5, 0, BALL_DIAMETER/2+PLAY*0]) {
                 sphere(d=BALL_DIAMETER + PLAY*2, $fn=60);
-                //%cylinder(d=BALL_DIAMETER + PLAY*2, BALL_DIAMETER);
             }
         }
 
@@ -108,10 +106,10 @@ module rivet(axis_diameter) {
             cylinder(d=axis_diameter - PLAY*3, h=h);
 
             translate([0, 0, BALL_DIAMETER + PLAY*5 + WALL_THICKNESS])
-            cylinder(d1=PULLEY_AXIS_DIAMETER+head_extra, d2=PULLEY_AXIS_DIAMETER, h=head_thickness);
+            cylinder(d1=PULLEY_AXIS_DIAMETER+head_extra+.5, d2=PULLEY_AXIS_DIAMETER-1, h=head_thickness);
 
             translate([0, 0, -PLAY*5 - WALL_THICKNESS - head_thickness])
-            cylinder(d2=PULLEY_AXIS_DIAMETER+head_extra, d1=PULLEY_AXIS_DIAMETER, h=head_thickness);
+            cylinder(d2=PULLEY_AXIS_DIAMETER+head_extra+.5, d1=PULLEY_AXIS_DIAMETER-1, h=head_thickness);
         }
 
         w = head_extra * 1.5;
@@ -120,33 +118,37 @@ module rivet(axis_diameter) {
     }
 }
 
+module rivet1() { rivet(PULLEY_AXIS_DIAMETER); }
+module rivet2() { rivet(PULLEY_AXIS_DIAMETER*.75); }
 
-PULLEYS_DISTANCE = HANDLE_LENGTH - PULLEY_DIAMETER*.75;
-
-module rivets(axis_diameter) {
-    rivet(PULLEY_AXIS_DIAMETER);
-
-    translate([0, PULLEYS_DISTANCE, 0])
-    rivet(PULLEY_AXIS_DIAMETER*.75);
+module rivets(dist=PULLEYS_DISTANCE) {
+    rivet1();
+    translate([0, dist, 0]) rivet2();
 }
 
+module pulleys(dist=PULLEYS_DISTANCE) {
+    pulley();
+    translate([0, dist, 0]) pulley();
+}
 
-if (1)
-intersection() {
+module cross_cutter() {
+    intersection() {
+        children();
+        translate([0, -HANDLE_LENGTH/2, -BALL_DIAMETER*2.5])
+        cube([PULLEY_DIAMETER, HANDLE_LENGTH*2, BALL_DIAMETER*6]);
+    }
+}
+
+if (0) cross_cutter() {
     union() {
         handle();
         chain();
-        pulley();
-        translate([0, PULLEYS_DISTANCE, 0]) pulley();
+        pulleys();
 %        rivets();
     }
-
-//%    cylinder(r=HANDLE_LENGTH*2, h=BALL_DIAMETER/2);
-    translate([0, -HANDLE_LENGTH/2, -BALL_DIAMETER*2.5])
-    cube([PULLEY_DIAMETER, HANDLE_LENGTH*2, BALL_DIAMETER*6]);
 } else {
-%    handle();
-    //chain();
-    pulley();
-    translate([0, PULLEYS_DISTANCE, 0]) pulley();
+    %cross_cutter() handle();
+
+    rivets();
+    pulleys();
 }
