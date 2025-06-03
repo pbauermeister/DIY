@@ -1,8 +1,7 @@
-L = 120;
+L = 120 + 5;
 W =  55;
 H = 225;
-R =   4*0 +2;
-HOLE_D = 45;
+R =   2  /5*4;
 
 ATOM   = 0.01;
 $fn    = 12;
@@ -20,14 +19,12 @@ module rcube(r, l, w, h, shift=0) {
 }
 
 module hole(extra=0, h=R, z=0) {
-    k = .71;
+    k = .60;
     w = W * k + extra;
     l = L * k + extra;
     translate([L/2, W/2, z])
     translate([-l/2, -w/2]) cube([l, w, h]);
 
-    d = HOLE_D+extra;
-    //cylinder(d=d, h=h, $fn=100);
 }
 
 module box() {
@@ -40,11 +37,6 @@ module box() {
         translate([r, r, r])
         rcube(r, L-r*2, W-r*2, H*2);
 
-        // angle window (if filament is translucent)
-        translate([-R/2, -R/2, r+H/4])
-        rcube(r, L/2, W/2, H/2.5);
-
-        //%rcube(ATOM, L, W, H+20);
 
         d = R/2.2;
         s1 = W/16;
