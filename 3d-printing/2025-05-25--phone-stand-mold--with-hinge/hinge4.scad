@@ -9,22 +9,30 @@ module hinge4(
     layer_height=0,
     total_height=0,
     fn=$preview ? 20 : 100,
-    tolerance=0.13,
+    tolerance=0.2,
     with_plate=true,
+    extra_angle=0,
+    only_alt=-1,
 ) {
     assert(thickness, "You must specify thickness")
     if (nb_layers==0 && total_height && layer_height) {
         _nb_layers = floor(total_height / layer_height);
         _layer_height = total_height / _nb_layers;
-        hinge4_0(thickness, angle, arm_length, _nb_layers, _layer_height, total_height, fn, tolerance, with_plate);
+        hinge4_0(thickness, angle, arm_length,
+                 _nb_layers, _layer_height, total_height,
+                 fn, tolerance, with_plate, extra_angle, only_alt);
     }
     else if (nb_layers && total_height==0 && layer_height) {
         _total_height = nb_layers * layer_height;
-        hinge4_0(thickness, angle, arm_length, nb_layers, layer_height, _total_height, fn, tolerance, with_plate);
+        hinge4_0(thickness, angle, arm_length,
+                 nb_layers, layer_height, _total_height,
+                 fn, tolerance, with_plate, extra_angle, only_alt);
     }
     else if (nb_layers && total_height && layer_height==0) {
         _layer_height = total_height / nb_layers;
-        hinge4_0(thickness, angle, arm_length, nb_layers, _layer_height, total_height, fn, tolerance, with_plate);
+        hinge4_0(thickness, angle, arm_length,
+                 nb_layers, _layer_height, total_height,
+                 fn, tolerance, with_plate, extra_angle, only_alt);
     }
     else assert(false, "You must specify exactly 2 of (nb_layers, total_height, layer_height)");
 }
@@ -39,6 +47,33 @@ module hinge4_0(
     fn,
     tolerance,
     with_plate,
+    extra_angle,
+    only_alt,
+) {
+    echo("**** only-alt", only_alt)
+    echo("**** only-alt!=1", only_alt!=1)
+    echo("**** only-alt!=0", only_alt!=0)
+    if (only_alt!=1)
+    hinge4_1(0, thickness, angle, arm_length, nb_layers, layer_height, total_height,
+             fn, tolerance, with_plate, extra_angle);
+
+    if (only_alt!=0)
+    hinge4_1(1, thickness, angle, arm_length, nb_layers, layer_height, total_height,
+             fn, tolerance, with_plate, extra_angle);
+}
+
+module hinge4_1(
+    alt,
+    thickness,
+    angle,
+    arm_length,
+    nb_layers,
+    layer_height,
+    total_height,
+    fn,
+    tolerance,
+    with_plate,
+    extra_angle,
 ) {
     echo("*** thickness, nb_layers, total_height, layer_height, $fn",
          thickness, nb_layers, total_height, layer_height, fn);
@@ -48,7 +83,7 @@ module hinge4_0(
     min_wall = 0.3;
 
     difference() {
-        for (i=[0:nb_layers-1]) {
+        for (i=[alt:2:nb_layers-1]) {
             shave_top = (nb_layers <=1 ? 0 : i < nb_layers-1 ? tolerance : 0);
             shave_bottom = (nb_layers <=1 ? 0 : i > 0 ? tolerance : 0);
             h = layer_height - shave_top - shave_bottom;
@@ -62,7 +97,7 @@ module hinge4_0(
                         if (arm_length) {
                             rotate([0, 0, i%2 == 0 ? 0 : angle])
                             translate([0, -thickness/2, 0])
-                            cube([arm_length, thickness, layer_height-shave_top - shave_bottom]);
+                            cube([arm_length, thickness, layer_height - shave_top - shave_bottom]);
                         }
                     }
 
@@ -89,20 +124,34 @@ module hinge4_0(
     }
     
     if (with_plate && arm_length) {
-        translate([-arm_length, -thickness/2, 0])
-        cube([arm_length-thickness/2 - tolerance*3, thickness, total_height]);
+        if (alt) {
+            difference() {
+                rotate([0, 0, 180+angle])
+                translate([-arm_length, -thickness/2, 0])
+                cube([arm_length-thickness/2 - tolerance*3, thickness, total_height]);
 
-        rotate([0, 0, angle])
-        translate([-arm_length, -thickness/2, 0])
-        cube([arm_length-thickness/2 - tolerance*3, thickness, total_height]);
+                if (extra_angle) for(i=[1,-1])
+                    rotate([0, 0, angle + (90 + extra_angle)*i])
+                    translate([-arm_length, -thickness/2, -ATOM])
+                    cube([arm_length, thickness, total_height+ATOM*2]);
+            }
+        }
+        else {
+            difference() {
+                rotate([0, 0, 180])
+                translate([-arm_length, -thickness/2, 0])
+                cube([arm_length-thickness/2 - tolerance*3, thickness, total_height]);
 
+                if (extra_angle) for(i=[1,-1])
+                    rotate([0, 0, (90 + extra_angle)*i])
+                    translate([-arm_length, -thickness/2, -ATOM])
+                    cube([arm_length, thickness, total_height+ATOM*2]);
+            }
+        }
     }
     
 }
 
 
-hinge4(thickness=3, arm_length=6, total_height=16, layer_height=3);
+hinge4(thickness=4, arm_length=6, total_height=16, layer_height=3, angle=160, extra_angle=50);
 
-translate([0, -6, 1.5])
-rotate([90, 0, 0])
-hinge4(thickness=3, arm_length=6, total_height=16, layer_height=3);

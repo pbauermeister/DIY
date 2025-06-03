@@ -239,14 +239,14 @@ module hinge_new(nb_layers=4, layer_height=LAYER_HEIGHT,
 ////////////////////////////////////////////////////////////////////////////////
 // Phone support
 
-module support_hinge(thickness=THICKNESS, angle=false, only_clearance=false) {
+module support_hinge(thickness=THICKNESS, angle=false, only_clearance=false, alt=false) {
     nb = 10;
     lh = 6.9 * .75;
     //%cylinder(d=100, h=100);
     if (only_clearance) {
         for (i=[0:nb-1]) {
-            translate([0, 0, lh*i*2 -.5])
-            cylinder(d=thickness*2, h=lh+1);
+            translate([0, 0, lh*(i*2 + (alt?1:0)) -.5])
+            cylinder(d=thickness*3, h=lh + (alt?.5:1));
         }
     }
     else {
