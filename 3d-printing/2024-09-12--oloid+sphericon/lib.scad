@@ -39,6 +39,7 @@ module sphericon() {
 
 oloid();
 
+translate([D*1.5, 0, 0])
 sphericon();
 
 module support() {
