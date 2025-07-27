@@ -2,7 +2,6 @@
 INNER_GAP        =  13;
 WIDTH            =  18.5    + .5   + .5;
 LENGTH           = 109;
-LENGTH_XTRA      =  51;
 
 THICKNESS_TOP    =   0.5    + .5;
 THICKNESS_SIDE   =   2;
@@ -61,36 +60,33 @@ module body() {
         rcube(R*1.7, BUMPER_W+R, BUMPER_H, LENGTH, -R*1.7, cyl=!true);
     }
 
+/*
     // foot
     translate([-WIDTH/2 - THICKNESS_SIDE, TOTAL_WIDTH, 0]) {
         intersection() {
             translate([0, WIDTH/16, 0])
             cube([WIDTH*2, WIDTH/8, LENGTH*10], center=true);
-
-            hull() {
-                for (h=[WIDTH/2+1, LENGTH - WIDTH/2-1 + LENGTH_XTRA]) {
-                    translate([1, 0, h])
-                    scale([1, .35, 1])
-                    sphere(d=WIDTH+2, $fn = $preview? 16*4 : 100); 
+            union() {
+                hull() {
+                    for (h=[WIDTH/2+1, LENGTH - WIDTH/2-1]) {
+                        translate([1, 0, h])
+                        scale([1, .35, 1])
+                        sphere(d=WIDTH+2, $fn = $preview? 16*4 : 100); 
+                    }
                 }
+
             }
         }
-
-        for (h=[WIDTH/2+1, LENGTH - WIDTH/2-1 + LENGTH_XTRA]) {
-            translate([1, 1, h])
-            scale([1, .35, 1])
-            sphere(d=WIDTH*.75, $fn = $preview? 16*4 : 100);
-        }
     }
+*/
+    // lower plate
+    w = WIDTH;
+    translate([-5-w, INNER_GAP + THICKNESS_TOP, 0])
+    cube([w, THICKNESS_BOTTOM, LENGTH]);
 
-
-    w = WIDTH + 5;
-    translate([-w, INNER_GAP + THICKNESS_TOP, 0])
-    cube([w, THICKNESS_BOTTOM, LENGTH + LENGTH_XTRA]);
-
-    //
+    // rests
     th = .5;
-    translate([0, .2, 0])
+    translate([-.5, .2 +.5, 0])
     hull() {        
         translate([-THICKNESS_SIDE - th, INNER_GAP-2, 0])
         cube([th*3, INNER_GAP-10, 1]);
@@ -115,10 +111,11 @@ module spacer_left() {
         // shave ribs
         translate([0, -1.5, 0])
         hull() {
+            d = INNER_GAP/2;
             translate([-THICKNESS_SIDE, INNER_GAP/2 + THICKNESS_TOP, 0])
-            cylinder(d=INNER_GAP/2.5, h=LENGTH*3, center=true, $fn=30);
+            cylinder(d=d, h=LENGTH*3, center=true, $fn=30);
             translate([-THICKNESS_SIDE + 2, INNER_GAP/2 + THICKNESS_TOP, 0])
-            cylinder(d=INNER_GAP/2.5, h=LENGTH*3, center=true, $fn=30);
+            cylinder(d=d, h=LENGTH*3, center=true, $fn=30);
         }
 
         // make ribs
@@ -127,17 +124,18 @@ module spacer_left() {
             xtra = 10;
             h = (LENGTH + xtra*1.25)/n*(i+.5) -xtra/2;
             k = 1.75;
+            r = R*1.75;
             // horizontal
-            translate([-BUMPER_W*1.5, 1+2, h])
-            rcube(R*1.5, BUMPER_W*4, BUMPER_H-2-4, LENGTH/n, -R*k);
+            translate([-BUMPER_W*1.5, 1+2-1, h])
+            rcube(r, BUMPER_W*4, BUMPER_H-2-4, LENGTH/n, -R*k);
 
             if (i==n-2)
             translate([-BUMPER_W*1.5, .75, h])
-            rcube(R*1.5, BUMPER_W*4, BUMPER_H-2-4, LENGTH/n, -R*k);
+            rcube(r, BUMPER_W*4, BUMPER_H-2-4, LENGTH/n, -R*k);
 
             // vertical
             translate([0, -BUMPER_H-5, h])
-            rcube(R*1.5, BUMPER_W*2, BUMPER_H*2, LENGTH/n, -R*k);
+            rcube(r, BUMPER_W*2, BUMPER_H*2, LENGTH/n, -R*k);
         }
     }
 }
