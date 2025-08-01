@@ -3,19 +3,19 @@
 
 use <../chamferer.scad>
 
-WIDTH                 = 140;
-HEIGHT                =  55.75 - 7;
-RADIUS                = 160;
-RADIUS_KZ             =   0.75;
+WIDTH            = 140;
+HEIGHT           =  55.75 - 7;
+RADIUS           = 160;
+RADIUS_KZ        =   0.75;
 
-CHAMFER               =   1.5;
-THICKNESS             =   7;
+CHAMFER          =   1.5;
+THICKNESS        =   7;
 
-ROUNDED_CORNER_RADIUS = 12;
+CORNER_RADIUS    = 12;
 
 // Clip hollowing
-CLIP_HOLLOWING_W      = 30-8;
-CLIP_HOLLOWING_H      = 15;
+CLIP_HOLLOWING_W = 30-8;
+CLIP_HOLLOWING_H = 15;
 
 $fn = $preview? 40 : 300;
 
@@ -23,11 +23,11 @@ module main() {
     intersection() {
         // Base cylinder
         hull() {
-            for (x=[ROUNDED_CORNER_RADIUS+5, WIDTH-ROUNDED_CORNER_RADIUS-4]) {
-                for (z=[ROUNDED_CORNER_RADIUS, HEIGHT-ROUNDED_CORNER_RADIUS]) {
+            for (x=[CORNER_RADIUS+5, WIDTH - CORNER_RADIUS-5]) {
+                for (z=[CORNER_RADIUS, HEIGHT-CORNER_RADIUS]) {
                     translate([x, 0, z])
                     rotate([90, 0, 0])
-                    cylinder(r=ROUNDED_CORNER_RADIUS, h=RADIUS, center=true);
+                    cylinder(r=CORNER_RADIUS, h=RADIUS, center=true);
                 }
             }
         }
@@ -49,31 +49,37 @@ module main() {
     }
 }
 
-difference() {
-    // Outer shell
-    chamferer($preview ? CHAMFER : CHAMFER, "sphere", fn=12, shrink=false)
-    main();
-
-    // Make hollow
-    r = RADIUS * RADIUS_KZ *.9;
-    translate([0, r, HEIGHT/2])
-    for (a=[0, 4]) {
-        rotate([-a, 0, 0])
-        translate([0, -r, -HEIGHT/2])
+module case() {
+    difference() {
+        // Outer shell
+        chamferer($preview ? CHAMFER : CHAMFER, "sphere", fn=12, shrink=false)
         main();
-    }
 
-    // Opening for clip
-    y = CLIP_HOLLOWING_W/2+THICKNESS + 2.5;
+        // Make hollow
+        r = RADIUS * RADIUS_KZ *.9;
+        translate([0, r, HEIGHT/2])
+        for (a=[0, 4]) {
+            rotate([-a, 0, 0])
+            translate([0, -r, -HEIGHT/2])
+            main();
+        }
 
-    translate([WIDTH/2, y, HEIGHT+7-12.5])
-    chamferer(2, "octahedron")
-    cube([CLIP_HOLLOWING_W, 30, CLIP_HOLLOWING_H], center=true);
+        // Opening for clip
+        y = CLIP_HOLLOWING_W/2+THICKNESS + 2.5;
 
-    translate([WIDTH/2, y, HEIGHT+7-12 + sqrt(2)*CLIP_HOLLOWING_W*.5 - 6])
-    intersection() {
-        rotate([0, 45, 0])
-        cube([CLIP_HOLLOWING_W, 30, CLIP_HOLLOWING_W], center=true);
-        cube([CLIP_HOLLOWING_W*2, 100, CLIP_HOLLOWING_W/2], center=true);
+        // - opening
+        translate([WIDTH/2, y, HEIGHT+7-12.5])
+        chamferer(2, "octahedron")
+        cube([CLIP_HOLLOWING_W, 30, CLIP_HOLLOWING_H], center=true);
+
+        // - chamfer
+        translate([WIDTH/2, y, HEIGHT+7-12 + sqrt(2)*CLIP_HOLLOWING_W*.5 - 6])
+        intersection() {
+            rotate([0, 45, 0])
+            cube([CLIP_HOLLOWING_W, 30, CLIP_HOLLOWING_W], center=true);
+            cube([CLIP_HOLLOWING_W*2, 100, CLIP_HOLLOWING_W/2], center=true);
+        }
     }
 }
+
+case();
