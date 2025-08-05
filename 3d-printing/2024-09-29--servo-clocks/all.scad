@@ -8,7 +8,7 @@
 // - shaft
 SERVO_SHAFT_CROSS_WIDTH      =  5.0;
 SERVO_SHAFT_CROSS_THICKNESS  =  1.8;
-SERVO_SHAFT_HEIGH            = 34.5;
+SERVO_SHAFT_HEIGHT           = 34.5;
 
 // - body
 SERVO_BODY_WIDTH             =  16;
@@ -31,7 +31,7 @@ SERVO_UPPER_Z_POS            =  5;
 // SERVO HOLDER
 SERVO_HOLDER_BORDER          =  4;
 SERVO_FIXTURE_ARM_W          = 12 -4;
-SERVO_FIXTURE_ARM_D          = 30.6  - 14;
+SERVO_FIXTURE_ARM_D          = 30.6  - 14 - 3;
 SERVO_FIXTURE_ARM_H          = 4;
 
 // CUBE
@@ -39,6 +39,7 @@ CUBE_WIDTH                   = 60 - 3;
 CUBE_WALL                    =  1;
 CUBE_HEIGHT                  = 45; 
 CUBE_H_GAP                   =  0.25;
+DIAMETER_TOLERANCE           = .2;
 
 SUPPORT_PLATE_DIAMETER_LOWER = CUBE_WIDTH - CUBE_WALL*2;
 SUPPORT_PLATE_DIAMETER_UPPER = SUPPORT_PLATE_DIAMETER_LOWER - CUBE_WALL*2;
@@ -57,12 +58,20 @@ function get_cube_width() = CUBE_WIDTH;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-module servo_shaft() {
-    translate([-SERVO_SHAFT_CROSS_WIDTH/2, -SERVO_SHAFT_CROSS_THICKNESS/2, 0])
-    cube([SERVO_SHAFT_CROSS_WIDTH, SERVO_SHAFT_CROSS_THICKNESS, SERVO_SHAFT_HEIGH]);
+module servo_shaft(extra=0, chamfer=0) {
+    w = SERVO_SHAFT_CROSS_WIDTH+extra*2;
+    l = SERVO_SHAFT_CROSS_THICKNESS+extra*2;
+    w2 = SERVO_SHAFT_CROSS_WIDTH+extra*2 + chamfer*2;
+    l2 = SERVO_SHAFT_CROSS_THICKNESS+extra*2 + chamfer*2;
+    for (a=[0, 90])
+        hull()
+        rotate([0, 0, a]) {
+            translate([-w/2, -l/2, 0])
+            cube([w, l, SERVO_SHAFT_HEIGHT]);
 
-    translate([-SERVO_SHAFT_CROSS_THICKNESS/2, -SERVO_SHAFT_CROSS_WIDTH/2, 0])
-    cube([SERVO_SHAFT_CROSS_THICKNESS, SERVO_SHAFT_CROSS_WIDTH, SERVO_SHAFT_HEIGH]);
+            translate([-w2/2, -l2/2, 0])
+            cube([w2, l2, SERVO_SHAFT_HEIGHT-chamfer]);
+        }
 }
 
 module servo_body() {
@@ -111,27 +120,33 @@ module servo() {
 module o_ring(section, support_plate_diameter) {
     scale([1, 1, 1.5])
     rotate_extrude(convexity=10, $fn=FINE_FN)
-    //translate([CUBE_WIDTH/2 - CUBE_WALL + TOLERANCE, 0, 0])
     translate([support_plate_diameter/2 + TOLERANCE, 0, 0])
     circle(r=section);
 }
 
-module cube_inner_cylinder(h, support_plate_diameter) {    
+module cube_inner_cylinder(h, support_plate_diameter, tolerance=0) {    
+    z = CUBE_WALL*3.25 + TOLERANCE/2;
     difference() {
         translate([-CUBE_WIDTH/2, -CUBE_WIDTH/2, 0])
         cube([CUBE_WIDTH, CUBE_WIDTH, h]);
 
         cylinder(d=support_plate_diameter,
-                 h=h*3, center=true, $fn=FINE_FN);
+                 h=h+ATOM, $fn=FINE_FN);
+
+        translate([0, 0, z-h])
+        cylinder(d=support_plate_diameter+tolerance*2,
+                 h=h+ATOM, $fn=FINE_FN);
+
     }
     
     // O-ring
-    translate([0, 0, CUBE_WALL*3.25 + TOLERANCE/2])
+    translate([0, 0, z])
     o_ring(CUBE_WALL*.85, support_plate_diameter);
 }
 
 module upper_cube_body() {
     cavity_h = CUBE_HEIGHT - CUBE_WALL*1.5;
+    // wall
     difference() {
         translate([-CUBE_WIDTH/2, -CUBE_WIDTH/2, 0])
         cube([CUBE_WIDTH, CUBE_WIDTH, CUBE_HEIGHT]);
@@ -140,30 +155,22 @@ module upper_cube_body() {
         cube([CUBE_WIDTH - CUBE_WALL*2, CUBE_WIDTH - CUBE_WALL * 2, cavity_h + ATOM]);
     }
 
-    cube_inner_cylinder(CUBE_HEIGHT, SUPPORT_PLATE_DIAMETER_UPPER);
-}
-
-module servo_shaft_fixture_outer(size, h, z, step, arm_w) {
-    border = 1;
-    d = (size - border*2) / sqrt(2);
-
-    // outer crown
-    translate([0, 0, z])
+    // cube with cavity
+    cube_inner_cylinder(CUBE_HEIGHT, SUPPORT_PLATE_DIAMETER_UPPER, DIAMETER_TOLERANCE);
+    
+    // lip
+    d = SUPPORT_PLATE_DIAMETER_UPPER + DIAMETER_TOLERANCE*2;
+    h = .2;
+    th = .5;
+    translate([0, 0, -h])
     difference() {
-        cylinder(d=size+ATOM*4, h=h);
-        for(a=[0:step:360-1])
-            rotate([0, 0, a])
-            cube([d, d, h*3], center=true);
+        cylinder(d=d+th*4, h=h);
+        cylinder(d=d+th*2, h=h*3, center=true);
     }
 }
 
-module shaft_hollowing() {
-    for(i=[-1, 1]) {
-        for(j=[-1, 1]) {
-            translate([i*TOLERANCE,j*TOLERANCE, 0])
-            servo_shaft();
-        }
-    }
+module shaft_hollowing(chamfer=0) {
+    servo_shaft(extra=TOLERANCE, chamfer=chamfer);
 }
 
 module servo_shaft_wrench() {
@@ -183,54 +190,6 @@ module servo_shaft_wrench() {
     }
 }
 
-module servo_shaft_fixture_inner(size, h, z, step, arm_w) {
-    chamfer = 1;
-    border = 1;
-    teeth_extra = TEETH_EXTRA;
-    d = (size - border*2) / sqrt(2) + teeth_extra;
-
-    // inner wheel
-    color("red")
-    translate([0, 0, z]) {
-        difference() {
-            union() {
-                // teeth
-                translate([0, 0, h/2])
-                cube([d, d, h], center=true);
-
-                // crown
-                cylinder(d=size - border*2.75, h=h);
-            }
-            cylinder(d=size - border*4.5, h=h*3, center=true);
-        }
-        
-        difference() {
-            // cross
-            intersection() {
-                union() {
-                    l = size - border*(4.5-ATOM*2);
-                    translate([0, 0, h/2])
-                    cube([arm_w, l, h], center=true);
-                    translate([0, 0, h/2])
-                    cube([l, arm_w, h], center=true);
-                }
-                cylinder(d=size - border*4.5 + ATOM, h=h*3, center=true);
-            }
-
-            // shaft hollowing
-            translate([0, 0, -h*2])
-            shaft_hollowing();
-        }
-    }
-}
-
-module upper_servo_fixture(inner=true, outer=true) {
-    if (inner)
-        servo_shaft_fixture_inner(SUPPORT_PLATE_DIAMETER_UPPER, 7, -7, 1, 8);
-    if (outer)
-        servo_shaft_fixture_outer(SUPPORT_PLATE_DIAMETER_UPPER, 7, -7, 1, 8);
-}
-
 module lower_cube_body() {
     difference() {
         translate([-CUBE_WIDTH/2, -CUBE_WIDTH/2, 0])
@@ -238,13 +197,19 @@ module lower_cube_body() {
 
         translate([-CUBE_WIDTH/2 + CUBE_WALL, -CUBE_WIDTH/2 + CUBE_WALL, -ATOM])
         cube([CUBE_WIDTH - CUBE_WALL*2, CUBE_WIDTH - CUBE_WALL * 2, CUBE_HEIGHT*2]);
+
+        // shave for tolerance
+        z = (CUBE_WALL*3.25 + TOLERANCE/2);
+        translate([0, 0, -ATOM])
+        cylinder(d=SUPPORT_PLATE_DIAMETER_LOWER+DIAMETER_TOLERANCE*2, h=z);
+
     }
 
-    cube_inner_cylinder(CUBE_HEIGHT, SUPPORT_PLATE_DIAMETER_LOWER);
+    cube_inner_cylinder(CUBE_HEIGHT, SUPPORT_PLATE_DIAMETER_LOWER, DIAMETER_TOLERANCE);
 
     intersection() {
         translate([0, 0, CUBE_HEIGHT])
-        o_ring(CUBE_WALL*1.67, SUPPORT_PLATE_DIAMETER_LOWER+CUBE_WALL);
+        o_ring(CUBE_WALL*1.67, SUPPORT_PLATE_DIAMETER_LOWER+CUBE_WALL + DIAMETER_TOLERANCE*2);
 
         translate([-CUBE_WIDTH/2, -CUBE_WIDTH/2, 0])
         cube([CUBE_WIDTH, CUBE_WIDTH, CUBE_HEIGHT]);
@@ -252,7 +217,6 @@ module lower_cube_body() {
 
     // fixture
     lower_servo_fixture_arm();
-    lower_servo_fixture(inner=false, outer=true);
 }
 
 module lower_servo_fixture_arm(dropped=false) {
@@ -277,12 +241,18 @@ module lower_servo_fixture_arm(dropped=false) {
                     translate([CUBE_WIDTH/2, -w/2, -extra_h2])
                     cube([ATOM, w, h+extra_h]);
                 }
+                cylinder(d=d, h=extra_h+h);
             }
-            cylinder(d=d, h=h*3, center=true);
+            chamfer = 1;
+            translate([0, 0, -SERVO_SHAFT_HEIGHT + chamfer])
+            shaft_hollowing(chamfer=1);
+            
+            translate([0, 0, -SERVO_SHAFT_HEIGHT + h])
+            shaft_hollowing();
+            
+            
+            
         }
-        
-        translate([0, 0, h])
-        cylinder(d=d, h=extra_h);
     }
 }
 
@@ -437,11 +407,7 @@ module holder_upper() {
             if ($preview)
                 translate([0, 0, SERVO_UPPER_Z_POS]) servo();
 
-            upper_cube_body();
-
-            translate([0, 0, CUBE_HEIGHT - CUBE_WALL*1.5])
-            upper_servo_fixture(inner=true, outer=false);
-            upper_servo_fixture(inner=false, outer=true);
+            cube_upper();
 
             upper_servo_holder();
         }
@@ -460,8 +426,6 @@ module holder_lower() {
                 translate([0, 0, SERVO_UPPER_Z_POS]) servo();
             lower_cube_body();
             lower_servo_holder();
-
-            lower_servo_fixture(inner=true, outer=false);
         }
 
         // servo holes
@@ -501,11 +465,6 @@ module printing_cube_lower() {
     lower_cube_body();
 }
 
-module printing_cube_lower_fixture() {
-    //translate([0, CUBE_HEIGHT, 0])
-    lower_servo_fixture(inner=true, outer=false, dropped=true);
-}
-
 module printing_servos_holder() {
     difference() {
         union() {
@@ -513,7 +472,7 @@ module printing_servos_holder() {
             translate([0, 0, UPPER_Z]) upper_servo_holder();
         }
 
-        // servo holes
+        // servo holes (rings)
         translate([0, 0, SERVO_UPPER_Z_POS - SERVO_HOLE_DIAMETER/4])
         servo_support_holes();
         translate([0, 0, SERVO_UPPER_Z_POS + UPPER_Z - SERVO_HOLE_DIAMETER/4])
@@ -523,7 +482,6 @@ module printing_servos_holder() {
         translate([0, 0, CUBE_HEIGHT*.9])
         rotate([0, 0, 90*2]) {
             lower_servo_fixture_arm_passage();
-            //%lower_servo_fixture_arm_passage();
         }
 
         // reinforcement
@@ -532,14 +490,34 @@ module printing_servos_holder() {
     }
 }
 
-module printing_cube_upper() {
-    rotate([180, 0, 0])
-    translate([0, 0, -CUBE_HEIGHT]) {
-        upper_cube_body();
-        translate([0, 0, CUBE_HEIGHT - CUBE_WALL*1.5])
-        upper_servo_fixture(inner=!true, outer=!false);
+module cube_upper() {
+    h = 7;
+    chamfer = 1;
+    difference() {
+        union() {
+            upper_cube_body();
+
+            // thick ceiling
+            translate([0, 0, CUBE_HEIGHT - CUBE_WALL*1.5 - h])
+            cylinder(d=CUBE_WIDTH - ATOM, h=h);
+        }
+
+        // shaft hollowing
+        translate([0, 0, CUBE_HEIGHT - SERVO_SHAFT_HEIGHT -CUBE_WALL*1.5])
+        shaft_hollowing();
+
+        translate([0, 0, CUBE_HEIGHT - CUBE_WALL*1.5 - h - SERVO_SHAFT_HEIGHT + chamfer])
+        shaft_hollowing(chamfer=chamfer);
     }
-    
+}
+
+module printing_cube_upper() {
+    // cube
+    rotate([180, 0, 0])
+    translate([0, 0, -CUBE_HEIGHT])
+    cube_upper();
+
+    // corner pads
     r = 10;
     for(i=[0:3])
         rotate([0, 0, (i+.5)*90])
@@ -547,20 +525,15 @@ module printing_cube_upper() {
         cylinder(r=r, h=.4);
 }
 
-module printing_cube_upper_fixture() {
-    //translate([CUBE_HEIGHT*1.25, 0, 0])
-    rotate([0, 180, 0])
-    upper_servo_fixture(inner=true, outer=false);
-}
+////////////////////////////////////////////////////////////////////////////////
 
-//!printing_servos_holder();
+!printing_servos_holder();
 //!printing_cube_lower();
-//!printing_cube_lower_fixture();
 
 crosscut(true) all();
 
 //!crosscut() holder_upper();
 //!crosscut() holder_lower();
 
-!crosscut(true) printing_cube_upper();
-//!printing_cube_upper_fixture();
+//!crosscut(true) printing_cube_lower();
+//!crosscut(true) printing_cube_upper();
