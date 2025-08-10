@@ -182,10 +182,13 @@ module lower_servo_fixture_arm_passage() {
 
 module servo_pit() {
     // servo pit
-    // TODO: add tolerance
-    translate([-SERVO_BODY_X_SHIFT, -SERVO_BODY_WIDTH/2, -SERVO_BODY_HEIGHT])
-    cube([SERVO_BODY_LENGTH,
-          SERVO_BODY_WIDTH,
+    tolerance_y = 0.17;
+    tolerance_x = 0.1;
+    translate([-SERVO_BODY_X_SHIFT - tolerance_x,
+               -SERVO_BODY_WIDTH/2 - tolerance_y,
+               -SERVO_BODY_HEIGHT])
+    cube([SERVO_BODY_LENGTH + tolerance_x*2,
+          SERVO_BODY_WIDTH + tolerance_y*2,
           SERVO_BODY_HEIGHT*30 + SERVO_UPPER_Z_POS]);
 
     // side pit (for cable)
@@ -294,13 +297,14 @@ module servo_holder(support_plate_diameter, extra_h=0, with_screw=false) {
 module servo_holder_clip() {
     // Clips
     d = 2.5;
+    ky = .25;
     for (dz=[d/2, -SERVO_L2_HEIGHT-d/2])
     for (y=[SERVO_BODY_WIDTH/2, -SERVO_BODY_WIDTH/2])
     for (x=[-SERVO_BODY_LENGTH/2 - d/2, SERVO_BODY_LENGTH/2 + d/2])
         translate([+SERVO_BODY_LENGTH/2 -SERVO_BODY_X_SHIFT + x,
                    y,
                    SERVO_UPPER_Z_POS + SERVO_L1_HEIGHT+SERVO_L2_HEIGHT + dz])
-    scale([1, .5, 1])
+    scale([1, ky, 1])
     sphere(d=d);
 }
 
@@ -317,14 +321,15 @@ module upper_servo_holder() {
 module column() {
     D = SERVO_BODY_WIDTH/2;
     h = CUBE_HEIGHT*1; //1.35;
+    extra_h = 8;
     intersection() {
         difference() {
             translate([D, -CUBE_WIDTH - SERVO_BODY_WIDTH/2, 0])
-            cube([CUBE_WIDTH, CUBE_WIDTH, h]);
+            cube([CUBE_WIDTH, CUBE_WIDTH, h + extra_h]);
             servo_pit();
         }
 
-        cylinder(d=COLUMN_RADIUS, h=h*2, center=true);
+        cylinder(d=COLUMN_RADIUS, h=h*2 + extra_h, center=true);
     }
 }
 
@@ -546,7 +551,7 @@ module servos_holder() {
         lower_servo_fixture_arm_passage();
 
         // vertical cable passage
-        l = 9 -.5;
+        l = 9 + .5;
         w = 4;
         translate([-2-l-SERVO_BODY_X_SHIFT+SERVO_BODY_LENGTH,
                    -w -SERVO_BODY_WIDTH/2 +ATOM, -CUBE_HEIGHT*.1])
@@ -590,7 +595,7 @@ module printing_servos_holder() {
     servos_holder();
 
     // servos (ghosts)
-    %if ($preview) {
+    %if (0 && $preview) {
         translate([0, 0, SERVO_UPPER_Z_POS]) servo();
         translate([0, 0, UPPER_Z])
         translate([0, 0, SERVO_UPPER_Z_POS]) servo();
