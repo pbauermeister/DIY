@@ -129,8 +129,14 @@ module servo() {
     }
 }
 
-module shaft_hollowing(chamfer=0) {
-    servo_shaft(extra=TOLERANCE, chamfer=chamfer);
+module shaft_hollowing(chamfer=0, upside_down=false) {
+    if (upside_down) {
+        translate([0, 0, SERVO_SHAFT_HEIGHT])
+        scale([1, 1, -1])
+        servo_shaft(extra=TOLERANCE, chamfer=chamfer);
+     } else {
+        servo_shaft(extra=TOLERANCE, chamfer=chamfer);
+     }
 }
 
 module servo_shaft_wrench() {
