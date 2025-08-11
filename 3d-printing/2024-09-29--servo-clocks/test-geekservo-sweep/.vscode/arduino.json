@@ -2,5 +2,5 @@
     "configuration": "cpu=atmega328",
     "board": "arduino:avr:diecimila",
     "sketch": "test-geekservo-sweep.ino",
-    "port": "/dev/ttyUSB0"
+    "port": "/dev/ttyUSB5"
 }
