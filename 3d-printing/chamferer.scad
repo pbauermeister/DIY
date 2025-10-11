@@ -11,6 +11,13 @@ module chamfer_tool(r, fn, tool) {
         scale([1, 1, -1])
         cylinder(r, r, 0, $fn=fn);
     }
+    else if (tool=="cone-up") {
+        cylinder(r, r, 0, $fn=fn, center=true);
+    }
+    else if (tool=="cone-down") {
+        scale([1, 1, -1])
+        cylinder(r, r, 0, $fn=fn, center=true);
+    }
     else if (tool=="octahedron") {
         resize([r*2, r*2, r*2]) {
             cylinder(r, r, 0, $fn=4);
@@ -30,6 +37,12 @@ module chamfer_tool(r, fn, tool) {
     }
     else if (tool=="cylinder") {
         cylinder(r=r, h=ATOM, $fn=fn);
+    }
+    else if (tool=="cube") {
+        cube(r*2, center=true);
+    }
+    else {
+        assert(false, str("Unknown tool: ", tool));
     }
 }
 

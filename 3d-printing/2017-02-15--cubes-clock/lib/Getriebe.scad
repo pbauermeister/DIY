@@ -33,7 +33,7 @@ Erlaubte Module nach DIN 780:
 // Allgemeine Variablen
 pi = 3.14159;
 rad = 57.29578;
-spiel = 0.05;	// Spiel zwischen Zähnen
+//spiel = 0.05;	// Spiel zwischen Zähnen
 spiel = 0.08;	// Spiel zwischen Zähnen
 
 /*	Wandelt Radian in Grad um */

@@ -36,8 +36,8 @@ SERVO_FIXTURE_ARM_H          =  4;
 
 // CUBE
 CUBE_WIDTH                   = 60 - 3;
-CUBE_WALL                    =  1;
 CUBE_HEIGHT                  = 45;
+CUBE_WALL                    =  1;
 CUBE_H_GAP                   =  0.25;
 DIAMETER_TOLERANCE           =  0.2;
 DIAMETER_PLATE_TOLERANCE     =  0.3;
