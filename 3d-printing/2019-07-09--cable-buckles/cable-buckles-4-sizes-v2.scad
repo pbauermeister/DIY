@@ -7,33 +7,57 @@
 */
 
 // Object sizes
-SMALL_HEIGHT          =  8.4;
-SMALL_WALL_THICKNESS  =  2.0;
-SMALL_LENGTH          = 34.0;
-SMALL_WIDTH           = 16.0;
-SMALL_PRONG_SIZE      =  6.0;
+B25_HEIGHT        =  8.4;
+B25_WALL_THICKNESS=  1.4;
+B25_LENGTH        = 25.0;
+B25_WIDTH         = 14.0;
+B25_PRONG_SIZE    =  6.0;
 
-MEDIUM_HEIGHT         =  8.4;
-MEDIUM_WALL_THICKNESS =  2.1;
-MEDIUM_LENGTH         = 38.0;
-MEDIUM_WIDTH          = 17.0;
-MEDIUM_PRONG_SIZE     =  7.0;
+B26_HEIGHT        =  8.4;
+B26_WALL_THICKNESS=  1.4;
+B26_LENGTH        = 26.0;
+B26_WIDTH         = 14.0;
+B26_PRONG_SIZE    =  6.0;
 
-BIG_HEIGHT            =  8.4;
-BIG_WALL_THICKNESS    =  2.1;
-BIG_LENGTH            = 48.0;
-BIG_WIDTH             = 20.0;
-BIG_PRONG_SIZE        =  8.0;
+B29_HEIGHT          =  8.4;
+B29_WALL_THICKNESS  =  1.7;
+B29_LENGTH          = 29.0;
+B29_WIDTH           = 15.5;
+B29_PRONG_SIZE      =  6.0;
 
-BIGGER_HEIGHT         =  8.4;
-BIGGER_WALL_THICKNESS =  2.4;
-BIGGER_LENGTH         = 75.0;
-BIGGER_WIDTH          = 32.0;
-BIGGER_PRONG_SIZE     = 12.0;
+B31_HEIGHT          =  8.4;
+B31_WALL_THICKNESS  =  1.7;
+B31_LENGTH          = 31.0;
+B31_WIDTH           = 16.0;
+B31_PRONG_SIZE      =  6.0;
+
+B32_HEIGHT          =  8.4;
+B32_WALL_THICKNESS  =  1.8;
+B32_LENGTH          = 32.0;
+B32_WIDTH           = 14.0;
+B32_PRONG_SIZE      =  6.0;
+
+B38_HEIGHT         =  8.4;
+B38_WALL_THICKNESS =  2.1;
+B38_LENGTH         = 38.0;
+B38_WIDTH          = 17.0;
+B38_PRONG_SIZE     =  7.0;
+
+B48_HEIGHT            =  8.4;
+B48_WALL_THICKNESS    =  2.1;
+B48_LENGTH            = 48.0;
+B48_WIDTH             = 20.0;
+B48_PRONG_SIZE        =  8.0;
+
+B75_HEIGHT         =  8.4;
+B75_WALL_THICKNESS =  2.8;
+B75_LENGTH         = 75.0;
+B75_WIDTH          = 32.0;
+B75_PRONG_SIZE     = 12.0;
 
 // Rendering
-DRAFT = false; // false: final rendering, true: disable Minkowski
-$fn = 90;
+DRAFT = $preview; // false: final rendering, true: disable Minkowski
+$fn   = $preview ? 12 : 90;
 
 // Globals
 PLAY  = 1.0;
@@ -47,7 +71,17 @@ module grow_object() {
         children();
     } else {
         // grow size in each dimension (by a cube)
-        minkowski() {
+
+        // faster
+        d = PLAY / 2;
+        for (x=[-d, d])
+            for (y=[-d, d])
+                for (z=[-d, d])
+                    translate([x, y, z])
+                    children();
+
+        // slower
+        if (0) minkowski() {
             children();
             cube([PLAY, PLAY, PLAY], true);
         }
@@ -134,7 +168,7 @@ module prong(wall_thickness, height, length, width, prong_size) {
         scale([1, 1.2, 1])
         rotate([0, 0, 90])
         linear_extrude(th)
-        text(str(length), font="FreeSans:style=Bold", size=3.5);
+        text(str(length), font="FreeSans:style=Bold", size=3.5, spacing=1.15);
     }
 }
 
@@ -148,18 +182,45 @@ module buckle(height, wall_thickness, length, width, prong_size) {
 
 // Object: One whole finished object (buckle and prong)
 module unit(height, wall_thickness, length, width, prong_size) {
-    buckle(height, wall_thickness, length, width, prong_size);
-    prong(wall_thickness, height, length, width, prong_size);
+    difference() {
+        union() {
+            buckle(height, wall_thickness, length, width, prong_size);
+            prong(wall_thickness, height, length, width, prong_size);
+        }
+        
+        // cross-cut
+//        translate([0, -500, -500]) cube(1000);
+    }
 }
 
 // Copies params
 PARAMS = [
-    [3, SMALL_HEIGHT, SMALL_WALL_THICKNESS, SMALL_LENGTH, SMALL_WIDTH, SMALL_PRONG_SIZE],
-//    [3, MEDIUM_HEIGHT, MEDIUM_WALL_THICKNESS, MEDIUM_LENGTH, MEDIUM_WIDTH, MEDIUM_PRONG_SIZE],
-    [2, BIG_HEIGHT, BIG_WALL_THICKNESS, BIG_LENGTH, BIG_WIDTH, BIG_PRONG_SIZE],
-    [2, BIG_HEIGHT, BIG_WALL_THICKNESS, BIG_LENGTH, BIG_WIDTH, BIG_PRONG_SIZE],
-    [1, BIGGER_HEIGHT, BIGGER_WALL_THICKNESS, BIGGER_LENGTH, BIGGER_WIDTH, BIGGER_PRONG_SIZE],
+/*
+    [3, B32_HEIGHT, B32_WALL_THICKNESS, B32_LENGTH, B32_WIDTH, B32_PRONG_SIZE],
+//    [3, B38_HEIGHT, B38_WALL_THICKNESS, B38_LENGTH, B38_WIDTH, B38_PRONG_SIZE],
+    [3, B48_HEIGHT, B48_WALL_THICKNESS, B48_LENGTH, B48_WIDTH, B48_PRONG_SIZE],
+    [6, B25_HEIGHT, B25_WALL_THICKNESS, B25_LENGTH, B25_WIDTH, B25_PRONG_SIZE],
+//    [2, B48_HEIGHT, B48_WALL_THICKNESS, B48_LENGTH, B48_WIDTH, B48_PRONG_SIZE],
+    [2, B75_HEIGHT, B75_WALL_THICKNESS, B75_LENGTH, B75_WIDTH, B75_PRONG_SIZE],
+    [1, B75_HEIGHT, B75_WALL_THICKNESS, B75_LENGTH, B75_WIDTH, B75_PRONG_SIZE],
+
+*/
+/*
+    [3, B26_HEIGHT, B26_WALL_THICKNESS, B26_LENGTH, B26_WIDTH, B26_PRONG_SIZE],
+    [2, B31_HEIGHT, B31_WALL_THICKNESS, B31_LENGTH, B31_WIDTH, B31_PRONG_SIZE],
+    [3, B31_HEIGHT, B31_WALL_THICKNESS, B31_LENGTH, B31_WIDTH, B31_PRONG_SIZE],
+    [2, B26_HEIGHT, B26_WALL_THICKNESS, B26_LENGTH, B26_WIDTH, B26_PRONG_SIZE],
+*/
+/*
+    [1, B26_HEIGHT, B26_WALL_THICKNESS, B26_LENGTH, B26_WIDTH, B26_PRONG_SIZE],
+    [2, B31_HEIGHT, B31_WALL_THICKNESS, B31_LENGTH, B31_WIDTH, B31_PRONG_SIZE],
+*/
+    [2, B29_HEIGHT, B29_WALL_THICKNESS, B29_LENGTH, B29_WIDTH, B29_PRONG_SIZE],
+    [3, B29_HEIGHT, B29_WALL_THICKNESS, B29_LENGTH, B29_WIDTH, B29_PRONG_SIZE],
 ];
+
+
+
 
 // Render one copy, then recurse
 module render(i=0, y=0) {
