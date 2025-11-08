@@ -22,10 +22,19 @@ module flap_hinge() {
     h = W_INNER + WALL_TH*2;
     y = th - WALL_TH + .1;
     intersection() {
+        // hinges
         translate([0, y, 0])
-        for (i=[0:2])
-            translate([i*(l*2) + l + L1, -th/2, -WALL_TH])
-        hinge4(thickness=th, arm_length=l+ATOM, total_height=h, nb_layers=20, angle=180, extra_angle=0);
+        for (i=[0:2]) {
+            odd = (i%2);
+            z = odd ? h : 0;
+            translate([i*(l*2) + l + L1, -th/2, z-WALL_TH])
+            scale([1, 1, odd ? -1 : 1])
+            hinge4(thickness=th,
+                   arm_length=l+ATOM,
+                   total_height=h,
+                   nb_layers=20,
+                   angle=180, extra_angle=0);
+        }
 
         // chamfer
         chamferer(CH, shrink=false, grow=true)
