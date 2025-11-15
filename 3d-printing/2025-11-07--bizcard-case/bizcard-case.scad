@@ -1,17 +1,19 @@
 use <../hinge4.scad>
 use <../chamferer.scad>
 
-W_INNER = 60;
-H_INNER =  9.2  + 1;
-L_INNER = 70    + 1;
-WALL_TH =  2    - 0.5;
+W_INNER = 60                                 -0.8;
+H_INNER =  9.2  + 1                                           +.1;
+L_INNER = 70    + 1        + 0.5;
+WALL_TH =  2    -0.5              +0.15;
 
-L1 = 20;
-L2 = 20         + 0.75*3;
-L3 = 45         - 3;
+L1 = 20                    +4                -3.75*3;
+L2 = 20         +0.75*3           -1.5       +3.75*3 +2;
+L3 = 45         -3                                   -2;
 
-HINGE_TH = 3;
-HINGE_L  = 3.75;
+HINGE_N  =                                    6;
+HINGE_TH = 3               -0.2   *0;
+HINGE_L  = 3.75                   -0.35       -.05;
+MARGIN   =                                    4.5;
 
 CH = WALL_TH;
 ATOM = 0.01;
@@ -21,29 +23,54 @@ module flap_hinge() {
     l = HINGE_L;
     h = W_INNER + WALL_TH*2;
     y = th - WALL_TH + .1;
-    intersection() {
-        // hinges
-        translate([0, y, 0])
-        for (i=[0:2]) {
-            odd = (i%2);
-            z = odd ? h : 0;
-            translate([i*(l*2) + l + L1, -th/2, z-WALL_TH])
-            scale([1, 1, odd ? -1 : 1])
-            hinge4(thickness=th,
-                   arm_length=l+ATOM,
-                   total_height=h,
-                   nb_layers=20,
-                   angle=180, extra_angle=0);
+    difference() {
+        intersection() {
+            // hinges
+            translate([0, y, 0]) {
+                for (i=[0:HINGE_N-1]) {
+                    odd = false; //(i%2);
+                    z = odd ? h : 0;
+                    translate([i*(l*2) + l + L1, -th/2, z-WALL_TH])
+                    scale([1, 1, odd ? -1 : 1])
+                    hinge4(thickness=th,
+                           arm_length=l+ATOM,
+                           total_height=h,
+                           nb_layers=20 - 7,
+                           angle=180, extra_angle=0);
+                }
+                
+                // hinge l-extension
+                translate([L1+L2-.5, -th, -WALL_TH])
+                cube([4+4-2, th, h]);
+            }
+
+            // chamfer
+            difference() {
+                chamferer(CH, shrink=false, grow=true)
+                cube([L_INNER*3, th*.1, W_INNER]);
+
+                // shaving for rails
+                y = th/8 + .5;
+                echo(th/4-th/8);
+                // - bottom
+                chamferer(th)
+                translate([0, y, -WALL_TH - MARGIN])
+                cube([L_INNER*3, th*4, MARGIN*2]);
+                // - top
+                chamferer(th)
+                translate([0, y, W_INNER + WALL_TH - MARGIN])
+                cube([L_INNER*3, th*4, MARGIN*2]);
+            }
         }
 
-        // chamfer
-        chamferer(CH, shrink=false, grow=true)
-        cube([L_INNER*3, th*.1, W_INNER]);
+        // cut for carriage plate
+        translate([L1+L2 + HINGE_L-2, 0, -h/2])
+        cube([10, th, h*2]);
     }
     
     if (0) %
-    translate([L1, -y, -WALL_TH])
-    cube([L2, th, h]);
+    translate([L1+L2-HINGE_L*2+1, -y, -WALL_TH+1])
+    cube([7, th, h]);
 }
 
 module flap() {
@@ -92,9 +119,10 @@ module flap() {
     difference() {
         flap_hinge();
 
+        // start chamfer
         l = CH*5;
-        translate([L1-l + CH*2, 0, -W_INNER/2])
-        chamferer(CH*2)
+        translate([L1-l + CH*1.4, 0, -W_INNER/2])
+        chamferer(CH*2, fn=3)
         cube([l, CH*5, W_INNER*2]);
     }
 }
@@ -106,13 +134,12 @@ module case() {
             translate([-L_INNER*1, 0, 0])
             difference() {
                 chamferer(CH, shrink=false, grow=true)
+
+                // chamber
                 cube([L_INNER + CH, H_INNER, W_INNER]);
-
-
+                cube([L_INNER, H_INNER, W_INNER]);
                 translate([L_INNER, -H_INNER/2, -W_INNER/2])
                 cube([CH*4, H_INNER*2, W_INNER*2]);
-
-                cube([L_INNER, H_INNER, W_INNER]);
             }
         }
 
@@ -123,6 +150,17 @@ module case() {
 
     // flap
     flap();
+
+    //% cube([L1, 6, 6]);
+    //% cube([L1+L2, 5, 5]);
+    //% cube([L1+L2+L3, 4, 4]);
 }
 
-case();
+rotate([0, 0, -90])
+{
+    case();
+
+    // lateral support
+    translate([L1+L2+L3 - CH - L3/4, 0, -WALL_TH])
+    cube([.45, 30, W_INNER*.77]);
+}
