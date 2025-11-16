@@ -1,7 +1,7 @@
 LENGTH    = 175;
 WIDTH     = 18;
 
-SINK      =  1.6;
+SINK      =  1.6              +1;
 THICKNESS =  SINK + 2;
 
 WHEEL_D   = 16;

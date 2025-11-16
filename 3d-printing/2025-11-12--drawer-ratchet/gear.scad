@@ -1,7 +1,7 @@
-LENGTH     = 65;
+LENGTH     = 70;
 WIDTH      = 12;
 PLATE_TH   =  1;
-ARM_TH     =  1.15  +.5;
+ARM_TH     =  1.15  +.5  + .5;
 
 SCREW_D    =  2;
 
@@ -145,4 +145,5 @@ module all() {
 }
 
 rotate([0, 0, $preview ? 0: -90])
+scale([$preview ? -1 : 1, 1, 1])
 all();
