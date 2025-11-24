@@ -6,6 +6,12 @@ module chamfer_tool(r, fn, tool) {
     if (tool=="sphere") {
         sphere(r, $fn=fn);
     }
+    else if (tool=="hemisphere-up") {
+        intersection() {
+            sphere(r, $fn=fn);
+            cylinder(r=r*2, h=r*2);
+        }
+    }
     else if (tool=="cone") {
         cylinder(r, r, 0, $fn=fn);
         scale([1, 1, -1])
@@ -90,7 +96,7 @@ module chamferer(r, tool="sphere", fn=8, shrink=true, grow=true) {
 cube(50);
 
 translate([70, 0, 0])
-chamferer(5, "sphere", $preview? 6*4 : 30)
+chamferer(5, "hemisphere-up", $preview? 6*4 : 30)
 //shrinker(5, "sphere", $preview? 6*4 : 30)
 cube(50);
 
