@@ -118,26 +118,34 @@ module cavity() {
     dx = (PHONE_CASE_L - BANK_HEIGHT)/2;
     dy = PHONE_CASE_TH + PHONE_CASE_Y;
     dz = (PHONE_W - BANK_LENGTH)/2;
-
-    // power banks
-    translate([-BANK_HEIGHT/2 + dx, BANK_WIDTH/2 + dy, BANK_LENGTH/2 + dz])
-    rotate([0, 90, 0])
-    power_bank();
-
-    // cable stash
+    pb_dy = -2;
     h=(PHONE_CASE_L - BANK_HEIGHT);
-    translate([-BANK_HEIGHT/2 + dx -h, BANK_WIDTH/2 + dy, BANK_LENGTH/2 + dz]) 
+
     difference() {
-        rotate([0, 90, 0])
-        power_bank(h=h+ATOM);
+        union() {
+            // power bank
+            translate([-BANK_HEIGHT/2 + dx+1, BANK_WIDTH/2 + dy + pb_dy, BANK_LENGTH/2 + dz])
+            rotate([0, 90, 0])
+            power_bank();
 
-        cube([PHONE_CASE_L, WALL*2, BANK_LENGTH], center=true);
+            // cable stash
+            translate([-BANK_HEIGHT/2 + dx -h, BANK_WIDTH/2 + dy + pb_dy, BANK_LENGTH/2 + dz]) 
+            rotate([0, 90, 0])
+            power_bank(h=h+ATOM);
+
+            // phone
+            translate([0, ATOM, 1.5])
+            phone_cavity(back_extension=BANK_WIDTH/2);
+        }
+
+        // separatior
+        translate([-BANK_HEIGHT*1.5 + dx+1, BANK_WIDTH/4 + dy + pb_dy, dz-WALL/2]) 
+                cube([BANK_HEIGHT,
+                      WALL*2, BANK_LENGTH+WALL], center=!true);
+    }
 }
 
-    // phone
-    translate([0, ATOM, 1.5])
-    phone_cavity(back_extension=BANK_WIDTH/2);
-}
+!cavity();
 
 module boombox() {
     difference() {
@@ -155,5 +163,5 @@ module boombox() {
     }
 }
 
-rotate([0, -90, 0])
+rotate([0, $preview ? 0 : -90, 0])
 boombox();
