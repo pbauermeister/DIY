@@ -121,6 +121,8 @@ module cavity() {
     pb_dy = -2;
     h=(PHONE_CASE_L - BANK_HEIGHT);
 
+    phone_tune_z = -5.5/2;
+
     difference() {
         union() {
             // power bank
@@ -134,34 +136,65 @@ module cavity() {
             power_bank(h=h+ATOM);
 
             // phone
-            translate([0, ATOM, 1.5])
-            phone_cavity(back_extension=BANK_WIDTH/2);
+            translate([0, ATOM, 1.5 + phone_tune_z])
+            phone_cavity(back_extension=BANK_WIDTH/2.4);
         }
 
-        // separatior
-        translate([-BANK_HEIGHT*1.5 + dx+1, BANK_WIDTH/4 + dy + pb_dy, dz-WALL/2]) 
+        // separator
+        translate([-BANK_HEIGHT*1.5 + dx+1, BANK_WIDTH/4 + dy + pb_dy, dz-BANK_LENGTH/2]) 
                 cube([BANK_HEIGHT,
-                      WALL*2, BANK_LENGTH+WALL], center=!true);
+                      WALL*2, BANK_LENGTH*2]);
     }
 }
-
-!cavity();
 
 module boombox() {
     difference() {
         dz = (PHONE_W - BANK_LENGTH)/2;
-        h = BANK_LENGTH;
         xz = WALL*2.7;
+        h  = BANK_LENGTH + xz;
+        xx = 1.5;
         dy = 1;
-        l = PHONE_CASE_L + WALL*2;
+        z  = dz - xz/2 -1.25;
 
-        chamferer(CH, fn=FN)
-        translate([-l/2, -dy, dz - xz/2 -1.25])
-        cube([l, PHONE_CASE_Y+PHONE_CASE_TH + BANK_WIDTH+dy+WALL, h+xz]);
+        l = PHONE_CASE_L + WALL*2 + xx*2;
+        w = PHONE_CASE_Y+PHONE_CASE_TH + BANK_WIDTH+dy + WALL -2 ;
+
+        difference() {
+            // box
+            union() {
+                chamferer(CH, fn=FN)
+                translate([-l/2, -dy, z])
+                cube([l, w, h]);
+
+                r = 10;
+                h2 = (l-WALL*4)  *0 + r*3;
+                translate([0, w, r*.85-CH])
+                rotate([0, 90, 0])
+                chamferer(CH, fn=FN)
+                cylinder(r=r, h=h2, center=true);
+            }
+
+            // slanted bottom-back corner 70°
+            py = 20-2;
+            translate([0, -dy+w-py, z])
+            rotate([30, 0, 0])
+            translate([-l, -5, -w*2])
+            cube([l*2, w*2, w*2]);
+
+            // slanted top-back corner 30°
+            if (0) %
+            translate([0, w - CH/4, h+z - CH/2])
+            rotate([10, 0, 0])
+            translate([-l, 0, -h*2])
+            cube([l*2, w*2, h*2]);
+
+
+        }
         
         cavity();
     }
 }
 
+//rotate([-30, 0, 0])
 rotate([0, $preview ? 0 : -90, 0])
 boombox();
