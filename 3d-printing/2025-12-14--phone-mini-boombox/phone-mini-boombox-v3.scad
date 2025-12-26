@@ -105,13 +105,13 @@ module phone_cavity(back_extension=0, just_case=false) {
     }
 }
 
-BANK_PLAY = .2  + .2;
-BANK_LENGTH    =  86.5 + BANK_PLAY + 1.4;
-BANK_WIDTH     =  30.0 + BANK_PLAY;
-BANK_DIAMETER  =  54.0;
-BANK_HEIGHT    = 137.5 + BANK_PLAY + 1;
+BANK_PLAY       = .2  + .2;
+BANK_LENGTH     =  86.5 + BANK_PLAY + 1.4;
+BANK_WIDTH      =  30.0 + BANK_PLAY;
+BANK_DIAMETER   =  54.0;
+BANK_HEIGHT     = 137.5 + BANK_PLAY + 1;
 
-PHONE_CASE_Y   = 1.2;
+PHONE_CASE_Y    = 1.2;
 
 module power_bank(w=BANK_WIDTH, l=BANK_LENGTH, d=BANK_DIAMETER, h=BANK_HEIGHT, with_extension=false) {
     side_extension = WALL*3 * 0;
@@ -180,13 +180,11 @@ BOOMBOX_H  = BANK_LENGTH + BOOMBOX_XZ;
 BOOMBOX_W = PHONE_CASE_Y+PHONE_CASE_TH + BANK_WIDTH + BOOMBOX_DY + WALL -2 +1;
 BOOMBOX_L = PHONE_CASE_L + WALL*2 + BOOMBOX_XX;
 
-
 PLAY = .1;
 
 HINGE_D = 4;
 HINGE_Z = 74-1;
 HINGE_Y = BOOMBOX_W - BOOMBOX_DY - HINGE_D/2;
-
 
 module boombox() {
     difference() {
@@ -262,6 +260,7 @@ rotate([0, $preview ? 0 : -90, 0]) {
             }
 
             // upper
+            //translate([0, 0, 10])
             rotate([-90, 0, 0])
             difference() {
                 boombox();
@@ -271,7 +270,7 @@ rotate([0, $preview ? 0 : -90, 0]) {
 
         // cross-cut
         if ($preview)
-            rotate([0, 90, 0])
-            cylinder(d=1000, h=1000);
+            //translate([-BOOMBOX_L/2-ATOM, 0, 0]) rotate([0, 90, 0]) cylinder(d=1000, h=185.5);
+            translate([-BOOMBOX_L/2*0-ATOM, 0, 0]) rotate([0, 90, 0]) cylinder(d=1000, h=185.5);
     }
 }
