@@ -41,8 +41,16 @@ module chamfer_tool(r, fn, tool) {
             cylinder(r, 0, r, center=true, $fn=4);
         }
     }
-    else if (tool=="cylinder") {
-        cylinder(r=r, h=ATOM, $fn=fn);
+    else if (tool=="cylinder-z" || tool=="cylinder") {
+        cylinder(r=r, h=ATOM, $fn=fn, center=true);
+    }
+    else if (tool=="cylinder-x") {
+        rotate([0, 90, 0])
+        cylinder(r=r, h=ATOM, $fn=fn, center=true);
+    }
+    else if (tool=="cylinder-y") {
+        rotate([90, 0, 0])
+        cylinder(r=r, h=ATOM, $fn=fn, center=true);
     }
     else if (tool=="cube") {
         cube(r*2, center=true);
