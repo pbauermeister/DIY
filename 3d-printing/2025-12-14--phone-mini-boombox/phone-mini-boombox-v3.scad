@@ -26,7 +26,7 @@ BANK_PLAY           =   0.2 + .2;
 BANK_LENGTH         =  86.5 + BANK_PLAY + 1.4;
 BANK_WIDTH          =  30.0 + BANK_PLAY;
 BANK_D              =  54.0;
-BANK_HEIGHT         = 137.5 + BANK_PLAY + 1;
+BANK_HEIGHT         = 137.5 + BANK_PLAY + 1  +1;
 
 
 BOOMBOX_DY          = 1;
@@ -113,7 +113,7 @@ module phone_cavity(back_extension=0, just_case=false) {
             for (x=[8, 19, 37])
                 translate([26+x, -1 + 6.5, 0])
                 cylinder(d=5, h=CASE_W*3);
-            
+
             // USB clearance
             pl = 18;
             translate([l/2, 1 + 1.5, w/2-pl/2])
@@ -151,7 +151,7 @@ module power_bank(w=BANK_WIDTH, l=BANK_LENGTH, d=BANK_D, h=BANK_HEIGHT, with_ext
             dd=(l - d)/2;
             fn = $preview ? 24 : 180;
             translate([-dd, 0, 0]) cylinder(d=d, h=h+side_extension, $fn=fn);
-            translate([+dd, 0, 0]) cylinder(d=d, h=h+side_extension, $fn=fn);           
+            translate([+dd, 0, 0]) cylinder(d=d, h=h+side_extension, $fn=fn);
         }
         cube([l*2, w, h*4], center=true);
     }
@@ -161,10 +161,12 @@ module power_bank(w=BANK_WIDTH, l=BANK_LENGTH, d=BANK_D, h=BANK_HEIGHT, with_ext
         translate([0, 0, h])
         cube([l - 6,12, h], center=true);
 
-        // shave power button clearance
+        // shave power button clearance, lower side
         gap = 6;
-        translate([-l/2 + 28-1, 0, h*1.5+ATOM + gap])
-        cube([12, 12*2, h], center=true);
+        translate([-l/2 + 28-2, 0, h*1.5+ATOM + gap])
+        cube([12-2, 12*2, h], center=true);
+
+        // shave power button clearance, upper side
         translate([-l/2 +1+3-ATOM, 0, h*1.5+ATOM])
         cube([2, 12*2, h], center=true);
     }
@@ -187,7 +189,7 @@ module cavity() {
             power_bank(with_extension=true);
 
             // cable stash
-            translate([-BANK_HEIGHT/2 + dx -h, BANK_WIDTH/2 + dy + pb_dy, BANK_LENGTH/2 + dz]) 
+            translate([-BANK_HEIGHT/2 + dx -h, BANK_WIDTH/2 + dy + pb_dy, BANK_LENGTH/2 + dz])
             rotate([0, 90, 0])
             power_bank(h=h*2);
 
@@ -197,16 +199,16 @@ module cavity() {
         }
 
         // separator
-        translate([-BANK_HEIGHT*1.5 + dx, BANK_WIDTH/4 + dy + pb_dy, dz-BANK_LENGTH/2]) 
+        translate([-BANK_HEIGHT*1.5 + dx, BANK_WIDTH/4 + dy + pb_dy, dz-BANK_LENGTH/2])
                 cube([BANK_HEIGHT,
                       WALL, BANK_LENGTH*2]);
         if(0)
-        translate([-BANK_HEIGHT*.5 + dx - WALL, BANK_WIDTH/4 + dy + pb_dy, dz-BANK_LENGTH/2]) 
+        translate([-BANK_HEIGHT*.5 + dx - WALL, BANK_WIDTH/4 + dy + pb_dy, dz-BANK_LENGTH/2])
                 cube([WALL, BANK_WIDTH, BANK_LENGTH*2]);
     }
 }
 
-module boombox_box() {
+module boombox_box(upper=false) {
     difference() {
         translate([0, -HINGE_Y, -HINGE_Z]) {
             dz = (PHONE_W - BANK_LENGTH)/2;
@@ -219,7 +221,6 @@ module boombox_box() {
             l = BOOMBOX_L;
             w = BOOMBOX_W;
             difference() {
-
                 // box
                 union() {
                     chamferer(CH, tool="cylinder-x", fn=FN)
@@ -247,7 +248,7 @@ module boombox_box() {
                 cube([l*2, w*2, w*2]);
 
                 // cavity
-                cavity();            
+                cavity();
             }
 
             // pads
@@ -264,9 +265,7 @@ module boombox_box() {
                     translate([side*k, rear+1, z+2])
                     scale([1, 1, .5])
                     sphere(d=5);
-
                 }
-
         }
 
         // hinge clearance
@@ -280,16 +279,15 @@ module boombox_box() {
 
         // handle axis
         dx = (WALL*2 + BOOMBOX_XX)/4;
-        for (z_d_a=[[-22, HANDLE_AXIS_D1, 0], [4, HANDLE_AXIS_D2, 90]])
+        for (z_d_a=[[-22+1, HANDLE_AXIS_D1, 0], [4, HANDLE_AXIS_D2, 90]])
         for (k=[-1, 1]) {
             z = z_d_a[0];
             d = z_d_a[1];
             a = z_d_a[2];
             translate([(CASE_L/2 + dx)*k, -HINGE_Y + BOOMBOX_W/2, z]) {
-                
                 rotate([0, 90, 0])  {
                     // through hole
-                    translate([0, 0, k*2])                    
+                    translate([0, 0, k*2])
                     cylinder(d=d, h=dx*2, center=true);
 
                     // reinforcement cracks
@@ -303,6 +301,14 @@ module boombox_box() {
                 }
             }
         }
+
+        // finger grooves
+        d = 6;
+        if (!upper)
+        for (kx=[1, -1]) hull() for (dy=[4, -4])
+            translate([BOOMBOX_L/2 * kx, -BOOMBOX_W * .69 + dy, 0])
+            scale([.8, 1, 3])
+            sphere(d=d);
     }
 }
 
@@ -311,7 +317,7 @@ module partitioner(upper=false) {
     shift = (upper ? PLAY : -PLAY);
     translate([0, 0, -h + shift])
     cylinder(d=1000, h=h);
- 
+
     // slanted front
     a = 30;
     translate([0, -BOOMBOX_W + CH + 2 + shift + sin(a)*WALL*1.5, -PLAY])
@@ -320,7 +326,7 @@ module partitioner(upper=false) {
     cube([BOOMBOX_L*2, BOOMBOX_W, BOOMBOX_H]);
 
     // snappers
-    d = 4;
+    d = 4       -.5;
     for (k=[-1, 1]) {
         translate([(CASE_L/2 + (WALL + BOOMBOX_XX/2)/2)*k,
                    -BOOMBOX_W + CH + 2 + shift + sin(a)*WALL*1.5*0,
@@ -331,10 +337,22 @@ module partitioner(upper=false) {
             }
         }
     }
+
+    // horizontal grippers
+    d2 = 5;
+    for (k=[-1, 1]) {
+        translate([(CASE_L/2 + (WALL + BOOMBOX_XX/2)/2)*k,
+                   -BOOMBOX_W + 27.5,
+                   0]) {
+            hull() for (kx=[-1, 1]) {
+                translate([kx * 2.5, 0, 0])
+                sphere(d=d2 + (upper?PLAY*2:0));
+            }
+        }
+    }
 }
 
 module boombox(upper=false) {
-
     difference() {
         union() {
             // lower
@@ -346,7 +364,7 @@ module boombox(upper=false) {
             // upper
             rotate([-90, 0, 0])
             difference() {
-                boombox_box();
+                boombox_box(true);
                 partitioner(true);
             }
         }
@@ -355,7 +373,7 @@ module boombox(upper=false) {
         rotate([0, 90, 0])
         cylinder(d=HINGE_D+HINGE_PLAY*2, h=HINGE_L+HINGE_PLAY*2, center=true);
     }
-    
+
     // hinge
     rotate([0, 90, 0])
 scale([1, 1, -1])
@@ -365,7 +383,7 @@ scale([1, 1, -1])
 }
 
 
-if (0 && $preview) {
+if ($preview) {
     boombox();
 }
 else {
@@ -374,10 +392,8 @@ else {
         rotate([0, -90, 0])
         rotate([0, 180, 0])
         boombox();
- 
+
         // cross-cut
-        translate([0, 0, 21.5])
-        cylinder(d=1000, h=BOOMBOX_L);
+        //translate([0, 0, 21.5]) cylinder(d=1000, h=BOOMBOX_L);
     }
-   
 }
