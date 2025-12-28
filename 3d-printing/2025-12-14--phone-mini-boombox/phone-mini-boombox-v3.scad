@@ -153,14 +153,20 @@ module phone_cavity(back_extension=0, just_case=false) {
     }
 }
 
-module power_bank(w=BANK_WIDTH, l=BANK_LENGTH, d=BANK_D, h=BANK_HEIGHT, with_extension=false) {
-    side_extension = WALL*3 * 0;
+BANK_LENGTH_ADJ = -1;
+BANK_POS_Z_ADJ = 1;
+BANK_POS_Y_ADJ = -.7;
+
+module power_bank(w=BANK_WIDTH, l=BANK_LENGTH, d=BANK_D, h=BANK_HEIGHT,
+                  with_extension=false) {
+    // battery
+    translate([-BANK_POS_Z_ADJ, 0, 0])
     intersection() {
         hull() {
-            dd=(l - d)/2;
+            dd=(l - d)/2 + BANK_LENGTH_ADJ;
             fn = $preview ? 24 : 180;
-            translate([-dd, 0, 0]) cylinder(d=d, h=h+side_extension, $fn=fn);
-            translate([+dd, 0, 0]) cylinder(d=d, h=h+side_extension, $fn=fn);
+            translate([-dd, 0, 0]) cylinder(d=d, h=h, $fn=fn);
+            translate([+dd, 0, 0]) cylinder(d=d, h=h, $fn=fn);
         }
         cube([l*2, w, h*4], center=true);
     }
@@ -191,7 +197,7 @@ module power_bank(w=BANK_WIDTH, l=BANK_LENGTH, d=BANK_D, h=BANK_HEIGHT, with_ext
 module cavity() {
     dx = (CASE_L - BANK_HEIGHT)/2;
     dy = CASE_TH + CASE_Y;
-    dz = (PHONE_W - BANK_LENGTH)/2      +1;
+    dz = (PHONE_W - BANK_LENGTH)/2      +1*0;
     pb_dy = -2;
     h=(CASE_L - BANK_HEIGHT);
 
@@ -199,15 +205,21 @@ module cavity() {
 
     difference() {
         union() {
-            // power bank
-            translate([-BANK_HEIGHT/2 + dx, BANK_WIDTH/2 + dy + pb_dy, BANK_LENGTH/2 + dz])
-            rotate([0, 90, 0])
-            power_bank(with_extension=true);
+            w = BANK_WIDTH/2 + dy + pb_dy;
+            l =  BANK_LENGTH/2 + dz;
 
-            // cable stash
-            translate([-BANK_HEIGHT/2 + dx -h, BANK_WIDTH/2 + dy + pb_dy, BANK_LENGTH/2 + dz])
-            rotate([0, 90, 0])
-            power_bank(h=h*2);
+            translate([0, BANK_POS_Y_ADJ, 0])
+            {
+                // power bank
+                translate([-BANK_HEIGHT/2 + dx, w, l])
+                rotate([0, 90, 0])
+                power_bank(with_extension=true);
+
+                // cable stash
+                translate([-BANK_HEIGHT/2 + dx -h, w, l])
+                rotate([0, 90, 0])
+                power_bank(h=h*2);
+            }
 
             // phone
             translate([0, ATOM, 1.5 + phone_tune_z])
@@ -334,7 +346,7 @@ module partitioner(upper=false) {
     cube([BOOMBOX_L*2, BOOMBOX_W, BOOMBOX_H]);
 
     // snappers
-    d = 4       -.5;
+    d = 4       -.5  +.5;
     for (k=[-1, 1]) {
         translate([(CASE_L/2 + (WALL + BOOMBOX_XX/2)/2)*k,
                    -BOOMBOX_W + CH + 2 + shift + sin(a)*WALL*1.5*0,
@@ -347,6 +359,7 @@ module partitioner(upper=false) {
     }
 
     // horizontal grippers
+    /*
     d2 = 5;
     for (k=[-1, 1]) {
         translate([(CASE_L/2 + (WALL + BOOMBOX_XX/2)/2)*k,
@@ -358,6 +371,7 @@ module partitioner(upper=false) {
             }
         }
     }
+    */
 }
 
 module boombox_1() {
@@ -377,12 +391,13 @@ module boombox_1() {
                     partitioner(true);
                 }
                 
+                // wedge
                 l = CASE_L+1;
                 l2 = CASE_L+1;
-                th = 3;
-                th2 = 6;
+                th = 3      +2;
+                th2 = 6     +2;
                 y = 17.5;
-                z = -.1;
+                z = -.1     +3;
                 hull() {
                     translate([0, - HINGE_Y-th/2 + y, -z])
                     translate([-l/2, -th/2, 0])
@@ -458,10 +473,11 @@ module foot_cut() {
     w = FOOT_W*2 + .9;
     rotate([30, 0, 0])
     translate([-HINGE_PLAY, -w/2, -HINGE_D/2 - HINGE_PLAY])
-    cube([HINGE2_L+HINGE_PLAY*2, w, HINGE_D + HINGE_PLAY*2]);
+    cube([HINGE2_L+HINGE_PLAY*2, w, HINGE_D + HINGE_PLAY*4]);
 }
 
 module boombox() {
+    // body w/o foot
     difference() {
         translate([0, 0, HINGE_Z])
         boombox_1();
@@ -470,6 +486,7 @@ module boombox() {
         foot_cut();
     }
 
+    // foot
     translate([-HINGE2_L + BOOMBOX_L/2, 0, 0])
     foot();
 
@@ -493,7 +510,7 @@ module boombox() {
 }
 
 
-if ($preview) {
+if (0 && $preview) {
     boombox();
 }
 else {
