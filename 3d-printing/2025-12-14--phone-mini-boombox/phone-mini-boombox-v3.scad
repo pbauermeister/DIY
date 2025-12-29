@@ -1,7 +1,7 @@
 use <../chamferer.scad>
 use <../hinge4.scad>
 
-CROSSCUT            = true;
+CROSSCUT            = !true;
 
 BATT_L              = 146           +1;
 BATT_W              = 108           +0.2;
@@ -59,7 +59,7 @@ PAD_D               =   3;
 FOOT_W              =  15;
 FOOT_ANGLE          =  90;
 
-SNAPPER_D           =   4                  -.2  -.1;
+SNAPPER_D           =   4                  -.2  -.1  -.1;
 
 ATOM                = .02;
 FN                  = $preview? 8 : 60;
@@ -130,23 +130,30 @@ module phone_cavity(back_extension=0) {
             // alignment pads
             r = 3;
             z = 20;
-            for (x=[l + bor + r, -r - bor]) hull() {
-                translate([x, 0, z-3])
-                rotate([90, 0, 0])
-                cylinder(r=r, h=cth, $fn=60, center=true);
+            for (x=[l + bor + r, -r - bor]) {
+                difference() {
+                    hull() {
+                        translate([x, 0, z-3])
+                        rotate([90, 0, 0])
+                        cylinder(r=r, h=cth, $fn=60, center=true);
 
-                translate([x, 0, z+3])
-                rotate([90, 0, 0])
-                cylinder(r=r, h=cth, $fn=60, center=true);
+                        translate([x, 0, z+3])
+                        rotate([90, 0, 0])
+                        cylinder(r=r, h=cth, $fn=60, center=true);
 
-                translate([x, 0, z])
-                rotate([90, 0, 0])
-                cylinder(r=r-reserve, h=cth*2, $fn=60, center=true);
+                        translate([x, 0, z])
+                        rotate([90, 0, 0])
+                        cylinder(r=r-reserve, h=cth*2, $fn=60, center=true);
 
-                translate([x, -r/2, z])
-                rotate([90, 0, 0])
-                cylinder(r=r, h=cth*2, $fn=60, center=true);
+                        translate([x, -r/2, z])
+                        rotate([90, 0, 0])
+                        cylinder(r=r, h=cth*2, $fn=60, center=true);
+                    }
 
+                    for (dz=[-3-r : .4 : 3+r])
+                    translate([x, 0, z+dz])
+                     cube([30, cth*2, .1], center=true);
+                }
             }
         }
 
@@ -185,10 +192,10 @@ module power_bank(w=BANK_WIDTH, l=BANK_LENGTH, d=BANK_D, h=BANK_HEIGHT,
     }
 
     // reinforcement cracks
-    dy = WALL + BOOMBOX_XX/2 -2;
+    dy = WALL + BOOMBOX_XX/2 -2  -4;
     th = 0.1;
     for (x=[-5+.25: .3 + th : 5])
-        translate([-l/2 + 28-2 +x, -6 -3*4, h+2])
+        translate([-l/2 + 28-2 +x, -6 -3*4, h+2 +4])
         cube([th, 12 + 6*4, dy-2]);
 }
 
@@ -448,6 +455,16 @@ module foot() {
             rotate([45, 0, 0])
             translate([-HINGE2_L/2, -d/2, -d/2])
             cube([HINGE2_L*2, d, d]);
+
+            // chamfer corner
+            rotate([a + 120, 0, 0])
+            rotate([30, 0, 0])
+            translate([0, -r, 0])
+            translate([0, d/2, -HINGE_D*.6])
+            rotate([45, 0, 0])
+            translate([-HINGE2_L/2, -d/2*-1.5, -d/2*-1])
+            cube([HINGE2_L*2, d, d]);
+
         }
 
         rotate([a - 210, 0, 0])
@@ -497,7 +514,7 @@ module boombox() {
                 y = -BOOMBOX_DY + CH*1.25;
                 translate([side*k, y, z]) pad();
 
-                y2 = -BOOMBOX_DY + BOOMBOX_W * .735     +.85 +.15       -.085;
+                y2 = -BOOMBOX_DY + BOOMBOX_W * .735     +.85 +.15       -.085  -.1;
                 translate([side*k, y2, z + .9 +         .75 +.07])
                 rotate([30, 0, 0])
                 pad(scale_z=.95);
