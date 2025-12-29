@@ -164,6 +164,9 @@ module hinge4_1(
 // examples
 k = 35/50;
 
+translate([0, 90*k, 0])
+hinge4(thickness=10*k, arm_length=18*k, total_height=50*k, nb_layers=5, angle=180, with_plate=false);
+
 translate([0, 65*k, 0])
 hinge4(thickness=10*k, arm_length=18*k, total_height=50*k, nb_layers=5, angle=180, extra_angle=0);
 
