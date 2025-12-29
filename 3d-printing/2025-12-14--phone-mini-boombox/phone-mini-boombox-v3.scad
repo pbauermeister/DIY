@@ -1,6 +1,8 @@
 use <../chamferer.scad>
 use <../hinge4.scad>
 
+CROSSCUT            = true;
+
 BATT_L              = 146           +1;
 BATT_W              = 108           +0.2;
 BATT_TH             =  39           -2;
@@ -8,8 +10,6 @@ BATT_TH             =  39           -2;
 PHONE_L             = 163           +.3;
 PHONE_W             =  77;
 WALL                =   3.5;
-
-SCREW_DIST          = 127.5;
 
 L                   = PHONE_L+WALL*2 + (BATT_W-77)              -28;
 W                   = BATT_W+WALL*2;
@@ -28,6 +28,10 @@ BANK_WIDTH          =  30.0 + BANK_PLAY;
 BANK_D              =  54.0;
 BANK_HEIGHT         = 137.5 + BANK_PLAY + 1  +1;
 
+BANK_LENGTH_ADJ     =  -0.5;
+BANK_POS_Z_ADJ      =   1;
+BANK_POS_Y_ADJ      =  -0.7;
+
 BOOMBOX_DY          = 1;
 BOOMBOX_XZ          = WALL*2.7;
 BOOMBOX_XX          = 24;
@@ -39,15 +43,15 @@ BOOMBOX_L           = CASE_L + WALL*2 + BOOMBOX_XX;
 HINGE_D             = 4;
 HINGE_Z             = 73    + 4.6;
 HINGE_Y             = BOOMBOX_W - BOOMBOX_DY - HINGE_D/2;
-HINGE_L             = BOOMBOX_L - 3*2                           *0;
+HINGE_L             = BOOMBOX_L;
 HINGE_PLAY          = .25;
 
-HINGE_NB_LAYERS     = 16*3;
+HINGE_NB_LAYERS     = CROSSCUT ? 16*3 : 10*3;
 
 HINGE2_L            = BOOMBOX_L;
 
 HANDLE_AXIS_D1      = 3.2;
-HANDLE_AXIS_D2      = 2.2;
+HANDLE_AXIS_D2      = 2.2                               +.3;
 
 PAD_POS_X           = (WALL*2 + BOOMBOX_XX/2) *.5;
 PAD_D               =   3;
@@ -55,10 +59,11 @@ PAD_D               =   3;
 FOOT_W              =  15;
 FOOT_ANGLE          =  90;
 
+SNAPPER_D           =   4                  -.2  -.1;
+
 ATOM                = .02;
 FN                  = $preview? 8 : 60;
 PLAY                = .1;
-
 $fn = FN;
 
 module screen_cavity(l, th, w) {
@@ -87,7 +92,7 @@ module screen_cavity(l, th, w) {
     cube([l + hbor*2, th, w + vbor*2]);
 }
 
-module phone_cavity(back_extension=0, just_case=false) {
+module phone_cavity(back_extension=0) {
     l = PHONE_L;
     w = PHONE_W;
     th = 9;
@@ -100,62 +105,55 @@ module phone_cavity(back_extension=0, just_case=false) {
     xy =   2;
 
     translate([-l/2, 0, 0]) {
-        if (!just_case) {
-            // screen
-            translate([0, 0, -1])
-            screen_cavity(l, th, w);
+        // screen
+        translate([0, 0, -1])
+        screen_cavity(l, th, w);
 
-            // buttons clearance
-            x = 26;
-            dx = 44;
-            /*
-            if (0)
-            hull() {
-                for (z=[0, th/2])
-                for (y=[th/2, -th/2]) {
-                    translate([x, y, w+z])
-                    rotate([0, 90, 0])
-                    cylinder(d=th, h=dx);
-                }
+        // buttons clearance
+        x = 26;
+        dx = 44;
+        for (x=[8, 19, 37])
+            translate([26+x, -1 + 6.5, 0])
+            cylinder(d=5, h=CASE_W*3);
+
+        // USB clearance
+        pl = 18;
+        translate([l/2, 1 + 1.5, w/2-pl/2])
+        cube([l, th, pl]);
+
+        // chamber
+        reserve = .33;
+        difference() {
+            translate([-bor - reserve, cy, -bor])
+            cube([l + bor*2 + reserve*2, cth+back_extension, w + bor*2]);
+
+            // alignment pads
+            r = 3;
+            z = 20;
+            for (x=[l + bor + r, -r - bor]) hull() {
+                translate([x, 0, z-3])
+                rotate([90, 0, 0])
+                cylinder(r=r, h=cth, $fn=60, center=true);
+
+                translate([x, 0, z+3])
+                rotate([90, 0, 0])
+                cylinder(r=r, h=cth, $fn=60, center=true);
+
+                translate([x, 0, z])
+                rotate([90, 0, 0])
+                cylinder(r=r-reserve, h=cth*2, $fn=60, center=true);
+
+                translate([x, -r/2, z])
+                rotate([90, 0, 0])
+                cylinder(r=r, h=cth*2, $fn=60, center=true);
+
             }
-            */
-            for (x=[8, 19, 37])
-                translate([26+x, -1 + 6.5, 0])
-                cylinder(d=5, h=CASE_W*3);
-
-            // USB clearance
-            pl = 18;
-            translate([l/2, 1 + 1.5, w/2-pl/2])
-            cube([l, th, pl]);
-
-            translate([-bor, cy, -bor])
-            cube([l + bor*2, cth+back_extension, w + bor*2]);
-
-            translate([-bor, cy, -bor])
-            cube([l + bor*2, cth+back_extension, w + bor*2]);
-
-            translate([-bor, cy+xy, -bor-xz + 2 +.2])
-            cube([l + bor*2, cth-xy+back_extension, xz+ATOM]);
-
-            // side extension
-            dy = 10;
-            side_extension = WALL*3;
-            if (0)
-            translate([-bor, cy+dy,  -bor-xz + 2 +.2])
-            cube([l + bor*2+side_extension, cth+back_extension-dy, w+bor+xz+2-.2]);
         }
-        else {
-            translate([-bor, cy+cth, -bor])
-            cube([l + bor*2, ATOM, w + bor*2]);
-            translate([-bor, cy+cth, -bor-xz + 2 +.2])
-            cube([l + bor*2, ATOM, xz+ATOM]);
-        }
+
+        translate([-bor - reserve, cy+xy, -bor-xz + 2 +.2])
+        cube([l + bor*2 + reserve*2, cth-xy+back_extension, xz+ATOM]);
     }
 }
-
-BANK_LENGTH_ADJ = -1;
-BANK_POS_Z_ADJ = 1;
-BANK_POS_Y_ADJ = -.7;
 
 module power_bank(w=BANK_WIDTH, l=BANK_LENGTH, d=BANK_D, h=BANK_HEIGHT,
                   with_extension=false) {
@@ -197,7 +195,7 @@ module power_bank(w=BANK_WIDTH, l=BANK_LENGTH, d=BANK_D, h=BANK_HEIGHT,
 module cavity() {
     dx = (CASE_L - BANK_HEIGHT)/2;
     dy = CASE_TH + CASE_Y;
-    dz = (PHONE_W - BANK_LENGTH)/2      +1*0;
+    dz = (PHONE_W - BANK_LENGTH)/2;
     pb_dy = -2;
     h=(CASE_L - BANK_HEIGHT);
 
@@ -236,11 +234,38 @@ module cavity() {
     }
 }
 
-module pad() {
+module pad(scale_z=.5) {
     hull() for (kx=[-1, 1])
         translate([kx * 3, 0, 0])
-        scale([1, 1, .5])
+        scale([1, 1, scale_z])
         sphere(d=PAD_D);
+}
+
+module handle_axis_holes() {
+    dx = (WALL*2 + BOOMBOX_XX)/4;
+    for (z_d_c=[[-22+1, HANDLE_AXIS_D1, false], [4+.3, HANDLE_AXIS_D2, true]])
+    for (k=[-1, 1]) {
+        z = z_d_c[0];
+        d = z_d_c[1];
+        c = z_d_c[2];
+        translate([(CASE_L/2 + dx)*k, -HINGE_Y + BOOMBOX_W/2, z]) {
+            rotate([0, 90, 0])  {
+                // through hole
+                translate([0, 0, k*2])
+                cylinder(d=d, h=dx*2, center=true);
+
+                // reinforcement cracks rings
+                if (c)
+                if (!$preview)
+                for (d2=[d : .3+.2 +1: d*2.2]) {
+                    difference() {
+                        cylinder(d=d2+.2, h=dx*2, center=true);
+                        cylinder(d=d2, h=dx*2.5, center=true);
+                    }
+                }
+            }
+        }
+    }
 }
 
 module boombox_0(upper=false) {
@@ -264,7 +289,7 @@ module boombox_0(upper=false) {
 
                     // back foot
                     r = 10;
-                    h2 = (l-WALL*4)  *0 + r*3;
+                    h2 = r*3;
                     if(0)
                     translate([0, w, r*.85-CH])
                     hull() {
@@ -298,37 +323,16 @@ module boombox_0(upper=false) {
         cube([HINGE_L+HINGE_PLAY*2, HINGE_D, HINGE_D  + HINGE_PLAY*2], center=true);
 
         // handle axis
-        dx = (WALL*2 + BOOMBOX_XX)/4;
-        for (z_d_a=[[-22+1, HANDLE_AXIS_D1, 0], [4, HANDLE_AXIS_D2, 90]])
-        for (k=[-1, 1]) {
-            z = z_d_a[0];
-            d = z_d_a[1];
-            a = z_d_a[2];
-            translate([(CASE_L/2 + dx)*k, -HINGE_Y + BOOMBOX_W/2, z]) {
-                rotate([0, 90, 0])  {
-                    // through hole
-                    translate([0, 0, k*2])
-                    cylinder(d=d, h=dx*2, center=true);
-
-                    // reinforcement cracks
-                    if (!$preview)
-                    for (d2=[d : .3+.2 : d*2.2]) {
-                        difference() {
-                            cylinder(d=d2+.2, h=dx*2, center=true);
-                            cylinder(d=d2, h=dx*2.5, center=true);
-                        }
-                    }
-                }
-            }
-        }
+        handle_axis_holes();
 
         // finger grooves
         d = 6;
         if (!upper)
-        for (kx=[1, -1]) hull() for (dy=[4, -4])
+        for (kx=[1, -1]) hull() for (dy=[-4.5, 4.5])
             translate([BOOMBOX_L/2 * kx, -BOOMBOX_W * .69 + dy, 0])
-            scale([.8, 1, 3])
-            sphere(d=d);
+            rotate([0, -50, 0])
+            scale([1.5*2, 1, 4])
+            sphere(d=d, $fn=4);
     }
 }
 
@@ -346,10 +350,10 @@ module partitioner(upper=false) {
     cube([BOOMBOX_L*2, BOOMBOX_W, BOOMBOX_H]);
 
     // snappers
-    d = 4       -.5  +.5;
+    d = SNAPPER_D;
     for (k=[-1, 1]) {
         translate([(CASE_L/2 + (WALL + BOOMBOX_XX/2)/2)*k,
-                   -BOOMBOX_W + CH + 2 + shift + sin(a)*WALL*1.5*0,
+                   -BOOMBOX_W + CH + 2 + shift,
                    d]) {
             hull() for (i=[-1,1]) {
                 translate([i*1, 0, 0])
@@ -357,21 +361,6 @@ module partitioner(upper=false) {
             }
         }
     }
-
-    // horizontal grippers
-    /*
-    d2 = 5;
-    for (k=[-1, 1]) {
-        translate([(CASE_L/2 + (WALL + BOOMBOX_XX/2)/2)*k,
-                   -BOOMBOX_W + 27.5,
-                   0]) {
-            hull() for (kx=[-1, 1]) {
-                translate([kx * 2.5, 0, 0])
-                sphere(d=d2 + (upper?PLAY*2:0));
-            }
-        }
-    }
-    */
 }
 
 module boombox_1() {
@@ -392,20 +381,20 @@ module boombox_1() {
                 }
                 
                 // wedge
-                l = CASE_L+1;
-                l2 = CASE_L+1;
-                th = 3      +2;
+                l = CASE_L+1  -15;
+                l2 = CASE_L+1  -1;
+                th = 3      +2          -4;
                 th2 = 6     +2;
-                y = 17.5;
+                y = 17.5                -2.5;
                 z = -.1     +3;
                 hull() {
-                    translate([0, - HINGE_Y-th/2 + y, -z])
+                    translate([0, - HINGE_Y + y, -z])
                     translate([-l/2, -th/2, 0])
                     cube([l, th, 6+z]);
 
-                    translate([0, - HINGE_Y-th2/2 + y, 0])
-                    translate([-l2/2, -th/2, 2])
-                    cube([l2, th2, 1]);
+                    translate([0, - HINGE_Y + y, -1.9])
+                    translate([-l2/2, -th2/2, 2])
+                    cube([l2, th2, 2.2]);
                     }
             }
         }
@@ -417,7 +406,7 @@ module boombox_1() {
 
     // hinge
     rotate([0, 90, 0])
-scale([1, 1, -1]) translate([0, 0, -HINGE_L/2])
+    scale([1, 1, CROSSCUT ? -1 : 1]) translate([0, 0, -HINGE_L/2])
     hinge4(thickness=HINGE_D, arm_length=HINGE_D/2 + HINGE_PLAY*2,
            total_height=HINGE_L,
            nb_layers=HINGE_NB_LAYERS, angle=90, extra_angle=0);
@@ -427,25 +416,38 @@ module foot() {
     a = -120 + FOOT_ANGLE;
 
     rotate([0, 90, 0])
-scale([1, 1, -1]) translate([0, 0, -HINGE2_L])
+    scale([1, 1, -1]) translate([0, 0, -HINGE2_L])
     rotate([0, 0, 180+60])
     hinge4(thickness=HINGE_D, arm_length=HINGE_D + HINGE_PLAY*2,
            total_height=HINGE2_L,
            nb_layers=HINGE_NB_LAYERS, angle=180 +a,
-           extra_angle=30);
+           with_plate=false);
 
     // rotating foot
     l = 15 + 4.65;
     h = l*sin(30);
     intersection() {
-        hull() {
-            rotate([a - 210, 0, 0])
-            translate([0, -l, -HINGE_D/2])
-            cube([HINGE2_L, l-HINGE_D, HINGE_D]);
+        difference() {
+            hull() {
+                rotate([a - 210, 0, 0])
+                translate([0, -l, -HINGE_D/2])
+                cube([HINGE2_L, l-HINGE_D, HINGE_D]);
 
+                rotate([a + 120, 0, 0])
+                translate([0, -HINGE_D/2 - HINGE_PLAY/2, -l*sin(30) - HINGE_D/2 +.27])
+                cube([HINGE2_L, ATOM, h-HINGE_D*.4]);
+            }
+
+            // gripping groove
+            d = 3;
+            r = l - HINGE_D/2;
             rotate([a + 120, 0, 0])
-            translate([0, -HINGE_D/2 - HINGE_PLAY/2, -l*sin(30) - HINGE_D/2 +.27])
-            cube([HINGE2_L, ATOM, h-HINGE_D*.4]);
+            rotate([30, 0, 0])
+            translate([0, -r, 0])
+            translate([0, d/2, -HINGE_D*.6])
+            rotate([45, 0, 0])
+            translate([-HINGE2_L/2, -d/2, -d/2])
+            cube([HINGE2_L*2, d, d]);
         }
 
         rotate([a - 210, 0, 0])
@@ -462,18 +464,12 @@ scale([1, 1, -1]) translate([0, 0, -HINGE2_L])
     }
 }
 
-
 module foot_cut() {
-    // hinge
-    rotate([60, 0, 0])
-    translate([-HINGE_PLAY, -HINGE_D/2 - HINGE_PLAY, -HINGE_D])
-    cube([HINGE2_L+HINGE_PLAY*2, HINGE_D + HINGE_PLAY*2, HINGE_D*2]);
-
     // rotating chamber
     w = FOOT_W*2 + .9;
     rotate([30, 0, 0])
     translate([-HINGE_PLAY, -w/2, -HINGE_D/2 - HINGE_PLAY])
-    cube([HINGE2_L+HINGE_PLAY*2, w, HINGE_D + HINGE_PLAY*4]);
+    cube([HINGE2_L+HINGE_PLAY*2, w, HINGE_D + HINGE_PLAY*3.2]);
 }
 
 module boombox() {
@@ -487,6 +483,7 @@ module boombox() {
     }
 
     // foot
+    scale([CROSSCUT ? 1 : -1, 1, 1])
     translate([-HINGE2_L + BOOMBOX_L/2, 0, 0])
     foot();
 
@@ -500,27 +497,27 @@ module boombox() {
                 y = -BOOMBOX_DY + CH*1.25;
                 translate([side*k, y, z]) pad();
 
-                y2 = -BOOMBOX_DY + BOOMBOX_W * .735;
-                translate([side*k, y2, z + .9])
+                y2 = -BOOMBOX_DY + BOOMBOX_W * .735     +.85 +.15       -.085;
+                translate([side*k, y2, z + .9 +         .75 +.07])
                 rotate([30, 0, 0])
-                pad();
+                pad(scale_z=.95);
             }
         }
     }
 }
 
-
-if (0 && $preview) {
+if ($preview) {
     boombox();
 }
 else {
     difference() {
         translate([0, 0, BOOMBOX_L/2])
         rotate([0, -90, 0])
-        rotate([0, 180, 0])
+        rotate([0, CROSSCUT ? 180 : 0, 0])
         boombox();
 
         // cross-cut
-        translate([0, 0, 21.5 +2]) cylinder(d=1000, h=BOOMBOX_L);
+        if (CROSSCUT)
+            translate([0, 0, 21.5 +2]) cylinder(d=1000, h=BOOMBOX_L);
     }
 }
