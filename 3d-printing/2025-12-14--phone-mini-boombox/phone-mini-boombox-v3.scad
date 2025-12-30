@@ -1,7 +1,7 @@
 use <../chamferer.scad>
 use <../hinge4.scad>
 
-CROSSCUT            = !true;
+CROSSCUT            = true;
 
 BATT_L              = 146           +1;
 BATT_W              = 108           +0.2;
