@@ -43,7 +43,7 @@ HINGE_Z             =  73    + 4.6;
 HINGE_Y             = BOOMBOX_W - BOOMBOX_DY - HINGE_D/2;
 HINGE_L             = BOOMBOX_L;
 HINGE_PLAY          =   0.25;
-HINGE_NB_LAYERS     =  25;
+HINGE_NB_LAYERS     =  24;
 HINGE2_L            = BOOMBOX_L;
 
 HANDLE_AXIS_D1      =   3.2                             +.6;
@@ -259,7 +259,7 @@ module pad(scale_z=.5) {
 
 module handle_axis_holes() {
     dx = (WALL*2 + BOOMBOX_XX)/4;
-    for (z_d_c=[[-22+1.08, HANDLE_AXIS_D1, 1.8, true],
+    for (z_d_c=[[-22+1.08, HANDLE_AXIS_D1, 1.8*2, true],
                 [4+.3,     HANDLE_AXIS_D2, 2.2, false]])
     for (k=[-1, 1]) {
         z = z_d_c[0];
@@ -285,6 +285,7 @@ module handle_axis_holes() {
             }
         }
         
+/*
         // reinforcement cracks
         if (!$preview && c) {
             for (x=[-BOOMBOX_L/2+WALL*1, BOOMBOX_L/2 - WALL*3]) {
@@ -298,6 +299,7 @@ module handle_axis_holes() {
                 }                    
             }
         }
+*/
     }
 }
 
@@ -315,24 +317,9 @@ module boombox_0(upper=false) {
 
             difference() {
                 // box
-                union() {
-                    chamferer(CH, tool="cylinder-x", fn=FN)
-                    translate([-l/2, -dy, z])
-                    cube([l, w, h]);
-
-                    // back foot
-                    r = 10;
-                    h2 = r*3;
-                    if(0)
-                    translate([0, w, r*.85-CH])
-                    hull() {
-                        rotate([0, 90, 0])
-                        cylinder(r=r, h=h2, $fn=100, center=true);
-                        translate([0, -r/2, -r])
-                        rotate([0, 90, 0])
-                        cylinder(r=ATOM, h=h2+r*5, $fn=100, center=true);
-                    }
-                }
+                chamferer(CH, tool="cylinder-x", fn=FN)
+                translate([-l/2, -dy, z])
+                cube([l, w, h]);
 
                 // slanted bottom-back corner 70°
                 py = 20-2;
