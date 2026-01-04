@@ -55,7 +55,7 @@ PAD_D               =   3;
 FOOT_W              =  15;
 FOOT_ANGLE          =  90;
 
-SNAPPER_D           =   4                  -.2  -.1  -.1;
+SNAPPER_D           =   4                  -.2  -.1  -.1    +.1;
 
 ATOM                =   0.02;
 FN                  = $preview? 8 : 60;
@@ -109,7 +109,7 @@ module phone_cavity(back_extension=0) {
         // buttons clearance
         x = 26;
         dx = 44;
-        for (x=[8, 19, 37])
+        for (x=[8, 19-1, 37])
             translate([26+x, -1 + 6.5, 0])
             cylinder(d=5, h=CASE_W*3);
 
@@ -161,7 +161,6 @@ module phone_cavity(back_extension=0) {
             for (y=[0 : .4 : cth+back_extension])
                 translate([x-rth/2, y+cy, 20-5])
                 cube([rth, .1, 10]);
-
 
         // hinge cavity
         translate([-bor - reserve, cy+xy, -bor-xz + 2 +.2])
@@ -303,6 +302,41 @@ module handle_axis_holes() {
     }
 }
 
+module marks(l=BOOMBOX_L, w=BOOMBOX_W, h=BOOMBOX_H) {
+    n = 6;
+    m = 3;
+    ch = .75;
+
+    for (i=[0:n-1]) {
+        for (j=[0:m-1]) {
+            translate([i*l/n + (i==0 ? -ch*10 : 0), 0, 0])
+            chamferer(ch, fn=16)
+            intersection() {
+                chamferer(CH, tool="cylinder-x", fn=FN)
+                cube([l/n + (i==n-1 || i==0 ? ch*10 : 0), w, h]);
+                
+                translate([0, 0, h/m*j])
+                cube([l/n + (i==n-1 || i==0 ? ch*10 : 0), w, h/m]);
+            }
+        }
+    }
+    
+    chamferer(ch*2, fn=8, grow=false)
+    cube([l, w, h]);
+}
+
+module box(l=BOOMBOX_L, w=BOOMBOX_W, h=BOOMBOX_H) {
+
+    intersection() {
+        // box
+        chamferer(CH, tool="cylinder-x", fn=FN)
+        cube([l, w, h]);
+
+        // marks
+        marks(l, w, h);
+    }
+}
+
 module boombox_0(upper=false) {
     difference() {
         dz = (PHONE_W - BANK_LENGTH)/2;
@@ -313,13 +347,12 @@ module boombox_0(upper=false) {
         z  = dz - xz/2 -1.25;
         l = BOOMBOX_L;
         w = BOOMBOX_W;
-        translate([0, -HINGE_Y, -HINGE_Z]) {
 
+        translate([0, -HINGE_Y, -HINGE_Z]) {
             difference() {
                 // box
-                chamferer(CH, tool="cylinder-x", fn=FN)
                 translate([-l/2, -dy, z])
-                cube([l, w, h]);
+                box(l, w, h);
 
                 // slanted bottom-back corner 70°
                 py = 20-2;
@@ -383,7 +416,7 @@ module partitioner(upper=false) {
     }
 }
 
-module boombox_1() {
+module boombox_1(inv_hinge) {
     difference() {
         union() {
             // lower
@@ -404,9 +437,9 @@ module boombox_1() {
                 l = CASE_L+1  -15;
                 l2 = CASE_L+1  -1;
                 th = 3      +2          -4;
-                th2 = 6     +2;
-                y = 17.5                -2.5;
-                z = -.1     +3;
+                th2 = 6     +2                  -2;
+                y = 17.5                -2.5    +0.2;
+                z = -.1     +3                  -0.5;
                 hull() {
                     translate([0, - HINGE_Y + y, -z])
                     translate([-l/2, -th/2, 0])
@@ -426,7 +459,7 @@ module boombox_1() {
 
     // hinge
     rotate([0, 90, 0])
-    scale([1, 1, CROSSCUT ? -1 : 1]) translate([0, 0, -HINGE_L/2])
+    scale([1, 1, inv_hinge ? -1 : 1]) translate([0, 0, -HINGE_L/2])
     hinge4(thickness=HINGE_D, arm_length=HINGE_D/2 + HINGE_PLAY*2,
            total_height=HINGE_L,
            nb_layers=HINGE_NB_LAYERS * ($preview ? 2 : 1),
@@ -502,18 +535,18 @@ module foot_cut() {
     cube([HINGE2_L+HINGE_PLAY*2, w, HINGE_D + HINGE_PLAY*3.2]);
 }
 
-module boombox() {
+module boombox(inv_hinge) {
     // body w/o foot
     difference() {
         translate([0, 0, HINGE_Z])
-        boombox_1();
+        boombox_1(inv_hinge);
         
         translate([-HINGE2_L + BOOMBOX_L/2, 0, 0])
         foot_cut();
     }
 
     // foot
-    scale([CROSSCUT ? 1 : -1, 1, 1])
+    scale([inv_hinge ? 1 : -1, 1, 1])
     translate([-HINGE2_L + BOOMBOX_L/2, 0, 0])
     foot();
 
@@ -536,21 +569,37 @@ module boombox() {
     }
 }
 
-module final_rotate() {
-    if ($preview && !CROSSCUT)
+module final_rotate(force=false) {
+if (!force && $preview && !CROSSCUT)
         children();
     else
         translate([0, 0, BOOMBOX_L/2])
         rotate([0, -90, 0])
-        rotate([0, CROSSCUT ? 180 : 0, 0])
+        rotate([0, CROSSCUT || force ? 180 : 0, 0])
         children();
 }
 
-CROSSCUT            = !true;
+module final_cut(layer) {
+    translate([0, 0, -layer * BOOMBOX_L/3])
+    intersection() {
+       
+        children();
+        translate([0, 0, layer * BOOMBOX_L/3])
+        cylinder(r=BOOMBOX_H*2, h=BOOMBOX_L/3);
+    }
+}
+
+module segment(layer, inv_hinge=false) {
+    final_cut(layer)
+    final_rotate(true)
+    boombox(inv_hinge);
+}
+
+CROSSCUT            = true;
 
 difference() {
     final_rotate()
-    boombox();
+    boombox(CROSSCUT);
 
     // cross-cut
     if (CROSSCUT)
