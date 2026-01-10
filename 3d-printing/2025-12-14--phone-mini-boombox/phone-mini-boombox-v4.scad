@@ -3,7 +3,7 @@ use <../hinge4.scad>
 
 /*
 v Batt more play
-- Batt rear opening
+v Batt rear opening
 - Phone
     - hinge more space
     - wedge at ends
@@ -64,7 +64,7 @@ HINGE2_L            = BOOMBOX_L;
 HANDLE_AXIS_D1      =   3.8;
 HANDLE_AXIS_D2      =   2.5;
 
-PAD_POS_X           = (WALL*2 + BOOMBOX_XX/2) *.5;
+PAD_POS_X           = (WALL*2 + BOOMBOX_XX/2) * 1;
 PAD_D               =   3;
 
 FOOT_W              =  15;
@@ -215,7 +215,7 @@ module cavity() {
     pb_dy = -2;
     h=(CASE_L - BANK_HEIGHT);
 
-    phone_tune_z = -5.5/2;
+    phone_tune_z = -2.75;
 
     difference() {
         union() {
@@ -243,14 +243,23 @@ module cavity() {
 
             // phone
             translate([0, ATOM, 1.5 + phone_tune_z])
-            phone_cavity(back_extension=BANK_WIDTH/5.45*0, side_extension=(BOOMBOX_XX+WALL)*2);
+            phone_cavity(side_extension=(BOOMBOX_XX+WALL)*2);
         }
 
         // separator
-        translate([-BANK_HEIGHT*1.5 + dx, BANK_WIDTH/4 + dy + pb_dy - 3.2, dz-BANK_LENGTH/2])
-                cube([BANK_HEIGHT,
-                      WALL, BANK_LENGTH*2]);
+        translate([-BANK_HEIGHT*1.5 + dx, BANK_WIDTH/4 + dy + pb_dy - 3.55, dz-BANK_LENGTH/2])
+                cube([BANK_HEIGHT, WALL, BANK_LENGTH*2]);
+        
     }
+
+    // back window
+    d = 23;
+    hull()
+    for (kx=[-1, 1])
+        translate([kx*BOOMBOX_L*.28, BOOMBOX_W, BOOMBOX_H/2.5])
+        rotate([-90, 0, 0])
+        cylinder(d=d, h=BOOMBOX_W, center=true, $fn=40);
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////
