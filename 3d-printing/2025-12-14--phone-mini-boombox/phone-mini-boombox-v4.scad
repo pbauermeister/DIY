@@ -4,10 +4,10 @@ use <../hinge4.scad>
 /*
 v Batt more play
 v Batt rear opening
-- Phone
+v Phone
     v hinge more space
     v wedge at ends
-    - left finger pusher hole
+    v left finger pusher hole
 - right side lock: rotating half knob
 - Buttons clearance, not holes
 
@@ -256,9 +256,19 @@ module cavity() {
     d = 23;
     hull()
     for (kx=[-1, 1])
-        translate([kx*BOOMBOX_L*.28, BOOMBOX_W, BOOMBOX_H/2.5])
+        translate([kx*BOOMBOX_L*.28, BOOMBOX_W, BOOMBOX_H/2.75])
         rotate([-90, 0, 0])
         cylinder(d=d, h=BOOMBOX_W, center=true, $fn=40);
+
+    // left side phone window
+    d2 = 15;
+    hull() for (y=[BOOMBOX_H*.40, BOOMBOX_H*.325])
+        translate([0, d2*.5+4.5, y])
+        rotate([0, -90, 0])
+        cylinder(d=d2, h=BOOMBOX_L, $fn=40);
+
+    // centering guides
+    //%for (z=[-14, 60-11.5]) translate([0, 0, z]) cube([BOOMBOX_L*3, 200, 40]);
 
 }
 
