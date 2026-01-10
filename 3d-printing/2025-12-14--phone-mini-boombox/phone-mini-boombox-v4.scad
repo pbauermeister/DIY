@@ -6,7 +6,7 @@ v Batt more play
 v Batt rear opening
 - Phone
     v hinge more space
-    - wedge at ends
+    v wedge at ends
     - left finger pusher hole
 - right side lock: rotating half knob
 - Buttons clearance, not holes
@@ -296,13 +296,10 @@ module boombox_0(upper=false) {
     }
 }
 
-module boombox_1(inv_hinge) {
-    boombox_0();
-
-    // wedge
-    dl  = 15;
-    l   = CASE_L +1 -dl;
-    l2  = CASE_L;
+module wedge() {
+    l2  = 30;
+    dl  = l2/2;
+    l   = l2 -dl;
     th  =  1;
     th2 =  5;
     y   = 15.2;
@@ -310,14 +307,28 @@ module boombox_1(inv_hinge) {
     hull() {
         // tip
         translate([0, - HINGE_Y + y, -z + CASE_ADJ_Y])
-        translate([-l/2 - dl/2, -th/2, 0])
+        translate([-l/2, -th/2, 0])
         cube([l, th, 6+z]);
 
+        // med
+        translate([0, - HINGE_Y + y, -2.2])
+        translate([-l/2, -th2/2, 2])
+        cube([l, th2, ATOM]);
+
         // base
-        translate([0, - HINGE_Y + y, -1.9])
+        translate([0, - HINGE_Y + y, 0])
         translate([-l2/2, -th2/2, 2])
-        cube([l2, th2, 2.2]);
+        cube([l2, th2, ATOM]);
     }
+}
+
+module boombox_1(inv_hinge) {
+    boombox_0();
+
+    // wedges
+    for (kx=[-1, 1])
+        translate([kx*(BOOMBOX_L/2.7), 0, 0])
+        wedge();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
