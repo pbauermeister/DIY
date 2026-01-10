@@ -383,66 +383,6 @@ module foot_cut() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Clips
-
-CLIP_X = BOOMBOX_L/2 - BOOMBOX_XX/2-WALL+PAD_D/2;
-CLIP_POS = [
-    [1, BANK_POS_Y_ADJ-BANK_WIDTH/2 - PAD_D - 3/2, BANK_POS_Z_ADJ-4],
-    [-1, -BOOMBOX_W + PAD_D/2 + 8.5, (PHONE_W - BANK_LENGTH)/2 - BOOMBOX_XZ/2 + CASE_W + 7.2]
-];
-
-module clip() {
-    intersection() {
-        hull() {
-            rotate([0, 0, 90])
-            pad(scale_z=1);
-
-            translate([4, 0, 0])
-            rotate([0, 0, 90])
-            pad(scale_z=.01);
-        }
-        cylinder(d=PAD_D*10, h=PAD_D);
-    }
-}
-
-module clip_pads() {
-    for (pos=CLIP_POS)
-        translate([CLIP_X, pos[1], pos[2]]) 
-        scale([1, .7, pos[0]])
-        clip();
-}
-
-module clip_hollowing() {
-    th1 = PAD_D/2+1.5;
-    th2 = .7;
-    th3 = .4;
-    l = CLIP_L;
-    w = PAD_D*2.5;
-    for (pos=CLIP_POS)
-        translate([CLIP_X-l+BOOMBOX_XX/2+WALL, pos[1], pos[2]])
-        scale([1, 1, pos[0]]) {
-            // main slit
-            hull() {
-                translate([l-1, -w/2, -th1 - th2])
-                cube([1, w, th1]);
-    
-                translate([0, -w/2, -th1 - th2])
-                cube([1, w, th1*.4]);
-            }
-
-            // side slits
-            for (y=[-w/2, -w/2 + w-th3])
-                translate([0, y, -th2-th1])
-                cube([l, th3, th1+ th2*2]);
-
-            // reinforcement cracks
-            for (z=[1 : .8 : th1+th2])
-                translate([-5, -w/2, -z])
-                cube([5, w, .1]);
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // Final boombox
 
 module boombox(inv_hinge=false) {
@@ -454,9 +394,6 @@ module boombox(inv_hinge=false) {
         
         translate([-HINGE2_L + BOOMBOX_L/2, 0, -BOOMBOX_XZ2/2])
         foot_cut();
-
-        clip_hollowing();
-        //%clip_hollowing();
     }
 
     // foot
@@ -474,16 +411,13 @@ module boombox(inv_hinge=false) {
                 y = -BOOMBOX_DY + CH*1.25;
                 translate([side*k, y, z]) pad();
 
-                y2 = -BOOMBOX_DY + BOOMBOX_W * .735     +.85 +.15       -.085  -.1;
-                translate([side*k, y2, z + .9 +         .75 +.07])
+                y2 = -BOOMBOX_DY + BOOMBOX_W * .735 + 0.815;
+                translate([side*k, y2, z + 1.72])
                 rotate([30, 0, 0])
                 pad(scale_z=.95);
             }
         }
     }
-    
-    // pads for clips
-    clip_pads();
 }
 
 module final_rotate(force=false) {
