@@ -5,7 +5,7 @@ use <../hinge4.scad>
 v Batt more play
 v Batt rear opening
 - Phone
-    - hinge more space
+    v hinge more space
     - wedge at ends
     - left finger pusher hole
 - right side lock: rotating half knob
@@ -189,7 +189,7 @@ module phone_cavity(back_extension=0, side_extension=0) {
 
         // phone case hinge cavity
         translate([-bor - reserve, cy+xy, -bor-xz + 2 +.2 + CASE_ADJ_Y])
-        cube([l + bor*2 + reserve*2 + side_extension, cth-xy+back_extension, xz+ATOM]);
+        cube([l + bor*2 + reserve*2 + side_extension, cth + back_extension, xz+ATOM]);
     }
 }
 
