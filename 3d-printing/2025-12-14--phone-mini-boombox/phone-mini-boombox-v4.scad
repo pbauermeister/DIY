@@ -2,7 +2,7 @@ use <../chamferer.scad>
 use <../hinge4.scad>
 
 /*
-- Batt more play
+v Batt more play
 - Batt rear opening
 - Phone
     - hinge more space
@@ -34,7 +34,7 @@ CASE_TH             =  21;
 CASE_Y              =   1.2;
 CASE_ADJ_Y          =  -2;
 
-BANK_PLAY           =   0.4;
+BANK_PLAY           =   0.4                                     +1;
 BANK_LENGTH         =  87.9 + BANK_PLAY;
 BANK_WIDTH          =  30.0 + BANK_PLAY;
 BANK_D              =  54.0;
@@ -357,8 +357,8 @@ module foot() {
             translate([0, -r, 0])
             translate([0, d/2, -HINGE_D*.6])
             rotate([45, 0, 0])
-            translate([-HINGE2_L/2, -d/2*-1.5, -d/2*-1])
-            cube([HINGE2_L*2, d, d]);
+            translate([-HINGE2_L/2, +d/2, +d/2 -.5])
+            cube([HINGE2_L*2, d*2, d]);
         }
 
         rotate([a - 210, 0, 0])
@@ -377,9 +377,10 @@ module foot() {
 module foot_cut() {
     // rotating chamber
     w = FOOT_W*2 + .9;
+    xh = 1;
     rotate([30, 0, 0])
-    translate([-HINGE_PLAY, -w/2, -HINGE_D/2 - HINGE_PLAY])
-    cube([HINGE2_L+HINGE_PLAY*2, w, HINGE_D + HINGE_PLAY*3.2]);
+    translate([-HINGE_PLAY, -w/2, -HINGE_D/2 - HINGE_PLAY - xh])
+    cube([HINGE2_L+HINGE_PLAY*2, w, HINGE_D + HINGE_PLAY*3.2 + xh]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
