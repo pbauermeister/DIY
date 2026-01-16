@@ -1,19 +1,6 @@
 use <../chamferer.scad>
 use <../hinge4.scad>
 
-/*
-v Batt more play
-v Batt rear opening
-v Phone
-    v hinge more space
-    v wedge at ends
-    v left finger pusher hole
-- right side lock: rotating half knob
-- Buttons clearance, not holes
-
-*/
-
-
 BATT_L              = 147;
 BATT_W              = 108.2;
 BATT_TH             =  37;
@@ -34,7 +21,7 @@ CASE_TH             =  21;
 CASE_Y              =   1.2;
 CASE_ADJ_Y          =  -2;
 
-BANK_PLAY           =   0.4                                     +1;
+BANK_PLAY           =   0.4                                     +1  -.5;
 BANK_LENGTH         =  87.9 + BANK_PLAY;
 BANK_WIDTH          =  30.0 + BANK_PLAY;
 BANK_D              =  54.0;
@@ -64,8 +51,11 @@ HINGE2_L            = BOOMBOX_L;
 HANDLE_AXIS_D1      =   3.8;
 HANDLE_AXIS_D2      =   2.5;
 
-PAD_POS_X           = (WALL*2 + BOOMBOX_XX/2) * 1;
+PAD_POS_X           = (WALL*2 + BOOMBOX_XX/2) * 1 + 6;
 PAD_D               =   3;
+
+BUTTONS_POS_X       = [8, 18, 37];
+BUTTONS_D           =   5;
 
 FOOT_W              =  15;
 FOOT_ANGLE          =  90;
@@ -80,6 +70,10 @@ FN                  = $preview? 8 : 60;
 PLAY                =   0.1;
 
 $fn = FN;
+
+function get_buttons_pos_x() = BUTTONS_POS_X;
+function get_buttons_d() = BUTTONS_D;
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Helpers
@@ -176,9 +170,9 @@ module phone_cavity(back_extension=0, side_extension=0) {
         // buttons clearance
         x  = 26;
         dx = 44;
-        for (x=[8, 19-1, 37])
+        for (x=BUTTONS_POS_X)
             translate([26+x, -1 + 6.5, 0])
-            cylinder(d=5, h=CASE_W*3);
+            cylinder(d=BUTTONS_D, h=CASE_W*3);
 
         // chamber
         reserve = .33;
@@ -189,7 +183,7 @@ module phone_cavity(back_extension=0, side_extension=0) {
 
         // phone case hinge cavity
         translate([-bor - reserve, cy+xy, -bor-xz + 2 +.2 + CASE_ADJ_Y])
-        cube([l + bor*2 + reserve*2 + side_extension, cth + back_extension, xz+ATOM]);
+        cube([l + bor*2 + reserve*2 + side_extension, cth + back_extension, xz*2 + ATOM]);
     }
 }
 
@@ -229,7 +223,7 @@ module cavity() {
                 rotate([0, 90, 0])
                 power_bank(side_extension=(BOOMBOX_XX+WALL)*2);
 
-                if (0)
+                if (0) // power bank ghost
                 %translate([-BANK_HEIGHT/2 + dx, w, l])
                 rotate([0, 90, 0])
                 power_bank();
@@ -301,6 +295,7 @@ module boombox_0(upper=false) {
 
                 // cavity
                 cavity();
+                //%cavity();
             }
         }
     }
@@ -414,10 +409,127 @@ module foot_cut() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// knob
+KNOB_SCREW_D      =  3;
+KNOB_SCREW_HEAD_D =  7.5;
+KNOB_D            = 22;
+KNOB_H            = WALL + BOOMBOX_XX/2;
+
+module knob() {
+    h   = KNOB_H - .2;
+    xh  = 5;
+    d   = KNOB_D;
+    th  = 2;
+    hub = 10.2;
+    fn = $preview ? 40 : 200;
+
+    difference() {
+
+        chamferer($preview ? 0 : .4)
+        difference() {
+            // basis disc
+            cylinder(d=d, h=h + xh, $fn=fn);
+            
+            // shave sides
+            translate([hub/2, -d, -d]) cube(d*2);
+            translate([-d*2-hub/2, -d, h]) cube(d*2);
+        }
+
+        // screw head
+        translate([0, 0, th]) cylinder(d=KNOB_SCREW_HEAD_D, h=h*2, $fn=fn);
+
+        // screw axis
+        cylinder(d=KNOB_SCREW_D+.2, h=h*3, center=true, $fn=fn/2);        
+
+        // cracks
+        gap = .03;
+        fil = .36;
+        for (r=[KNOB_SCREW_D/2-.2 : fil*2 + gap : KNOB_SCREW_HEAD_D/2]) difference() {
+            cylinder(r=r + gap, h=h*2, $fn=fn/2);
+            cylinder(r=r, h=h*2, $fn=fn/2);
+        }
+
+        // hollowing
+        intersection() {
+            cylinder(d=d-.7*2, h=h + xh, $fn=fn);
+            translate([-d*2 - hub/2, -hub*2, th]) cube(d*2);
+
+            cube([d, d*.75, d*2], center=true);
+        }
+
+    }
+}
+
+module knob_cavity() {
+    // knob
+    h = KNOB_H;
+    d = KNOB_D + 1;
+    y = -BANK_WIDTH + 5 -.5;
+    z = -9;
+
+    translate([BOOMBOX_L/2 -h, y, z]) {
+        a = -0;  // 0:lock -200:batt -90:phone
+        if (0) %rotate([a, 0, 0]) rotate([0, 90, 0]) knob();
+
+        rotate([0, 90, 0])
+        cylinder(d=d, h=h+ATOM, $fn=100);
+
+        // screw hole
+        translate([-8, 0, 0])
+        rotate([0, 90, 0]) {
+            cylinder(d=KNOB_SCREW_D-.2, h=h*2, $fn=60);
+
+            for (r=[KNOB_SCREW_D/2-.2 : .6 : KNOB_SCREW_D+.5]) difference() {
+                cylinder(r=r+.1, h=h*2, $fn=60);
+                cylinder(r=r, h=h*2, $fn=60);
+            }
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Handles
+
+HANDLE_D  = 12;
+HANDLE_TH = 3;
+HANDLE_L  = (WALL + BOOMBOX_XX/2) * 2;
+HANDLE_SP = 20;
+
+module handle() {
+    h = HANDLE_SP + HANDLE_D + HANDLE_TH;
+    w = HANDLE_D + HANDLE_TH*2;
+
+    difference() {
+        hull() {
+            translate([0, -w/2, 0])
+            cube([HANDLE_L, w, ATOM]);
+
+            translate([0, 0, HANDLE_SP+HANDLE_TH*2])
+            rotate([0, 90, 0])
+            cylinder(d=w, h=HANDLE_L, $fn=100);
+        }
+
+        translate([0, 0, HANDLE_SP+HANDLE_TH*2])
+        rotate([0, 90, 0])
+        cylinder(d=HANDLE_D, h=HANDLE_L*3, center=true, $fn=100);
+    }
+
+    difference() {
+        ch = CH*2;
+        translate([0, -w/2 - ch/2, 0])
+        cube([HANDLE_L, w + ch, ch/2]);
+
+        for (y=[-w/2 - ch/2, w/2 + ch/2])
+            translate([0, y, ch/2])
+            rotate([0, 90, 0])
+            cylinder(d=ch, h=HANDLE_L*3, center=true, $fn=100);
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // Final boombox
 
 module boombox(inv_hinge=false) {
-
     // body w/o foot
     difference() {
         translate([0, 0, HINGE_Z])
@@ -425,6 +537,8 @@ module boombox(inv_hinge=false) {
         
         translate([-HINGE2_L + BOOMBOX_L/2, 0, -BOOMBOX_XZ2/2])
         foot_cut();
+
+        knob_cavity();        
     }
 
     // foot
@@ -449,6 +563,14 @@ module boombox(inv_hinge=false) {
             }
         }
     }
+    
+    // handles
+    // center finders
+    //translate([0, 2-BOOMBOX_W, 0]) %cube([BOOMBOX_L*3, BOOMBOX_W, 90]);
+    //translate([0, 2-BOOMBOX_W, 0]) %cube([BOOMBOX_L*3, BOOMBOX_W/2, 95]);
+    for (x=[-BOOMBOX_L/2, BOOMBOX_L/2 - HANDLE_L])
+        translate([x, 2-BOOMBOX_W/2, BOOMBOX_H*0 + HINGE_Z + 10.75])
+        handle();
 }
 
 module final_rotate(force=false) {
@@ -464,7 +586,6 @@ module final_rotate(force=false) {
 module final_cut(layer) {
     translate([0, 0, -layer * BOOMBOX_L/3])
     intersection() {
-       
         children();
         translate([0, 0, layer * BOOMBOX_L/3])
         cylinder(r=BOOMBOX_H*2, h=BOOMBOX_L/3);
@@ -479,10 +600,8 @@ module segment(layer, inv_hinge=false) {
 
 CROSSCUT            = !true;
 
-//translate([0, -BOOMBOX_W+4, 0]) %cube([BOOMBOX_L*3, 20, 20]);
-
 difference() {
-    final_rotate()
+    final_rotate(0)
     boombox();
 
     // cross-cut
