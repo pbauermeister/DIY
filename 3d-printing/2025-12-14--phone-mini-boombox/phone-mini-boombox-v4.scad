@@ -415,50 +415,10 @@ KNOB_SCREW_HEAD_D =  7.5;
 KNOB_D            = 22;
 KNOB_H            = WALL + BOOMBOX_XX/2;
 
-module knob() {
-    h   = KNOB_H - .2;
-    xh  = 5;
-    d   = KNOB_D;
-    th  = 2;
-    hub = 10.2;
-    fn = $preview ? 40 : 200;
-
-    difference() {
-
-        chamferer($preview ? 0 : .4)
-        difference() {
-            // basis disc
-            cylinder(d=d, h=h + xh, $fn=fn);
-            
-            // shave sides
-            translate([hub/2, -d, -d]) cube(d*2);
-            translate([-d*2-hub/2, -d, h]) cube(d*2);
-        }
-
-        // screw head
-        translate([0, 0, th]) cylinder(d=KNOB_SCREW_HEAD_D, h=h*2, $fn=fn);
-
-        // screw axis
-        cylinder(d=KNOB_SCREW_D+.2, h=h*3, center=true, $fn=fn/2);        
-
-        // cracks
-        gap = .03;
-        fil = .36;
-        for (r=[KNOB_SCREW_D/2-.2 : fil*2 + gap : KNOB_SCREW_HEAD_D/2]) difference() {
-            cylinder(r=r + gap, h=h*2, $fn=fn/2);
-            cylinder(r=r, h=h*2, $fn=fn/2);
-        }
-
-        // hollowing
-        intersection() {
-            cylinder(d=d-.7*2, h=h + xh, $fn=fn);
-            translate([-d*2 - hub/2, -hub*2, th]) cube(d*2);
-
-            cube([d, d*.75, d*2], center=true);
-        }
-
-    }
-}
+function get_knob_h() = KNOB_H;
+function get_knob_d() = KNOB_D;
+function get_knob_screw_d() = KNOB_SCREW_D;
+function get_knob_screw_head_d() = KNOB_SCREW_HEAD_D;
 
 module knob_cavity() {
     // knob
