@@ -14,7 +14,7 @@ module knob() {
     th  = 2;
     hub = 10.2 - .4;
     shift = 5.3;
-    fn = $preview ? 40 : 200;
+    fn = $preview ? 20 : 200;
 
     difference() {
         union() {
@@ -38,13 +38,14 @@ module knob() {
             
             // lever ratchets
             for (ky=[-1, 1]) {
-                translate([-d, -d/2+shift, h]) hull() {
-                    for (x=[-2.8, 2.8]) {
-                        translate([x, ky * 1.6, 0])
-                        scale([1, 2, 1])
-                        sphere(d=.7, $fn=fn);
+                translate([-d+3, -d/2+shift, h]) hull() {
+                    for (kx=[-1, 1]) {
+                        x = kx * 3;
+                        translate([x, ky * 2, .25])
+                        scale([1, 1.5, 2])
+                        sphere(d=1.4, $fn=fn);
 
-                        translate([x, ky * 4, .2])
+                        translate([x, ky * 4.5, .2])
                         scale([1, 2, 1])
                         sphere(d=.4, $fn=fn);
                     }
