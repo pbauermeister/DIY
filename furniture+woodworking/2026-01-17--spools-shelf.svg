@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="420mm"
+   height="594mm"
+   viewBox="0 0 420 594"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   sodipodi:docname="2026-01-17--spools-shelf.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="true"
+     inkscape:zoom="0.67526655"
+     inkscape:cx="619.75526"
+     inkscape:cy="1191.3814"
+     inkscape:window-width="2560"
+     inkscape:window-height="1387"
+     inkscape:window-x="1920"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid182"
+       units="cm"
+       dotted="false"
+       spacingx="10"
+       spacingy="10"
+       originx="20"
+       originy="20"
+       empspacing="10" />
+  </sodipodi:namedview>
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#ffff00;fill-opacity:0.760196;stroke:#000000;stroke-width:0.2;stroke-linecap:round;stroke-linejoin:bevel;stop-color:#000000"
+       id="rect236"
+       width="59.900002"
+       height="424.79999"
+       x="20.1"
+       y="95.100014" />
+    <rect
+       style="fill:#55d400;fill-opacity:0.760196;stroke:#000000;stroke-width:0.200001;stroke-linecap:round;stroke-linejoin:bevel;stop-color:#000000"
+       id="rect236-35"
+       width="199.89999"
+       height="74.800003"
+       x="20.050001"
+       y="195.19998" />
+    <rect
+       style="fill:#55d400;fill-opacity:0.760196;stroke:#000000;stroke-width:0.200001;stroke-linecap:round;stroke-linejoin:bevel;stop-color:#000000"
+       id="rect236-35-2"
+       width="199.89999"
+       height="74.800003"
+       x="220.10001"
+       y="195.09999" />
+    <rect
+       style="fill:#55d400;fill-opacity:0.760196;stroke:#000000;stroke-width:0.200001;stroke-linecap:round;stroke-linejoin:bevel;stop-color:#000000"
+       id="rect236-35-6"
+       width="199.89999"
+       height="74.800003"
+       x="20"
+       y="120" />
+    <rect
+       style="fill:#55d400;fill-opacity:0.760196;stroke:#000000;stroke-width:0.200001;stroke-linecap:round;stroke-linejoin:bevel;stop-color:#000000"
+       id="rect236-35-6-9"
+       width="199.89999"
+       height="74.800003"
+       x="220.05"
+       y="120" />
+    <rect
+       style="fill:#a0892c;fill-opacity:0.760196;stroke:#000000;stroke-width:0.2;stroke-linecap:round;stroke-linejoin:bevel;stop-color:#000000"
+       id="rect236-3"
+       width="400"
+       height="19.799994"
+       x="19.999998"
+       y="500.10001" />
+    <rect
+       style="fill:#a0892c;fill-opacity:0.760196;stroke:#000000;stroke-width:0.2;stroke-linecap:round;stroke-linejoin:bevel;stop-color:#000000"
+       id="rect236-3-6"
+       width="400"
+       height="19.799994"
+       x="20.000015"
+       y="270" />
+    <path
+       style="fill:#55d400;fill-opacity:0.760196;stroke:#000000;stroke-width:0.2;stroke-linecap:round;stroke-linejoin:bevel;stop-color:#000000"
+       id="path398"
+       sodipodi:type="arc"
+       sodipodi:cx="120"
+       sodipodi:cy="400"
+       sodipodi:rx="100"
+       sodipodi:ry="100"
+       sodipodi:start="3.1420085"
+       sodipodi:end="3.1405575"
+       sodipodi:open="true"
+       sodipodi:arc-type="arc"
+       d="M 20.000009,399.95842 A 100,100 0 0 1 120.00531,300 100,100 0 0 1 220,399.96903 100,100 0 0 1 120.06724,499.99998 100,100 0 0 1 20.000054,400.10352" />
+    <path
+       style="fill:#55d400;fill-opacity:0.760196;stroke:#000000;stroke-width:0.2;stroke-linecap:round;stroke-linejoin:bevel;stop-color:#000000"
+       id="path398-7"
+       sodipodi:type="arc"
+       sodipodi:cx="320"
+       sodipodi:cy="400"
+       sodipodi:rx="100"
+       sodipodi:ry="100"
+       sodipodi:start="3.1420085"
+       sodipodi:end="3.1405575"
+       sodipodi:open="true"
+       sodipodi:arc-type="arc"
+       d="M 220.00001,399.95842 A 100,100 0 0 1 320.00531,300 100,100 0 0 1 420,399.96903 100,100 0 0 1 320.06724,499.99998 100,100 0 0 1 220.00005,400.10352" />
+  </g>
+</svg>
