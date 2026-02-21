@@ -69,6 +69,8 @@ module piece() {
     }
 }
 
+!piece();
+
 for(y=[-4:3]) {
     for(x=[-1:1]) {
         translate([d4*1.125*x, 11*y, 0])
