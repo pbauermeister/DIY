@@ -1,3 +1,10 @@
+/*
+This tray version consists of one long tray per level
+- meant to be stacked,
+- held together by vertical steel bars,
+- needing a large printer.
+*/
+
 use <../chamferer.scad>
 
 TRAY_L       = 300;
@@ -112,7 +119,4 @@ module tray() {
     gasket(ch, .3, .6);
 }
 
-intersection() {
-    tray();
-//    cube(TRAY_L/2);
-}
+tray();
