@@ -33,7 +33,7 @@ PARTITIONER_Y_TWEAK        =  1.7 -.5;
 HINGE_Z_SHIFT_TWEAK        = -1.2;
 
 // Consts
-$fn  = 40 - 5;
+$fn  = $preview ? 10 : 35;
 ATOM =  0.01;
 
 // Dimensions
@@ -394,8 +394,9 @@ module case_full_0(extra_x=0, thickness=WALL_THICKNESS) {
     minkowski() {
         phone(extra_x=extra_x);
 
-        translate([0.4, 1.25, 0])
-        scale([1.5+.5, 2.75, 2.5+.5])
+        //translate([0.4, 1.25, 0])
+        //scale([1.5+.5, 2.75, 2.5+.5])
+        scale(1.5)
         sphere(d=thickness);
     }
 }
@@ -403,6 +404,7 @@ module case_full_0(extra_x=0, thickness=WALL_THICKNESS) {
 module case_full(, thickness=WALL_THICKNESS) {
     dx = -WALL_THICKNESS/2 - .4 +.2;
 
+    // hull
     intersection() {
         case_full_0(thickness=thickness);
 
@@ -412,6 +414,9 @@ module case_full(, thickness=WALL_THICKNESS) {
               LENGTH*2]);
     }
 
+
+    // head
+if(0)
     intersection() {
         translate ([dx, -WALL_THICKNESS, -WALL_THICKNESS*2])
         cube([THICKNESS,
@@ -585,7 +590,7 @@ module lid_inner_carver() {
 
 module lid_hinge0_new(dx=HINGE_DX) {
     translate([0, 0, HINGE_Z_SHIFT])
-    main_hinge();
+%    main_hinge();
 }
 
 
@@ -624,13 +629,15 @@ force_render=true;
 
 module lid_hinge_maybe_cached(no_cache=false) {
     difference() {
+        lid_hinge_new();
+/*
         if (no_cache || !$preview || force_render) {
             lid_hinge_new();
         }
         else {
             import("lid-hinge-exported.stl");
         }
-
+*/
         translate([0, -THICKNESS/2, 0])
         flap_cut();
         
@@ -656,73 +663,6 @@ module lid() {
             lid_hinge_maybe_cached();
         }
         partitionner2();
-    }
-}
-
-/******************************************************************************/
-
-module support() {
-    // side fins
-    thickness2 = .5 +.25 +.25;
-    translate([0, 0, -WALL_THICKNESS/2]) {
-        for (x=[16, 58]) {
-            difference() {
-                translate([x, -THICKNESS*.6, 0]) hull() {
-                    translate([0, -WIDTH*.7, 0])
-                    cube([thickness2, WIDTH*.7, thickness2]);
-                    cube([thickness2, thickness2, WIDTH*1.25]);
-                }
-
-                translate([x-THICKNESS*2, -THICKNESS*4, WIDTH]) cube(THICKNESS*4);
-
-                rotate([0, 90, 0]) cylinder(r=THICKNESS*3.125, h=WIDTH);
-
-                translate([0, 0, WIDTH*.705]) rotate([0, 90, 0])
-                cylinder(r=THICKNESS*2.05, h=WIDTH);
-            }
-        }
-
-        thickness3 = .5;
-        hull()
-        for (x=[16, 58]) {
-            difference() {
-                translate([x, -THICKNESS*.6, 0]) hull() {
-                    translate([0, -WIDTH*.7, 0])
-                    cube([thickness3, thickness3, thickness3]);
-
-                    translate([0, 0, WIDTH*1.25])
-                    cube([thickness3, thickness3, thickness3]);
-                }
-                translate([x-THICKNESS*2, -THICKNESS*4, WIDTH]) cube(THICKNESS*4);
-            }
-        }
-    }
-}
-
-module support() {
-    d = WIDTH*.6-4;
-    difference() {
-        translate([WIDTH/2-1.75, 0, -.8])
-        difference() {
-            scale([1, 1.3 *2, 1])
-            cylinder(d=d, h=LENGTH*.6);
-
-            scale([1, 1.32 *2, 1])
-            translate([0, 0, -ATOM])
-            cylinder(d=d-1, h=LENGTH*.6+ATOM*2);
-        }
-        translate([0, -THICKNESS/2 - WALL_THICKNESS + 1.4, -2])
-        cube([WIDTH*2, THICKNESS + WALL_THICKNESS*1.6, LENGTH]);
-
-        translate([0, WALL_THICKNESS*.6+.1, LENGTH*.15])
-        scale([1, 1, 2.03])
-        rotate([0, 90, 0])
-        cylinder(d=LENGTH*.2, h=WIDTH);
-
-        translate([0, WALL_THICKNESS*.6+.1, LENGTH*.46])
-        scale([1, 1, 1.45])
-        rotate([0, 90, 0])
-        cylinder(d=LENGTH*.2, h=WIDTH);
     }
 }
 
@@ -1004,7 +944,6 @@ module camera_flap_texture() {
 module all() {
         all_back_flap();
         lid();
-        translate([0, 0, -THICKNESS/6 -.3]) support();
 }
 
 module all_cutoff() {
@@ -1061,7 +1000,7 @@ module upper_slice() {
 //%flap_cut0();
 //camera_flap();
 
-!all_back();  // GOOD
+//all_back();  // GOOD
 //all_back_flap(); // GOOD
 //all_back_flap(); lid();
 
@@ -1073,5 +1012,113 @@ module upper_slice() {
 //intersection() { all(); translate([0, 0, -3]) cylinder(d=20, h=40); }
 
 //lid_hinge0_new();
+//all();
 
-all();
+///////////////////////////
+
+th      = 4.6;
+hinge_x = -4+.4;
+hinge_y = th*2+.65;
+hinge_z = 11.70;
+play    = .5;
+
+module hinge_columns(xtra=0, dy=0, dz=0) {
+    hull()
+    for (z=[.1-dz, S22_LENGTH-.1+dz])
+        for (y=[th*2+.65+dy, .65-dy])
+            translate([0, y, z])
+            sphere(d=th+xtra);
+}
+
+module phone_and_hinge() {
+    difference() {
+        union() {
+            // hinge
+            translate([hinge_x, 0, 0])
+            intersection() {
+                translate([0, hinge_y, hinge_z]) main_hinge(th=th);
+                
+                // case enveloppe
+                translate([-th*2, 0, 0])
+                case_full();
+
+                // hinge chamfering
+                hull()
+                for (x=[0, S22_WIDTH*1.5])
+                    translate([x, 0, 0])
+                        hinge_columns();
+            }
+
+            // case
+            difference() {
+                union() {
+                    case_full();
+                    translate([-th, 0, 0])
+                    case_full();
+                }
+                translate([hinge_x, 0, 0])
+                hinge_columns(xtra=1, dz=th*5, dy=th*2);
+            }
+        }
+
+        // phone cavity
+        phone();
+    }
+}
+
+module partitioner(play_y=0, play_x=0) {
+    d = S22_THICKNESS*.75;
+    h = S22_LENGTH*2;
+    w = S22_WIDTH;
+    mx = 1.25;
+    my = 1.25;
+    hull()
+    for (x=[d/2 - mx + play_x, w*2])
+        for (y=[d/2 + my - play_y, S22_THICKNESS*2])
+            translate([x, y, -h/4])
+            cylinder(d=d, h=h);
+}
+
+module body() {
+    difference() {
+        intersection() {
+            phone_and_hinge();
+            partitioner(play_x=play);
+        }
+
+        // chamfer
+        m = .6;
+        translate([m, -S22_THICKNESS/2, 0])
+        cube([S22_WIDTH-m*2, S22_THICKNESS, S22_LENGTH]);
+
+/*        
+        translate([0, -S22_THICKNESS/4+WALL_THICKNESS*.5, 0])
+        scale([1, .5, 1])
+        phone();
+        */
+    }
+}
+
+module lid() {
+    difference() {
+        phone_and_hinge();
+
+        difference() {
+            partitioner(play_y=play);
+            
+            translate([-th/2, hinge_y-th/2, -S22_LENGTH/2])
+            cube([th, th, S22_LENGTH*2]);
+        }
+    }
+}
+    
+intersection() {
+    union() {
+        body();
+        lid();
+    }
+    //cylinder(d=500, h=60, center=true);
+}
+
+//%phone();
+//%partitioner();
