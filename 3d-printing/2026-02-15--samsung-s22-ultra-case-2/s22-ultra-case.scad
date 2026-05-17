@@ -1058,13 +1058,14 @@ module hinge_axis_holes() {
             cylinder(d=pin_d, h=pin_l);
 }
 
-module phone_and_hinge() {
+module phone_and_hinge(right=true, mid=true, left=true) {
     difference() {
         union() {
             // hinge
             translate([hinge_x, 0, 0])
             intersection() {
-                translate([0, hinge_y, hinge_z]) main_hinge(th=th);
+                translate([0, hinge_y, hinge_z])
+                main_hinge(th=th, right=right, mid=mid, left=left);
                 
                 // case enveloppe
                 translate([-th*2, 0, 0])
@@ -1078,6 +1079,7 @@ module phone_and_hinge() {
             }
 
             // case
+            if (right || left)
             difference() {
                 union() {
                     case_full();
@@ -1108,12 +1110,15 @@ module partitioner(play_y=0, play_x=0) {
         for (y=[d/2 + my - play_y, S22_THICKNESS*2])
             translate([x, y, -h/4])
             cylinder(d=d, h=h);
+        
+    translate([-w/2, my+S22_THICKNESS/2, -h/4])
+    cube([w, S22_THICKNESS, h]);
 }
 
 module body() {
     difference() {
         intersection() {
-            phone_and_hinge();
+            phone_and_hinge(right=true, mid=false, left=false);
             partitioner(play_x=play);
         }
 
@@ -1184,18 +1189,13 @@ module body() {
 
 module lid() {
     difference() {
-        phone_and_hinge();
+        phone_and_hinge(right=false, mid=false, left=true);
 
-        for(x=[-2, 1])
+        for(x=[-1.25, 1])
             translate([x, 0, 0])
             phone();
 
-        difference() {
-            partitioner(play_y=play);
-            
-            translate([-th/2, hinge_y-th/2, -S22_LENGTH/2])
-            cube([th, th, S22_LENGTH*2]);
-        }
+        partitioner(play_y=play);
 
         // stripes for flap
         h_marg = 1;
@@ -1211,11 +1211,19 @@ module lid() {
             cube([d, d, h]);
     }
 }
+
+
+module mid() {
+    phone_and_hinge(right=false, mid=true, left=false);
+}
+
+
     
 intersection() {
     union() {
-        //body();
+        body();
         lid();
+        mid();
     }
     
     //translate([0, 0, 30]) cylinder(d=500, h=100, center=false);

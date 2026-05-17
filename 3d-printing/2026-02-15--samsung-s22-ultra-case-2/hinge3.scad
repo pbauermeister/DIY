@@ -117,12 +117,14 @@ module p2_new(h=LAYER_HEIGHT, extent=0, thickness=THICKNESS,
 
 ////////////////////////////////////////////////////////////////////////////////
 
-module hinge_new0(nb_layers=4, layer_height=LAYER_HEIGHT,
+module hinge_new(nb_layers=4, layer_height=LAYER_HEIGHT,
              layer_imbalance=0,
              thickness=THICKNESS,
              width1=THICKNESS, shave_bottom1=0, shave_top1=0,
              width2=THICKNESS, shave_bottom2=0, shave_top2=0, angle2=0,
-             only_axis=false) {
+             only_axis=false,
+             part1=true, part2=true
+             ) {
 
     height = nb_layers * layer_height *2;
 
@@ -131,6 +133,7 @@ module hinge_new0(nb_layers=4, layer_height=LAYER_HEIGHT,
     }
     else {
         // left half-side
+        if (part1)
         intersection() {
             for (i=[0:nb_layers-1]) {
                 rotate([0, 0, -180])
@@ -163,6 +166,7 @@ module hinge_new0(nb_layers=4, layer_height=LAYER_HEIGHT,
         }
 
         // right half-side
+        if (part2)
         rotate([0, 0, angle2])
         intersection() {
             for (i=[0:nb_layers-1]) {
@@ -194,12 +198,13 @@ module hinge_new0(nb_layers=4, layer_height=LAYER_HEIGHT,
     }
 }
 
-module hinge_new(nb_layers=4, layer_height=LAYER_HEIGHT,
+module __hinge_new(nb_layers=4, layer_height=LAYER_HEIGHT,
              layer_imbalance=0,
              thickness=THICKNESS,
              width1=THICKNESS, shave_bottom1=0, shave_top1=0,
              width2=THICKNESS, shave_bottom2=0, shave_top2=0, angle2=0,
-             only_axis=false) {
+             only_axis=false,
+             part1=true, part2=true) {
     difference() {
         hinge_new0(
             nb_layers, layer_height,
@@ -208,12 +213,6 @@ module hinge_new(nb_layers=4, layer_height=LAYER_HEIGHT,
             width1, shave_bottom1, shave_top1,
             width2, shave_bottom2, shave_top2, angle2,
             only_axis);
-
-        pin_h = layer_height * PIN_HEIGHT_K;
-if(0)
-            for(z=[-ATOM, nb_layers*layer_height*2 - pin_h + ATOM*2])
-            translate([0, 0, z - pin_h/2])
-            cylinder(d=PIN_D, h=pin_h*2);
     }
 }
 
@@ -235,7 +234,7 @@ function get_hinge_height(nb_layers=3,
 ////////////////////////////////////////////////////////////////////////////////
 // Main hinge
 
-module main_hinge0(open=false, th=4.5) {
+module main_hinge0(open=false, th=4.5, right=true, mid=true, left=true) {
     z = -14.25  + .9;
     n =   9     + 1;
     w1 =  5;
@@ -246,29 +245,23 @@ module main_hinge0(open=false, th=4.5) {
     translate([0, th, z])
     rotate([0, 0, open ? -90 : 180]) difference(){
         hinge_new(nb_layers=n, layer_height=h, thickness=th,
-                  width1=w2, width2=w1, angle2=open ? 0: 90);
-/*
-            translate([0, 0, -.1]) cylinder(d=PIN_D, h=ph);
-            translate([0, 0, n*h*2-ph+.1]) cylinder(d=PIN_D, h=ph);
-*/
+                  width1=w2, width2=w1, angle2=open ? 0: 90,
+                  part1=right, part2=mid);
     }
 
     translate([0, -th, z])
     rotate([0, 0,  open ? 90 : 180]) difference() {
         hinge_new(nb_layers=n, layer_height=h, thickness=th,
-                  width1=w2, width2=w1, angle2=open ? 0 : -90);
-/*
-            translate([0, 0, -.1]) cylinder(d=PIN_D, h=ph);
-            translate([0, 0, n*h*2-ph+.1]) cylinder(d=PIN_D, h=ph);
-*/
+                  width1=w2, width2=w1, angle2=open ? 0 : -90,
+                  part2=mid, part1=left);
     }
 }
 
 
-module main_hinge(open=false, th=4.5) {
+module main_hinge(open=false, th=4.5, right=true, mid=true, left=true) {
     rotate([0, 0, open ? -90 : 0])
     translate([0, -th, 0])
-    main_hinge0(open, th=th);
+    main_hinge0(open, th=th, right=right, mid=mid, left=left);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
