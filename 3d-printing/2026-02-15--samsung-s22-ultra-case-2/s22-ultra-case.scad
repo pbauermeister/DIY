@@ -247,16 +247,19 @@ module camera_flap_snapper(extra=0) {
     CAM_FLAP_SNAPPER_INSET = .35;
     dz = CAM_FLAP_SNAPPER_R -CAM_FLAP_SNAPPER_INSET;
     dx = WALL_THICKNESS*3;
-    for (z=[dz, S22_CAM_HEIGHT+CUTS_D -dz]) {
+    for (z=[dz, S22_CAM_HEIGHT+CUTS_D -dz - CAM_FLAP_SNAPPER_R]) {
         hull() {
-            translate([-WALL_THICKNESS-dx, 0, z])
-            sphere(r=CAM_FLAP_SNAPPER_R + extra);
+            for (i=[0, 1]) {
+                translate([-WALL_THICKNESS-dx, 0, z+CAM_FLAP_SNAPPER_R*i])
+                sphere(r=CAM_FLAP_SNAPPER_R + extra);
 
-            translate([-WALL_THICKNESS, 0, z])
-            sphere(r=CAM_FLAP_SNAPPER_R + extra);
+                translate([-WALL_THICKNESS, 0, z+CAM_FLAP_SNAPPER_R*i])
+                sphere(r=CAM_FLAP_SNAPPER_R + extra);
+            }
         }
     }
 }
+
 
 module camera_flap(only_axis=false) {
     x0 = WIDTH-S22_CAM_OFFSET_X;
@@ -269,31 +272,33 @@ module camera_flap(only_axis=false) {
         difference() {
             union() {
                 // hinge
-                translate([-x -.1, 0, 0])
+                translate([-x -.1, -WALL_THICKNESS*.5, 0])
                 camera_hinge(nb_layers=CAM_NB_LAYERS, height=CAM_FLAP_HEIGHT,
-                             thickness=WALL_THICKNESS*2, only_axis=only_axis);
+                             thickness=WALL_THICKNESS*1, only_axis=only_axis);
 
                 // door
                 if (!only_axis) {
                     intersection() {
                         // make door
+                        translate([0, -WALL_THICKNESS/2, 0])
                         hull() {
                             translate([0, 0, CUTS_D/2])
                             rotate([-90, 0, 0])
-                            cylinder(d=CUTS_D-SPACING*2, h=WALL_THICKNESS*2, center=true);
+                            cylinder(d=CUTS_D-SPACING*2, h=WALL_THICKNESS, center=true);
 
                             translate([0, 0, S22_CAM_HEIGHT + CUTS_D/2])
                             rotate([-90, 0, 0])
-                            cylinder(d=CUTS_D-SPACING*2, h=WALL_THICKNESS*2, center=true);
+                            cylinder(d=CUTS_D-SPACING*2, h=WALL_THICKNESS, center=true);
 
-                            translate([-w, 0, WALL_THICKNESS+SPACING])
-                            cube(WALL_THICKNESS*2, center=true);
+                            translate([-w-5, 0, WALL_THICKNESS+SPACING-WALL_THICKNESS/2])
+                            cube(WALL_THICKNESS, center=true);
 
-                            translate([-w, 0, S22_CAM_HEIGHT + WALL_THICKNESS*1.5-SPACING])
-                            cube(WALL_THICKNESS*2, center=true);
+                            translate([-w-5, 0, S22_CAM_HEIGHT + WALL_THICKNESS*1.5-SPACING+WALL_THICKNESS/4.5])
+                            cube(WALL_THICKNESS, center=true);
                         }
 
                         // rounded bottom
+                        translate([-5, 0, 0])
                         hull() {
                             translate([-S22_CAM_WIDTH, 0, WALL_THICKNESS+SPACING])
                             rotate([0, 90, 0])
@@ -305,12 +310,13 @@ module camera_flap(only_axis=false) {
                     }
 
                     // snappers
+                    translate([0, -WALL_THICKNESS*.7, 0])
                     camera_flap_snapper();
 
                     // support for adhesion
                     th = .3;
                     w2 = w/2;
-                    translate([-w2 -w/2-WALL_THICKNESS*2.5, -th/2, 0])
+                    translate([-w2 -w/2-WALL_THICKNESS*2.5, -th*1.5, 0])
                     cube([w2, th, 1]);
                 }
             }
@@ -334,8 +340,10 @@ module camera_flap(only_axis=false) {
             }
 
             // hollowing for nail
+            /*
             translate([-x0, -y-WALL_THICKNESS*4.25, -z])
             cam_gripper();
+            */
 
         }
     }
@@ -1105,13 +1113,65 @@ module body() {
         m = .6;
         translate([m, -S22_THICKNESS/2, 0])
         cube([S22_WIDTH-m*2, S22_THICKNESS, S22_LENGTH]);
+        
+        // bottom clearance
+        minkowski() {
+            extra = 20;
+            translate([THICKNESS*.6 - 1.5, -WALL_THICKNESS*2, -LENGTH/2])
+            cube([WIDTH-THICKNESS*1.25 -extra +1, THICKNESS, LENGTH]);
+            sphere(d=CUTS_D, $fn=6*3);
+        }
 
-/*        
-        translate([0, -S22_THICKNESS/4+WALL_THICKNESS*.5, 0])
-        scale([1, .5, 1])
-        phone();
+        // usb plug etching
+        minkowski() {
+            etch = 1.5;
+            width = USB_PLUG_WIDTH - CUTS_D;
+            translate([WIDTH/2 - width/2, -WALL_THICKNESS*2 + etch, -LENGTH/2])
+            cube([width, THICKNESS, LENGTH]);
+            sphere(d=CUTS_D, $fn=6*3);
+        }
+
+        // buttons clearance
+        translate([WIDTH/2, 0, 0])
+        scale([.5, 1, 1])
+        buttons_hollowing(POWER_BUTTON_POS, POWER_BUTTON_HEIGHT, POWER_BUTTON_OFFSET);
+        
+        // speaker clearance
+        hull() {
+            translate([S22_TOP_HOLE_POS-1, THICKNESS/2, LENGTH/2])
+            cylinder(d=1.5, h=LENGTH);
+            translate([S22_TOP_HOLE_POS+1, THICKNESS/2, LENGTH/2])
+            cylinder(d=1.5, h=LENGTH);
+        }
+
+        // camera cutoff
+        translate([0, -1.85, 0])
+        cam_cutoff();
+
+        // flap cutoff
+        /*
+        flap_cut();
+        translate([0, THICKNESS/2, 0])
+        card_cavity();
         */
+
+        // top anti-tension slit
+        translate([th*2, 0, S22_LENGTH+.3])
+        {
+            th = .3;
+            translate([-th/2, -1, 0])
+            cube([th, THICKNESS, 10]);
+
+            translate([-THICKNESS/4+.1, THICKNESS-1, 0])
+            cube([THICKNESS/2, th, 10]);
+        }
     }
+
+
+    translate([0, 5, 0])
+    //scale([1, .75, 1])
+    camera_flap();
+//    flap();
 }
 
 module lid() {
@@ -1130,9 +1190,9 @@ module lid() {
 intersection() {
     union() {
         body();
-        lid();
+        //lid();
     }
-    cylinder(d=500, h=55, center=true);
+    //cylinder(d=500, h=250, center=true);
 }
 
 //%phone();
