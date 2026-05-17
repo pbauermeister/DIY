@@ -268,14 +268,15 @@ module camera_flap(only_axis=false) {
     z = S22_CAM_POS_Z-CUTS_D/2;
     w = S22_CAM_WIDTH + CAM_SHUTTER_EXTRA_WIDTH - WALL_THICKNESS*5.5;
 
+    translate([0, -.65, 0])
     translate([x0, y, z]) {
         difference() {
             union() {
                 intersection() {
                     // hinge
-                    translate([-x -.1, -WALL_THICKNESS*.5, 0])
+                    translate([-x -.1, -WALL_THICKNESS*.5 + .32, 0])
                     camera_hinge(nb_layers=CAM_NB_LAYERS, height=CAM_FLAP_HEIGHT,
-                                 thickness=WALL_THICKNESS*1, only_axis=only_axis);
+                                 thickness=WALL_THICKNESS*.73, only_axis=only_axis);
                     // free hinge
                     translate([-WALL_THICKNESS*2-x, -THICKNESS/2, SPACING])
                     cube([S22_CAM_WIDTH*2, THICKNESS, S22_CAM_HEIGHT+WALL_THICKNESS*2]);
@@ -1070,6 +1071,8 @@ module phone_and_hinge(right=true, mid=true, left=true) {
                 // case enveloppe
                 translate([-th*2, 0, 0])
                 case_full();
+                translate([-th*2, 0, 0])
+                case_full();
 
                 // hinge chamfering
                 hull()
@@ -1169,7 +1172,7 @@ module body() {
         */
 
         // top anti-tension slit
-        translate([th*2, 0, S22_LENGTH+.3])
+        translate([th*2, 0, S22_LENGTH-.3])
         {
             th = .3;
             translate([-th/2, -1, 0])
@@ -1217,13 +1220,25 @@ module mid() {
     phone_and_hinge(right=false, mid=true, left=false);
 }
 
+module rotate_at(x, y, a) {
+    translate([x, y, 0])
+    rotate([0, 0, a])
+    translate([-x, -y, 0])
+    children();
+}
 
-    
+
+rotate([-90, 0, 0])    
 intersection() {
     union() {
         body();
-        lid();
-        mid();
+
+        a = -90;
+
+        rotate_at(hinge_x, hinge_y, a) {
+            mid();
+            rotate_at(hinge_x, hinge_py, a) lid();
+        }
     }
     
     //translate([0, 0, 30]) cylinder(d=500, h=100, center=false);
