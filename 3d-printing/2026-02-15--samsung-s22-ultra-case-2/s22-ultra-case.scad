@@ -314,10 +314,12 @@ module camera_flap(only_axis=false) {
                     camera_flap_snapper();
 
                     // support for adhesion
+                    /*
                     th = .3;
                     w2 = w/2;
                     translate([-w2 -w/2-WALL_THICKNESS*2.5, -th*1.5, 0])
                     cube([w2, th, 1]);
+                    */
                 }
             }
 
