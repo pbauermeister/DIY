@@ -1016,18 +1016,30 @@ module upper_slice() {
 
 ///////////////////////////
 
-th      = 4.6;
-hinge_x = -4+.4;
-hinge_y = th*2+.65;
-hinge_z = 11.70;
-play    = .5;
+th       =  4.60;
+
+hinge_x  = -3.60;
+hinge_py =  0.65;
+hinge_z  = 11.70;
+hinge_y  = th*2 + hinge_py;
+
+play     =  0.50;
+pin_d    =  1.75;
+pin_l    =  9 * 3.5;
 
 module hinge_columns(xtra=0, dy=0, dz=0) {
     hull()
     for (z=[.1-dz, S22_LENGTH-.1+dz])
-        for (y=[th*2+.65+dy, .65-dy])
+        for (y=[hinge_y + dy, hinge_py - dy])
             translate([0, y, z])
             sphere(d=th+xtra);
+}
+
+module hinge_axis_holes() {
+    for (z=[-th/2, S22_LENGTH - pin_l + th/2])
+        for (y=[hinge_y, hinge_py])
+            translate([hinge_x, y, z])
+            cylinder(d=pin_d, h=pin_l);
 }
 
 module phone_and_hinge() {
@@ -1063,6 +1075,9 @@ module phone_and_hinge() {
 
         // phone cavity
         phone();
+        
+        // axis pinholes
+        hinge_axis_holes();
     }
 }
 
@@ -1117,7 +1132,7 @@ intersection() {
         body();
         lid();
     }
-    //cylinder(d=500, h=60, center=true);
+    cylinder(d=500, h=55, center=true);
 }
 
 //%phone();
