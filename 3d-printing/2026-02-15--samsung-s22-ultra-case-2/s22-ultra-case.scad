@@ -298,6 +298,7 @@ module camera_flap(only_axis=false) {
                         }
 
                         // rounded bottom
+if(0)
                         translate([-5, 0, 0])
                         hull() {
                             translate([-S22_CAM_WIDTH, 0, WALL_THICKNESS+SPACING])
