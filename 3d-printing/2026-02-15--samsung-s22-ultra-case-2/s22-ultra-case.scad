@@ -1186,21 +1186,39 @@ module lid() {
     difference() {
         phone_and_hinge();
 
+        for(x=[-2, 1])
+            translate([x, 0, 0])
+            phone();
+
         difference() {
             partitioner(play_y=play);
             
             translate([-th/2, hinge_y-th/2, -S22_LENGTH/2])
             cube([th, th, S22_LENGTH*2]);
         }
+
+        // stripes for flap
+        h_marg = 1;
+        _h = get_hinge_height(nb_layers=FLAP_NB_LAYERS,
+                             layer_height=FLAP_LAYER_HEIGHT) + h_marg*2;
+        h = LENGTH - FLAP_POS_Z -h_marg*2;
+        d = 3;
+        depth = 1.7 +.5;
+        for (x=[10 + d*2 : d*2: WIDTH-10 -d*2])
+            translate([-d/2+x,
+                       -THICKNESS/2 +d/2 - WALL_THICKNESS + depth,
+                        FLAP_POS_Z - h_marg])
+            cube([d, d, h]);
     }
 }
     
 intersection() {
     union() {
-        body();
-        //lid();
+        //body();
+        lid();
     }
-    //cylinder(d=500, h=250, center=true);
+    
+    //translate([0, 0, 30]) cylinder(d=500, h=100, center=false);
 }
 
 //%phone();
