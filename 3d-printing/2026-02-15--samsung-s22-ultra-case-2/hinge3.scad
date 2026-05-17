@@ -240,25 +240,27 @@ module main_hinge0(open=false, th=4.5) {
     n =   9     + 1;
     w1 =  5;
     w2 = 10;
-    h =  10     - 1.61+.47;
+    h =  8.86;;
     ph = h*5.5;
 
     translate([0, th, z])
     rotate([0, 0, open ? -90 : 180]) difference(){
         hinge_new(nb_layers=n, layer_height=h, thickness=th,
                   width1=w2, width2=w1, angle2=open ? 0: 90);
-
+/*
             translate([0, 0, -.1]) cylinder(d=PIN_D, h=ph);
             translate([0, 0, n*h*2-ph+.1]) cylinder(d=PIN_D, h=ph);
+*/
     }
 
     translate([0, -th, z])
     rotate([0, 0,  open ? 90 : 180]) difference() {
         hinge_new(nb_layers=n, layer_height=h, thickness=th,
                   width1=w2, width2=w1, angle2=open ? 0 : -90);
-
+/*
             translate([0, 0, -.1]) cylinder(d=PIN_D, h=ph);
             translate([0, 0, n*h*2-ph+.1]) cylinder(d=PIN_D, h=ph);
+*/
     }
 }
 
