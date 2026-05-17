@@ -271,10 +271,15 @@ module camera_flap(only_axis=false) {
     translate([x0, y, z]) {
         difference() {
             union() {
-                // hinge
-                translate([-x -.1, -WALL_THICKNESS*.5, 0])
-                camera_hinge(nb_layers=CAM_NB_LAYERS, height=CAM_FLAP_HEIGHT,
-                             thickness=WALL_THICKNESS*1, only_axis=only_axis);
+                intersection() {
+                    // hinge
+                    translate([-x -.1, -WALL_THICKNESS*.5, 0])
+                    camera_hinge(nb_layers=CAM_NB_LAYERS, height=CAM_FLAP_HEIGHT,
+                                 thickness=WALL_THICKNESS*1, only_axis=only_axis);
+                    // free hinge
+                    translate([-WALL_THICKNESS*2-x, -THICKNESS/2, SPACING])
+                    cube([S22_CAM_WIDTH*2, THICKNESS, S22_CAM_HEIGHT+WALL_THICKNESS*2]);
+                }
 
                 // door
                 if (!only_axis) {
