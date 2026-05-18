@@ -21,7 +21,7 @@ module p0_new(h=LAYER_HEIGHT,
               is_left=false, is_right=false,
               extra_length=0) {
     k = 1.25;
-    tk = .25;
+    tk = .25 + .3 +.2;
 
     difference() {
         intersection() {
@@ -292,7 +292,7 @@ module flap_hinge0(flap_height=FLAP_HEIGHT, nb_layers=FLAP_NB_LAYERS,
 ////////////////////////////////////////////////////////////////////////////////
 
 CAM_LAYER_HEIGHT = 5.04;
-CAM_NB_LAYERS = 5;
+CAM_NB_LAYERS = 5 * 2;
 CAM_HEIGHT = CAM_NB_LAYERS * CAM_LAYER_HEIGHT * 2;
 
 module maybe_hull(use_hull=false) {
@@ -306,6 +306,7 @@ module camera_hinge(nb_layers=CAM_NB_LAYERS, height=CAM_HEIGHT, thickness=4,
     maybe_hull(only_axis) {
         hinge_new(nb_layers=nb_layers, layer_height=height/2/nb_layers,
                   //shave_bottom2=SPACING, shave_top2=SPACING,
+                  width1=thickness*1.5 +5,
                   width2=thickness*.75 + extra_spacing,
                   thickness=thickness,
                   only_axis=only_axis);
@@ -315,15 +316,14 @@ module camera_hinge(nb_layers=CAM_NB_LAYERS, height=CAM_HEIGHT, thickness=4,
         rotate([0, 0, 180])
         hinge_new(nb_layers=nb_layers, layer_height=height/2/nb_layers,
                   //shave_bottom1=SPACING, shave_top1=SPACING,
-                  width1=thickness*1.5,
+                  width1=thickness*1.5 +5,
                   //shave_bottom2 = SPACING, shave_top2 = SPACING,
-                  width2=thickness*.75,
+                  width2=thickness*.75 + extra_spacing,
                   thickness=thickness,
                   only_axis=only_axis);
     }
 }
 
-!camera_hinge();
 ////////////////////////////////////////////////////////////////////////////////
 
 module basic_test() {
@@ -354,7 +354,7 @@ module test_hinge() {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-//!basic_test();
+!basic_test();
 //!rotate([0, 90, 0]) test_hinge();
 
 //translate([4.0, 4.5, 0])
