@@ -12,11 +12,12 @@ ATOM           = 0.01;
 $fn = $preview ? 50 : 100;
 
 module knobs() {
-    for (i=[0:2]) {
+//    for (i=[0:2]) {
+    for (i=[0:1]) {
         x = BUTTONS_POS[i];
 
         translate([x, 0, 0])
-        scale([i<2 ? .8 : 1, 1, 1])
+        //scale([i<2 ? .8 : 1, 1, 1])
         {
             // shaft
             d0 = BUTTONS_D - PLAY*2;
@@ -50,7 +51,7 @@ module knobs() {
     th2 = 0.3;
 
     chamferer($preview ? 0 : 1, "cone-up")
-    translate([0, 0, BUTTONS_PIN_TH -.5]) {
+    translate([0, 0, BUTTONS_PIN_TH -.5  -.3*0]) {
         hull() {
             translate([BUTTONS_POS[0], 0, ])
             cylinder(d=m*2, h=th);
@@ -58,7 +59,7 @@ module knobs() {
             cylinder(d=m*2, h=th);
         }
 
-        translate([BUTTONS_POS[2], 0, 0])
+%        translate([BUTTONS_POS[2], 0, 0])
         cylinder(d=m*2, h=th);
     }
 }
