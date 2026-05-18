@@ -14,10 +14,10 @@ Z                   = 40; //PIPE_DIAMETER_INNER*.5;
 Y                   = -5; //PIPE_DIAMETER_INNER*.05;
 
 // wALL THICKNESS
-TH = .5*2;
+TH = .5*2 * 2;
 
 // cable channel
-CHANNEL_W           = 15 + TH;
+CHANNEL_W           = 15 + TH + 3;
 
 
 ATOM                = 0.01;
@@ -76,9 +76,9 @@ module stand(dispy=0, dispz=0, channels=true) {
 //%stand();
 
 module ribs() {
-    th = TH; //*1.25;
+    th = TH/2; //*1.25;
     marg = 5;
-    step = 14.3;
+    step = 14.3 * 1.5;
 
     intersection() {
         union() {
@@ -91,7 +91,6 @@ module ribs() {
                     for (i=[-3.5:3.5])
                         translate([i*step -th/2, -PIPE_DIAMETER_INNER/2, 0])
                         cube([th, PIPE_DIAMETER_INNER/2, Z + cos(ANGLE)*PIPE_DIAMETER_INNER/2]);
-
                 }
                 
                 // holes
@@ -100,7 +99,7 @@ module ribs() {
                 rotate([0, 90, 0])
                 cylinder(d=15, h= PIPE_DIAMETER_INNER*.7, center=true, $fn=6);
 
-                translate([0, -PIPE_DIAMETER_INNER/2*.5, Z/2+3])
+                translate([0, -PIPE_DIAMETER_INNER/2*.5 +4, Z/2+3])
                 resize([PIPE_DIAMETER_INNER*.66, 15, Z])
                 rotate([0, 90, 0])
                 cylinder(d=1, h= PIPE_DIAMETER_INNER, center=true, $fn=6);
@@ -109,15 +108,13 @@ module ribs() {
                 resize([PIPE_DIAMETER_INNER, 15, Z])
                 rotate([0, 90, 0])
                 cylinder(d=1, h= PIPE_DIAMETER_INNER, center=true, $fn=6);
-
-
-
             }
 
             // perp ribs
+            l = PIPE_DIAMETER_INNER*.85;
             for (i=[-1,1])
-                translate([-PIPE_DIAMETER_INNER/2, i*step -th/2, marg*2])
-                cube([PIPE_DIAMETER_INNER, th, 20]);
+                translate([-l/2, i*step*0.6 -th/2, marg*2])
+                cube([l, th, 20]);
 
         }
 
@@ -134,11 +131,11 @@ module ribs2() {
         step = 6;
         w = 3;
 
-        for (dz=[0:step:PIPE_HEIGHT-Z-step*0])
+        for (dz=[-step:step:PIPE_HEIGHT-Z])
             translate([0, w/2 +Y +dz*cos(ANGLE) + TH*1.33, Z+dz])
             cube([PIPE_DIAMETER_INNER, w, .1], center=true);
 
-        cylinder(d=PIPE_DIAMETER_INNER - marg*2, h=PIPE_HEIGHT);
+        cylinder(d=PIPE_DIAMETER_INNER - marg*2-3*2, h=PIPE_HEIGHT);
     }
 }
 
@@ -149,7 +146,7 @@ module bottom_cone() {
                 intersection() {
                     shape(channels=false);
 
-                    translate([0, 0, Z-PIPE_DIAMETER_INNER/2])
+                     translate([0, 0, Z-PIPE_DIAMETER_INNER/2])
                     translate([-PIPE_DIAMETER_INNER/2, Y-PIPE_DIAMETER_INNER, 0])
                     cube(PIPE_DIAMETER_INNER);
                 }
@@ -161,10 +158,9 @@ module bottom_cone() {
 
         // shave bottom as steps to ensure supports
         for (y=[0:3:PIPE_DIAMETER_INNER/2])
-        translate([0, -y*sin(ANGLE), Z + cos(ANGLE)*y -3])
+        translate([0, -y*sin(ANGLE), Z + cos(ANGLE)*y -3-2])
         translate([-PIPE_DIAMETER_INNER/2, Y-PIPE_DIAMETER_INNER, -PIPE_DIAMETER_INNER])
         cube(PIPE_DIAMETER_INNER);
-
     }
 }
 
@@ -175,7 +171,7 @@ module top_cone() {
         cylinder(d1=0, d2=PIPE_DIAMETER_INNER, h=h*2);
         stand();
 
-        translate([0, 0, PIPE_HEIGHT-3])
+        translate([0, 0, PIPE_HEIGHT-3-2])
         cylinder(d=PIPE_DIAMETER_INNER, h=20);
     }
 }
@@ -197,15 +193,23 @@ module shape(channels=true) {
     }
 }
 
-difference() {
-    union() {
-        shape();
-        //translate([0, .1, 0]) ribs();
-        ribs2();
-        top_cone();
-        bottom_cone();
+module all() {
+    difference() {
+        union() {
+            shape();
+            translate([0, .1, 0]) ribs();
+            //ribs2();
+            top_cone();
+            bottom_cone();
+        }
+        
+        chamferer(TH, grow=false)
+        channels();
     }
-    
-    chamferer(TH, grow=false)
-    channels();
+
+    translate([0, -10, 0])
+    cube([.5, PIPE_DIAMETER_INNER/2+10, CHANNEL_W-TH]);
 }
+
+
+rotate([0, 0, 90]) all();
