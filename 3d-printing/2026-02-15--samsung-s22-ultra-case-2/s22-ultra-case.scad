@@ -41,7 +41,7 @@ ATOM =  0.01;
 WALL_THICKNESS             =   2.0 +.2;
 CUTS_D                     =   5.0;
 
-S22_WIDTH                  =  75.4  + 2.5      +0.15;
+S22_WIDTH                  =  75.4  + 2.5      +0.15     -.18;
 S22_LENGTH                 = 164.45 + 1.2  -.4 -0.7;
 S22_THICKNESS              =  10.0  + 0.5;
 
@@ -162,11 +162,30 @@ module partitionner2() {
 
 /******************************************************************************/
 
-module phone(extra_x=0) {
+module phone(extra_x=0, edgy=false) {
+    /*
     minkowski() {
         translate([S22_THICKNESS/2, S22_THICKNESS/2, 0])
         cube([S22_WIDTH-S22_THICKNESS+extra_x, 0.00001, S22_LENGTH]);
         cylinder(d=S22_THICKNESS, 0.00001);
+    }
+    */
+
+    hull() {
+        translate([S22_THICKNESS/2, S22_THICKNESS/2, 0])
+        cylinder(d=S22_THICKNESS, h=S22_LENGTH);
+
+        translate([S22_WIDTH-S22_THICKNESS/2, S22_THICKNESS/2, 0])
+        cylinder(d=S22_THICKNESS, h=S22_LENGTH);
+        
+        if (edgy) {
+            d = S22_THICKNESS/2;
+            translate([S22_WIDTH-d/2, d/2, 0])
+            cylinder(d=d, h=S22_LENGTH);
+
+            translate([S22_WIDTH-d/2, S22_THICKNESS - d/2, 0])
+            cylinder(d=d, h=S22_LENGTH);
+        }
     }
 }
 
@@ -247,8 +266,10 @@ module cam_cutoff() {
     }
 
     // adhesion flat surface
+    /*
     translate([THICKNESS, THICKNESS+WALL_THICKNESS + .93, S22_CAM_POS_Z - CUTS_D/2])
     cube([20, THICKNESS, S22_CAM_HEIGHT + CUTS_D]);
+    */
 
     // gripper
     cam_gripper();
@@ -415,7 +436,7 @@ module texturer() {
 
 module case_full_0(extra_x=0, thickness=WALL_THICKNESS) {
     minkowski() {
-        phone(extra_x=extra_x);
+        phone(extra_x=extra_x, edgy=true);
 
         //translate([0.4, 1.25, 0])
         //scale([1.5+.5, 2.75, 2.5+.5])
@@ -424,7 +445,7 @@ module case_full_0(extra_x=0, thickness=WALL_THICKNESS) {
     }
 }
 
-module case_full(, thickness=WALL_THICKNESS) {
+module case_full(thickness=WALL_THICKNESS) {
     dx = -WALL_THICKNESS/2 - .4 +.2;
 
     // hull
@@ -436,7 +457,6 @@ module case_full(, thickness=WALL_THICKNESS) {
               THICKNESS*2,
               LENGTH*2]);
     }
-
 /***
     // head
     intersection() {
@@ -450,6 +470,7 @@ module case_full(, thickness=WALL_THICKNESS) {
     }
 ***/
 }
+
 
 /***
 module case1() {
@@ -1032,6 +1053,9 @@ module upper_slice() {
 
 ///////////////////////////
 
+/******************************************************************************/
+
+
 th       =  4.60;
 
 hinge_x  = -3.60;
@@ -1068,10 +1092,7 @@ module phone_and_hinge(right=true, mid=true, left=true, case=true) {
                 main_hinge(th=th, right=right, mid=mid, left=left);
                 
                 // case enveloppe
-                translate([-th*2, 0, 0])
-                case_full();
-                translate([-th*2, 0, 0])
-                case_full();
+                translate([-th*2, 0, 0]) case_full();
 
                 // hinge chamfering
                 hull()
@@ -1085,8 +1106,7 @@ module phone_and_hinge(right=true, mid=true, left=true, case=true) {
             difference() {
                 union() {
                     case_full();
-                    translate([-th, 0, 0])
-                    case_full();
+                    translate([-th, 0, 0]) case_full();
                 }
                 translate([hinge_x, 0, 0])
                 hinge_columns(xtra=1, dz=th*5, dy=th*2);
@@ -1107,12 +1127,16 @@ module partitioner(play_y=0, play_x=0) {
     w = S22_WIDTH;
     mx = 1.25;
     my = 1.25;
+    adjust_y = .5;
+    
+    // body
     hull()
     for (x=[d/2 - mx + play_x, w*2])
-        for (y=[d/2 + my - play_y, S22_THICKNESS*2])
+        for (y=[d/2 + my - play_y - adjust_y, S22_THICKNESS*2])
             translate([x, y, -h/4])
             cylinder(d=d, h=h);
-        
+
+    // to keep right hinge part
     translate([-w/2, my+S22_THICKNESS/2, -h/4])
     cube([w, S22_THICKNESS, h]);
 }
@@ -1191,6 +1215,7 @@ module body0(no_hinge=false) {
         */
 
         // top anti-tension slit
+        /*
         translate([th*2, 0, S22_LENGTH-.3])
         {
             th = .3;
@@ -1200,6 +1225,7 @@ module body0(no_hinge=false) {
             translate([-THICKNESS/4+.1, THICKNESS-1, 0])
             cube([THICKNESS/2, th, 10]);
         }
+        */
     }
 
 %if(0)
@@ -1241,10 +1267,41 @@ module lid() {
     }
 }
 
-
 module mid() {
     phone_and_hinge(right=false, mid=true, left=false, case=false);
 }
+
+module pad(r) {
+    cylinder(r=r+1.5, h=.2, $fn=20);
+    cylinder(r1=r+1.5, r2=r-5, h=.6, $fn=20);
+    difference() {
+        cylinder(r=r-5, h=5, $fn=20);
+        cylinder(r=r-5-.6, h=6, $fn=20);
+    }
+}
+
+/******************************************************************************/
+
+module pads() {
+    // adhesion pads
+
+    r = 15;
+    r2 = r/sqrt(2);
+
+    for(x=[-WIDTH-r*2+r2/2+.5, WIDTH+r-r2/2-2-.5])
+    for(y=[-r+r2/2+.5, LENGTH++WALL_THICKNESS*2+r2/2-.5])
+        translate([x, y, -THICKNESS-WALL_THICKNESS+.5])
+        pad(r); //cylinder(r=r, h=.6, $fn=20);
+
+
+    for(x=[-THICKNESS+2.2])
+    for(y=[-r-1, LENGTH++WALL_THICKNESS*2+r2+1])
+        translate([x, y, -THICKNESS-WALL_THICKNESS+.5])
+        //scale([.5, 1, 1])
+        pad(r); //cylinder(r=r, h=.6, $fn=20);
+}
+
+/******************************************************************************/
 
 module rotate_at(x, y, a) {
     translate([x, y, 0])
@@ -1253,8 +1310,7 @@ module rotate_at(x, y, a) {
     children();
 }
 
-
-rotate([$preview ? -90 : -90, 0, 0])    
+rotate([$preview ? 0 : -90, 0, 0])    
 intersection() {
 
     if (0)
@@ -1266,41 +1322,17 @@ intersection() {
         body();
 
         a = -90;
-
         rotate_at(hinge_x, hinge_y, a) {
             mid();
             rotate_at(hinge_x, hinge_py, a) lid();
         }
     }
     
-    //if ($preview) translate([0, 0, -20]) cylinder(d=500, h=100, center=false);
+    if ($preview)
+    translate([0, 0, -60]) cylinder(d=500, h=100, center=false);
 }
 
-r = 15;
-r2 = r/sqrt(2);
-
-module pad() {
-    cylinder(r=r+1.5, h=.2, $fn=20);
-    cylinder(r1=r+1.5, r2=r-5, h=.6, $fn=20);
-    difference() {
-        cylinder(r=r-5, h=5, $fn=20);
-        cylinder(r=r-5-.6, h=6, $fn=20);
-    }
-}
-
-for(x=[-WIDTH-r*2+r2/2+.5, WIDTH+r-r2/2-2-.5])
-for(y=[-r+r2/2+.5, LENGTH++WALL_THICKNESS*2+r2/2-.5])
-    translate([x, y, -THICKNESS-WALL_THICKNESS+.5])
-    pad(); //cylinder(r=r, h=.6, $fn=20);
-
-
-for(x=[-THICKNESS+2.2])
-for(y=[-r-1, LENGTH++WALL_THICKNESS*2+r2+1])
-    translate([x, y, -THICKNESS-WALL_THICKNESS+.5])
-    //scale([.5, 1, 1])
-    pad(); //cylinder(r=r, h=.6, $fn=20);
-
-
+pads();
 
 
 //%phone();
