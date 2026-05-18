@@ -21,7 +21,7 @@ module p0_new(h=LAYER_HEIGHT,
               is_left=false, is_right=false,
               extra_length=0) {
     k = 1.25;
-    tk = .25 + .3 +.2;
+    tk = .25 + .3 +.2 +.2 -.05;
 
     difference() {
         intersection() {
