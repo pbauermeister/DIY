@@ -12,6 +12,12 @@ module chamfer_tool(r, fn, tool) {
             cylinder(r=r*2, h=r*2);
         }
     }
+    else if (tool=="hemisphere-down") {
+        difference() {
+            sphere(r, $fn=fn);
+            cylinder(r=r*2, h=r*2);
+        }
+    }
     else if (tool=="cone") {
         cylinder(r, r, 0, $fn=fn);
         scale([1, 1, -1])
@@ -54,6 +60,9 @@ module chamfer_tool(r, fn, tool) {
     }
     else if (tool=="cube") {
         cube(r*2, center=true);
+    }
+    else if (tool=="plate-y") {
+        cube([r*2, ATOM, r*2], center=true);
     }
     else {
         assert(false, str("Unknown tool: ", tool));
