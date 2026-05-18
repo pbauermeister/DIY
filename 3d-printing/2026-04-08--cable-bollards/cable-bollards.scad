@@ -3,7 +3,7 @@ use <../chamferer.scad>
 L_SPACING = 100;
 W_SPACING =  25;
 MARGIN    =  10;
-N         =   4*0+1;
+N         =   4;
 H         =  18;
 D         =  15;
 TH        =   4;
@@ -12,8 +12,12 @@ CH        =   3;
 
 $fn = $preview ? 20 : 100;
 
+PAIR = [0, L_SPACING];
+
 module pillars(grow=0) {
-    for (i=[0:N-1]) for (x=[0, L_SPACING]) translate([x, i*W_SPACING, 0]) {
+    for (i=[0:N-1])
+    for (x=PAIR)
+    translate([x, i*W_SPACING, 0]) {
         union() {
             hull() for (j=[0, x?-D:D])
                 translate([j, 0, 0])
@@ -24,9 +28,10 @@ module pillars(grow=0) {
 
 module base(grow=0) {
     // plate
+    chamferer($preview ? 0: 1)
     hull()
         for (i=[0, N-1])
-        for (x=[0, L_SPACING]) translate([x, i*W_SPACING, -TH-grow]) {
+        for (x=PAIR) translate([x, i*W_SPACING, -TH-grow]) {
             cylinder(d=D+MARGIN*2, h=TH+grow);
     }
 
@@ -44,67 +49,13 @@ module chamfered_base() {
             
             base();
         }
-        
-        for (i=[0:N-1]) {
-            /*
-            // cracks
-            translate([0, 0, -TH/2])
-            for (d=[2:2:4]) difference() {
-                pillars(-d);
-                pillars(-d - 0.07);
-            }
-            */
-        
-            // slit
-            translate([-D-L_SPACING/2, -SLIT/2 + i*W_SPACING, H*.85])
+
+        for (i=[0:N-1])
+         translate([0, i*W_SPACING, 0]) {
+
+            translate([-D-L_SPACING/2, -SLIT/2, H*.99])
             cube([L_SPACING*2, SLIT, H*2]);
-        }    
-    }    
-}
-
-//!chamfered_base();
-
-difference() {
-    difference() {
-        union() {
-            // heads
-            for (i=[0:N-1]) for (x=[0, L_SPACING]) translate([x, i*W_SPACING, 0]) {
-                hull()
-                for (j=[0, x?-D:D])
-                translate([j, 0, H+D/2])
-                intersection() {
-                    resize([D*1.5, D*1.125, D])
-                    sphere();
-                    cube([D*3, D*2, D*.75], center=true);
-                }
-            }
-
-            // base
-            chamfered_base();
-        }
-
-        step = 1;
-        amax = 60;
-        dh = D/amax * step;
-        
-        for (i=[0:N-1]) 
-        translate([0, i*W_SPACING, 0]) {
-            for (x=[0, L_SPACING])
-            translate([x,0, 0])
-            translate([x?-D/2:D/2, 0, 0]) {
-                // cork slit        
-                for (a=[0:step:amax]) {
-                    rotate([0, 0, a])
-                    translate([-D, -SLIT/2, H + D/amax*a/2])
-                    cube([D*2, SLIT, dh*0+SLIT/2]);
-                }
-
-                // top slit
-                rotate([0, 0, amax])
-                translate([-D, -SLIT/2, H + D*.55])
-                cube([D*2, SLIT, H]);
-            }
-
+ 
             for (k=[0, 1]) {
                 translate([k?L_SPACING:0, 0, 0])
                 scale([k?-1:1, 1, 1])
@@ -117,11 +68,64 @@ difference() {
                 }
             }
         }
-        
-        // screw holes
-        for (y=[W_SPACING/2, W_SPACING*(N-1.5)])
-        for (x=[D*1.5, L_SPACING - D*1.5])
-            translate([x, y, 0])
-            cylinder(d=4.5, h=H*6, center=true);
+    }    
+}
+
+module piece() {
+
+    difference() {
+        union() {
+            // plate
+            difference() {
+                chamfered_base();
+                // screw holes
+                for (y=[W_SPACING/2, W_SPACING*(N-1.5)])
+                for (x=[D*1.5, L_SPACING - D*1.5])
+                    translate([x, y, 0])
+                    cylinder(d=4.5, h=H*6, center=true);
+            }
+
+            // heads
+            for (i=[0:N-1])
+            for (x=PAIR) translate([x, i*W_SPACING, 0]) {
+                difference() {
+
+                    // head
+                    hull() for (j=[0, x?-D:D])
+                    translate([j, 0, H+D/2])
+                    intersection() {
+                        resize([D*1.75, D*1.125, D])
+                        sphere();
+                        cube([D*3, D*2, D*.75], center=true);
+                    }
+                }
+            }
+        }
+
+        // bollards
+        step = 1;
+        amax = 60;
+        dh = D/amax * step;
+
+        for (i=[0:N-1])
+        for (x=PAIR) translate([x, i*W_SPACING, 0]) {
+            // slit
+            translate([x?-D/2:D/2, 0, 0]) {
+                // cork slit        
+                for (a=[0:step:amax]) {
+                    l = D*(3 -sin(a)*1.5);
+                    rotate([0, 0, a])
+                    translate([-l/2, -SLIT/2, H + D/amax*a/2])
+                    cube([l, SLIT, dh*0+SLIT/2]);
+                }
+
+                // top slit
+                rotate([0, 0, amax])
+                translate([-D, -SLIT/2, H + D*.55])
+                cube([D*2, SLIT, H]);
+            }
+        }
     }
 }
+
+piece();
