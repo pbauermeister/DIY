@@ -34,7 +34,7 @@ PARTITIONER_Y_TWEAK        =  1.7 -.5;
 HINGE_Z_SHIFT_TWEAK        = -1.2;
 
 // Consts
-$fn  = $preview ? 10 : 35;
+$fn  = $preview ? 10*0+35 : 35;
 ATOM =  0.01;
 
 // Dimensions
@@ -256,7 +256,7 @@ module cam_cutoff() {
         // rounded angles
         for (x=[0, S22_CAM_WIDTH+CAM_SHUTTER_EXTRA_WIDTH]) {
             translate([WIDTH-S22_CAM_OFFSET_X-x, THICKNESS, z + S22_CAM_POS_Z])
-            rotate([-90, 0, 0]) cylinder(d=CUTS_D, h=THICKNESS*2, center=true);
+            rotate([-90, 0, 0]) cylinder(d=CUTS_D, h=THICKNESS*2, center=true, $fn=35);
         }
 
         // square angles
@@ -264,12 +264,6 @@ module cam_cutoff() {
         translate([WIDTH-S22_CAM_OFFSET_X-x, THICKNESS*1.25, z + S22_CAM_POS_Z])
         cube(CUTS_D, center=true);
     }
-
-    // adhesion flat surface
-    /*
-    translate([THICKNESS, THICKNESS+WALL_THICKNESS + .93, S22_CAM_POS_Z - CUTS_D/2])
-    cube([20, THICKNESS, S22_CAM_HEIGHT + CUTS_D]);
-    */
 
     // gripper
     cam_gripper();
@@ -283,26 +277,28 @@ module cam_cutoff() {
 }
 
 
-module camera_flap_snapper(extra=0) {
+module camera_flap_snapper(extra=0, ky=1, kz=1) {
     CAM_FLAP_SNAPPER_R = WALL_THICKNESS/3;
     CAM_FLAP_SNAPPER_INSET = .35;
     dz = CAM_FLAP_SNAPPER_R -CAM_FLAP_SNAPPER_INSET;
     dx = WALL_THICKNESS*3;
+
     for (z=[dz, S22_CAM_HEIGHT+CUTS_D -dz - CAM_FLAP_SNAPPER_R]) {
         hull() {
             for (i=[0, 1]) {
                 translate([-WALL_THICKNESS-dx, 0, z+CAM_FLAP_SNAPPER_R*i])
+                scale([1, ky, kz])
                 sphere(r=CAM_FLAP_SNAPPER_R + extra);
 
                 translate([-WALL_THICKNESS, 0, z+CAM_FLAP_SNAPPER_R*i])
+                scale([1, ky, kz])
                 sphere(r=CAM_FLAP_SNAPPER_R + extra);
             }
         }
     }
 }
 
-
-module camera_flap(only_axis=false) {
+module camera_flap() {
     x0 = WIDTH-S22_CAM_OFFSET_X;
     y = THICKNESS/2+WALL_THICKNESS;
     x = S22_CAM_WIDTH+CAM_SHUTTER_EXTRA_WIDTH;
@@ -311,49 +307,98 @@ module camera_flap(only_axis=false) {
     
     //hth = WALL_THICKNESS*.74;
     //hth = 1.628;
-    hth = 2;
+    hth = 4;
+    //w = 4;
+    marg = .5;
 
-    translate([0, -.35, 0])
+//    translate([0, .35*0, 0])
     translate([x0, y, z]) {
+
         difference() {
+            py = -WALL_THICKNESS*.5 + .9;
+            px = 1;
             union() {
                 intersection() {
                     // hinge
-                    translate([-x -.1, -WALL_THICKNESS*.5 + .12, 0])
-                    camera_hinge(nb_layers=CAM_NB_LAYERS, height=CAM_FLAP_HEIGHT,
-                                 thickness=hth, only_axis=only_axis);
+                    translate([-x -px, py, -marg])
+                    camera_hinge(nb_layers=CAM_NB_LAYERS, height=CAM_FLAP_HEIGHT + marg*2,
+                                 thickness=hth, extra_gap=hinge_extra_gap);
 
                     // hinge gap
-                    translate([-WALL_THICKNESS*2-x, -THICKNESS/2, SPACING])
-                    cube([S22_CAM_WIDTH*2, THICKNESS, S22_CAM_HEIGHT+WALL_THICKNESS*2]);
-                }
+                    union() {
+                        translate([-WALL_THICKNESS*2-x-px, -WALL_THICKNESS, SPACING])
+                        cube([S22_CAM_WIDTH*2, WALL_THICKNESS, S22_CAM_HEIGHT+WALL_THICKNESS*2-.1]);
 
-                // door
-                if (!only_axis) {
-                    intersection() {
-                        // make door
-                        translate([0, -WALL_THICKNESS/2, 0])
-                        hull() {
-                            translate([0, 0, CUTS_D/2])
-                            rotate([-90, 0, 0])
-                            cylinder(d=CUTS_D-SPACING*2, h=WALL_THICKNESS, center=true);
-
-                            translate([0, 0, S22_CAM_HEIGHT + CUTS_D/2])
-                            rotate([-90, 0, 0])
-                            cylinder(d=CUTS_D-SPACING*2, h=WALL_THICKNESS, center=true);
-
-                            translate([-w-5, 0, WALL_THICKNESS+SPACING-WALL_THICKNESS/2])
-                            cube(WALL_THICKNESS, center=true);
-
-                            translate([-w-5, 0, S22_CAM_HEIGHT + WALL_THICKNESS*1.5-SPACING+WALL_THICKNESS/4.5])
-                            cube(WALL_THICKNESS, center=true);
-                        }
+                        translate([-x0, -.55, -z])
+                        cube([S22_WIDTH, WALL_THICKNESS*2, S22_LENGTH]);
                     }
-
-                    // snappers
-                    translate([0, -WALL_THICKNESS*.7, 0])
-                    camera_flap_snapper();
                 }
+
+                // door, inner slice
+                translate([0, -.2, 0])
+                hull() {
+                    translate([0, 0, CUTS_D/2])
+                    rotate([-90, 0, 0])
+                    cylinder(d=CUTS_D-SPACING*2, h=hth, center=true, $fn=35);
+
+                    translate([0, 0, S22_CAM_HEIGHT + CUTS_D/2])
+                    rotate([-90, 0, 0])
+                    cylinder(d=CUTS_D-SPACING*2, h=hth, center=true, $fn=35);
+
+                    translate([-w -.2, 0, hth+SPACING-hth/2])
+                    cube(hth, center=true);
+
+                    translate([-w -.2, 0, hth+SPACING-hth/2 + S22_CAM_HEIGHT+SPACING])
+                    cube(hth, center=true);
+                }
+                
+                // door, outer slice, left
+                dh = .55;
+                xd = marg*2 + SPACING*2;
+                h = hth - WALL_THICKNESS + dh;
+                translate([0, -.2 -dh, 0])
+                hull() {
+
+                    translate([0, .2, CUTS_D/2])
+                    rotate([-90, 0, 0])
+                    cylinder(d=CUTS_D-SPACING*2 + xd, h=h, center=false, $fn=35);
+
+                    translate([0, .2, S22_CAM_HEIGHT + CUTS_D/2])
+                    rotate([-90, 0, 0])
+                    cylinder(d=CUTS_D-SPACING*2 + xd, h=h, center=false, $fn=35);
+
+                    translate([-w -.2, WALL_THICKNESS, hth+SPACING-hth/2 - marg-SPACING])
+                    translate([-hth/2, -hth/2, -hth/2])
+                    cube([hth, h, hth], center=!true);
+
+                    translate([-w -.2, WALL_THICKNESS, hth+SPACING-hth/2 + S22_CAM_HEIGHT + SPACING+marg*2-.1])
+                    translate([-hth/2, -hth/2, -hth/2])
+                    cube([hth, h, hth], center=!true);
+                }
+
+                // door, outer slice, right
+                translate([0, -.2 -dh, 0])
+                hull() {
+                    translate([-x-hth*2, WALL_THICKNESS, hth+SPACING-hth/2 - marg-SPACING])
+                    translate([-hth/2, -hth/2, -hth/2])
+                    cube([hth, h, hth], center=!true);
+
+                    translate([-x-hth*2, WALL_THICKNESS, hth+SPACING-hth/2 + S22_CAM_HEIGHT + SPACING+marg*2-.1])
+                    translate([-hth/2, -hth/2, -hth/2])
+                    cube([hth, h, hth], center=!true);
+
+                    translate([-x0+S22_CAM_OFFSET_X, .2, CUTS_D/2])
+                    rotate([-90, 0, 0])
+                    cylinder(d=CUTS_D-SPACING*2 + xd, h=h, center=false, $fn=35);
+
+                    translate([-x0+S22_CAM_OFFSET_X, .2, S22_CAM_HEIGHT + CUTS_D/2])
+                    rotate([-90, 0, 0])
+                    cylinder(d=CUTS_D-SPACING*2 + xd, h=h, center=false, $fn=35);
+                }
+
+                // snappers
+                translate([0, -hth *.42, 0])
+                camera_flap_snapper(ky=.75, kz=.66);
             }
 
             // hole for flash
@@ -362,24 +407,13 @@ module camera_flap(only_axis=false) {
             cylinder(d=CAM_FLASH_D, h=WALL_THICKNESS*4, center=true);
 
             // hollowing for lenses
-            w3 = w + CUTS_D;
+            w3 = w + CUTS_D -.5;
             dx = CUTS_D/2 + .5;
             h = S22_CAM_HEIGHT + CUTS_D - SPACING*2 -2  -2;
+
             translate([0, -.5, 0])
-            hull() {
-                translate([-w3 + dx, -WALL_THICKNESS*2, SPACING+1 +1])
-                cube([w3, WALL_THICKNESS*2, h]);
-
-                translate([-w3 + dx, -WALL_THICKNESS*3, SPACING+1 +1])
-                cube([w3, WALL_THICKNESS*2, h + WALL_THICKNESS/2.5]);
-            }
-
-            // hollowing for nail
-            /*
-            translate([-x0, -y-WALL_THICKNESS*4.25, -z])
-            cam_gripper();
-            */
-
+            translate([-w3 + dx -.7, -WALL_THICKNESS*3+.5 + hth-WALL_THICKNESS/2 , SPACING +1.5 -.5])
+            cube([w3, WALL_THICKNESS*2, h + WALL_THICKNESS/2.5+1.1]);
         }
     }
 }
@@ -1326,32 +1360,32 @@ module rotate_at(x, y, a) {
 }
 
 module flap() {
-    rotate([$preview ? 0 : -90, 0, 0]) {
-        translate([0, 5, 0])
-        camera_flap();
-        %body(no_hinge=true);
-    }
+    translate([0, 5.25, 0])
+    camera_flap();
+    
+    //if ($preview) %body(no_hinge=true);
 }
 
-//!flap();
-
 module all_body() {
-    rotate([$preview ? 0 : -90, 0, 0])
-    intersection() {
-        union() {
-            body();
+    body();
 
-            a = -90;
-            rotate_at(hinge_x, hinge_y, a) {
-                mid();
-                rotate_at(hinge_x, hinge_py, a) lid();
-            }
-        }
-        if ($preview) translate([0, 0, -60]) cylinder(d=500, h=100, center=false);
+    a = -90;
+    rotate_at(hinge_x, hinge_y, a) {
+        mid();
+        rotate_at(hinge_x, hinge_py, a) lid();
     }
 
+    rotate([$preview ? 0 : 90, 0, 0])
     pads();
 }
 
-if (1) all_body();
-else flap();
+rotate([$preview ? 0 : -90, 0, 0])
+intersection() {
+    if (0) all_body();
+    else flap();
+
+    //if ($preview) translate([0, 0, 34]) cylinder(d=500, h=100, center=false);
+    //if ($preview) rotate([0, 90, 0]) cylinder(d=500, h=63, center=false);
+
+}
+        

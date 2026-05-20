@@ -315,7 +315,7 @@ module maybe_hull(use_hull=false) {
 }
 
 module camera_hinge(nb_layers=CAM_NB_LAYERS, height=CAM_HEIGHT, thickness=4,
-                    extra_spacing=1, only_axis=false)
+                    extra_spacing=1, only_axis=false, extra_gap=0,)
 {
     maybe_hull(only_axis) {
         hinge_new(nb_layers=nb_layers, layer_height=height/2/nb_layers,
@@ -323,7 +323,8 @@ module camera_hinge(nb_layers=CAM_NB_LAYERS, height=CAM_HEIGHT, thickness=4,
                   width1=thickness*1.5 +5,
                   width2=thickness*.75 + extra_spacing,
                   thickness=thickness,
-                  only_axis=only_axis);
+                  only_axis=only_axis,
+                  extra_gap=extra_gap);
 
 
         translate([thickness*1.5 + extra_spacing, 0, 0])
@@ -334,7 +335,8 @@ module camera_hinge(nb_layers=CAM_NB_LAYERS, height=CAM_HEIGHT, thickness=4,
                   //shave_bottom2 = SPACING, shave_top2 = SPACING,
                   width2=thickness*.75 + extra_spacing,
                   thickness=thickness,
-                  only_axis=only_axis);
+                  only_axis=only_axis,
+                  extra_gap=extra_gap);
     }
 }
 
