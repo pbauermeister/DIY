@@ -1056,16 +1056,17 @@ module upper_slice() {
 /******************************************************************************/
 
 
-th       =  4.60;
+th              =  4.60;
 
-hinge_x  = -3.60;
-hinge_py =  0.65;
-hinge_z  = 11.70;
-hinge_y  = th*2 + hinge_py;
+hinge_x         = -3.60;
+hinge_py        =  0.65;
+hinge_z         = 11.70;
+hinge_y         = th*2 + hinge_py;
+hinge_extra_gap = 0.03    +.1;
 
-play     =  0.50;
-pin_d    =  1.75;
-pin_l    =  9 * 3.5;
+play            =  0.50;
+pin_d           =  1.75;
+pin_l           =  9 * 3.5;
 
 module hinge_columns(xtra=0, dy=0, dz=0) {
     hull()
@@ -1089,7 +1090,7 @@ module phone_and_hinge(right=true, mid=true, left=true, case=true) {
             translate([hinge_x, 0, 0])
             intersection() {
                 translate([0, hinge_y, hinge_z])
-                main_hinge(th=th, right=right, mid=mid, left=left);
+                main_hinge(th=th, right=right, mid=mid, left=left, extra_gap=hinge_extra_gap);
                 
                 // case enveloppe
                 translate([-th*2, 0, 0]) case_full();
@@ -1157,7 +1158,25 @@ module body_texturer() {
         for (x=[0:step:LENGTH*1.5])
             translate([x, 0, 0])
             rotate([0, -45, 0])
-            cube([step/sqrt(2) - 2, THICKNESS*4, LENGTH*2], center=true);
+            cube([step/sqrt(2) - 2, THICKNESS*4, LENGTH*4], center=true);
+    }
+}
+
+module body_texturer() {
+    difference() {
+        chamferer(6, "plate-y", shrink=true, grow=false)
+        rotate([-90, 0, 0])
+        linear_extrude(height=1)
+        projection(cut=true)
+        translate([0, 0, -THICKNESS-WALL_THICKNESS/2])
+        rotate([90, 0, 0])
+        body0(no_hinge=true);
+
+        step = 14;
+        for (x=[0:step:LENGTH*1.5])
+            translate([x, 0, 0])
+            rotate([0, -45, 0])
+            cube([step/sqrt(2) - 1.25, THICKNESS*4, LENGTH*4], center=true);
     }
 }
 
@@ -1227,20 +1246,16 @@ module body0(no_hinge=false) {
         }
         */
     }
-
-%if(0)
-    translate([0, 5, 0])
-    camera_flap();
 }
 
 module body(no_hinge=false) {
     difference() {
         body0(no_hinge=no_hinge);
         if (!$preview)
+            translate([0, THICKNESS + WALL_THICKNESS/2 +.2, 0])
             body_texturer();
     }
 }
-
 
 module lid() {
     difference() {
@@ -1310,30 +1325,33 @@ module rotate_at(x, y, a) {
     children();
 }
 
-rotate([$preview ? 0 : -90, 0, 0])    
-intersection() {
-
-    if (0)
-    translate([0, 5, 0])
-    camera_flap();
-
-    else
-    union() {
-        body();
-
-        a = -90;
-        rotate_at(hinge_x, hinge_y, a) {
-            mid();
-            rotate_at(hinge_x, hinge_py, a) lid();
-        }
+module flap() {
+    rotate([$preview ? 0 : -90, 0, 0]) {
+        translate([0, 5, 0])
+        camera_flap();
+        %body(no_hinge=true);
     }
-    
-    if ($preview)
-    translate([0, 0, -60]) cylinder(d=500, h=100, center=false);
 }
 
-pads();
+//!flap();
 
+module all_body() {
+    rotate([$preview ? 0 : -90, 0, 0])
+    intersection() {
+        union() {
+            body();
 
-//%phone();
-//%partitioner();
+            a = -90;
+            rotate_at(hinge_x, hinge_y, a) {
+                mid();
+                rotate_at(hinge_x, hinge_py, a) lid();
+            }
+        }
+        if ($preview) translate([0, 0, -60]) cylinder(d=500, h=100, center=false);
+    }
+
+    pads();
+}
+
+if (1) all_body();
+else flap();
