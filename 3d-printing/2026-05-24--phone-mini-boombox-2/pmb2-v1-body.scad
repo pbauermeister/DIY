@@ -14,14 +14,14 @@ W                   = BATT_W  + WALL*2;
 TH                  = BATT_TH + WALL*2 + 18.2;
 CH                  = WALL * 1.25;
 
-CASE_BORDER         =   4;
+CASE_BORDER         =   4                                    -2;
 CASE_L              = PHONE_L + CASE_BORDER*2;
 CASE_W              = PHONE_W + CASE_BORDER*2;
 CASE_TH             =  21;
 CASE_Y              =   1.2;
 CASE_ADJ_Y          =  -2;
 
-BANK_PLAY           =   0.4                                     +1  -.5;
+BANK_PLAY           =   0.9;
 BANK_LENGTH         =  87.9 + BANK_PLAY;
 BANK_WIDTH          =  30.0 + BANK_PLAY;
 BANK_D              =  54.0;
@@ -85,39 +85,11 @@ module pad(scale_z=.5) {
         sphere(d=PAD_D);
 }
 
-/*
-module marks(l=BOOMBOX_L, w=BOOMBOX_W, h=BOOMBOX_H) {
-    n  = 6;
-    m  = 3;
-    ch = .75;
-
-    for (i=[0:n-1]) {
-        for (j=[0:m-1]) {
-            translate([i*l/n + (i==0 ? -ch*10 : 0), 0, 0])
-            chamferer(ch, fn=16)
-            intersection() {
-                chamferer(CH, tool="cylinder-x", fn=FN)
-                cube([l/n + (i==n-1 || i==0 ? ch*10 : 0), w, h]);
-                
-                translate([0, 0, h/m*j])
-                cube([l/n + (i==n-1 || i==0 ? ch*10 : 0), w, h/m]);
-            }
-        }
-    }
-    
-    chamferer(ch*2, fn=8, grow=false)
-    cube([l, w, h]);
-}
-*/
-
 module box(l=BOOMBOX_L, w=BOOMBOX_W, h=BOOMBOX_H) {
     intersection() {
         // box
         chamferer(CH, tool="cylinder-x", fn=FN)
         cube([l, w, h]);
-
-        // marks
-//        marks(l, w, h);
     }
 }
 
@@ -243,7 +215,6 @@ module cavity() {
         // separator
         translate([-BANK_HEIGHT*1.5 + dx, BANK_WIDTH/4 + dy + pb_dy - 3.55, dz-BANK_LENGTH/2])
                 cube([BANK_HEIGHT, WALL, BANK_LENGTH*2]);
-        
     }
 
     // back window
@@ -455,6 +426,8 @@ HANDLE_TH = 3;
 HANDLE_L  = (WALL + BOOMBOX_XX/2) * 2;
 HANDLE_SP = 20;
 
+HANDLE_D_ADJUST = .5;
+
 module handle() {
     h = HANDLE_SP + HANDLE_D + HANDLE_TH;
     w = HANDLE_D + HANDLE_TH*2;
@@ -471,7 +444,7 @@ module handle() {
 
         translate([0, 0, HANDLE_SP+HANDLE_TH*2])
         rotate([0, 90, 0])
-        cylinder(d=HANDLE_D, h=HANDLE_L*3, center=true, $fn=100);
+        cylinder(d=HANDLE_D+HANDLE_D_ADJUST, h=HANDLE_L*3, center=true, $fn=100);
     }
 
     difference() {
@@ -510,7 +483,7 @@ module boombox(inv_hinge=false) {
     translate([0, -HINGE_Y, 0]) {
         dx = PAD_POS_X;
         z  = (PHONE_W - BANK_LENGTH)/2 - BOOMBOX_XZ/2 -1.25;
-        for (k=[1, -1]) {
+        for (k=[1, 0, -1]) {
             color("red") {
                 side = -BOOMBOX_L/2 + dx;
                 y = -BOOMBOX_DY + CH*1.25;
