@@ -1,4 +1,4 @@
-use <phone-mini-boombox-v4.scad>
+use <pmb2-v1-body.scad>
 use <../chamferer.scad>
 
 KNOB_H = get_knob_h();

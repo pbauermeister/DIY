@@ -1,4 +1,4 @@
-use <phone-mini-boombox-v4.scad>
+use <pmb2-v1-body.scad>
 use <../chamferer.scad>
 
 
@@ -12,8 +12,7 @@ ATOM           = 0.01;
 $fn = $preview ? 50 : 100;
 
 module knobs() {
-//    for (i=[0:2]) {
-    for (i=[0:1]) {
+    for (i=[0:2]) {
         x = BUTTONS_POS[i];
 
         translate([x, 0, 0])
@@ -59,7 +58,7 @@ module knobs() {
             cylinder(d=m*2, h=th);
         }
 
-%        translate([BUTTONS_POS[2], 0, 0])
+        translate([BUTTONS_POS[2], 0, 0])
         cylinder(d=m*2, h=th);
     }
 }

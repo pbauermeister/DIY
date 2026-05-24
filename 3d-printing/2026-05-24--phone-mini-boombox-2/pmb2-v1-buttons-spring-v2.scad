@@ -1,5 +1,5 @@
-use <phone-mini-boombox-v4-buttons.scad>
-use <phone-mini-boombox-v4.scad>
+use <pmb2-v1-buttons.scad>
+use <pmb2-v1-body.scad>
 use <../chamferer.scad>
 
 
