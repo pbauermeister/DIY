@@ -176,6 +176,7 @@ module power_bank(w=BANK_WIDTH, l=BANK_LENGTH, d=BANK_D, h=BANK_HEIGHT,
 
 module cavity() {
     dx = (CASE_L - BANK_HEIGHT)/2;
+    dx2 = 3;
     dy = CASE_TH + CASE_Y;
     dz = (PHONE_W - BANK_LENGTH)/2;
     pb_dy = -2;
@@ -213,7 +214,7 @@ module cavity() {
         }
 
         // separator
-        translate([-BANK_HEIGHT*1.5 + dx, BANK_WIDTH/4 + dy + pb_dy - 3.55, dz-BANK_LENGTH/2])
+        translate([-BANK_HEIGHT*1.5 + dx + dx2, BANK_WIDTH/4 + dy + pb_dy - 3.55, dz-BANK_LENGTH/2])
                 cube([BANK_HEIGHT, WALL, BANK_LENGTH*2]);
     }
 
@@ -224,6 +225,20 @@ module cavity() {
         translate([kx*BOOMBOX_L*.28, BOOMBOX_W, BOOMBOX_H/2.75])
         rotate([-90, 0, 0])
         cylinder(d=d, h=BOOMBOX_W, center=true, $fn=40);
+
+    // back window flat
+    marg = 2;
+    dd = d+marg*2;
+    translate([0, -2-1.5, 0])
+    hull() {
+        translate([BOOMBOX_L*.28, BOOMBOX_W, BOOMBOX_H/2.75])
+        rotate([-90, 0, 0])
+        cylinder(d=dd, h=2, center=true, $fn=40);
+
+        translate([-BOOMBOX_L*.5 + dd/2 +2, BOOMBOX_W, BOOMBOX_H/2.75])
+        cube([dd, 2, dd], center=true);
+    }
+
 
     // left side phone window
     d2 = 15;
@@ -460,6 +475,37 @@ module handle() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// Earbuds
+
+EARBUD_CASE_D = 34;
+EARBUD_CASE_L = 75.7;
+EARBUD_CASE_H = 30;
+
+EARBUD_PX = -.7 -L/2 + EARBUD_CASE_D/2;
+EARBUD_PY = -EARBUD_CASE_D/2 + 3.8 -.2;
+EARBUD_PZ = EARBUD_CASE_L/2 +5;
+
+module earbud_case(extra_d=0) {
+    sp = EARBUD_CASE_L - EARBUD_CASE_D;
+    intersection() {
+        hull() for (k=[-1, 1])
+            translate([0, 0, k*sp/2])
+            sphere(d=EARBUD_CASE_D+extra_d, $fn=30);
+        translate([0, (-EARBUD_CASE_D+EARBUD_CASE_H)/2, 0])
+        cube([EARBUD_CASE_D, EARBUD_CASE_H, EARBUD_CASE_L], center=true);
+    }
+}
+
+module earbud_case_clearance() {
+    hull() {
+        earbud_case(.2);
+        translate([0, 50, 0]) earbud_case();
+    }
+}
+
+%translate([EARBUD_PX, EARBUD_PY, EARBUD_PZ]) earbud_case();
+
+////////////////////////////////////////////////////////////////////////////////
 // Final boombox
 
 module boombox(inv_hinge=false) {
@@ -471,7 +517,10 @@ module boombox(inv_hinge=false) {
         translate([-HINGE2_L + BOOMBOX_L/2, 0, -BOOMBOX_XZ2/2])
         foot_cut();
 
-        knob_cavity();        
+        knob_cavity();
+        
+        translate([EARBUD_PX, EARBUD_PY, EARBUD_PZ])
+        earbud_case_clearance();
     }
 
     // foot
@@ -544,4 +593,6 @@ difference() {
         cylinder(d=1000, h=BOOMBOX_L+1 - 24);
     
     //translate([-50, -15+3.32, -50]) cube(500);
+    //translate([-250, -30, -50]) cube(500);
+    //translate([0, 0, 40]) cylinder(d=10000, h=1000);
 }
