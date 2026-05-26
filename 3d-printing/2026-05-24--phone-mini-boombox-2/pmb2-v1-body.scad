@@ -1,6 +1,19 @@
 use <../chamferer.scad>
 use <../hinge4.scad>
 
+/*
+TODO:
+- Pads (serving as foot ratchet): move forward by 0.25 mm.
+- Hinge tolerance: increase by .05 mm.
+- Handle hole diameter: increase by .5 mm.
+- Handle arm: add a screw hole
+- Batt width (=boombox height): devrease by 0.7 mm.
+- Top/bottom mini groove to limit rosonnance of btn holes etc.
+- Phone case thickness: increase by 0.2 mm.
+
+- Make back sliding door, to lock earbuds case.
+*/
+
 BATT_L              = 147;
 BATT_W              = 108.2;
 BATT_TH             =  37;
@@ -17,7 +30,7 @@ CH                  = WALL * 1.25;
 CASE_BORDER         =   4                                    -2;
 CASE_L              = PHONE_L + CASE_BORDER*2;
 CASE_W              = PHONE_W + CASE_BORDER*2;
-CASE_TH             =  21;
+CASE_TH             =  21                                    -2;
 CASE_Y              =   1.2;
 CASE_ADJ_Y          =  -2;
 
@@ -156,6 +169,13 @@ module phone_cavity(back_extension=0, side_extension=0) {
         // phone case hinge cavity
         translate([-bor - reserve, cy+xy, -bor-xz + 2 +.2 + CASE_ADJ_Y])
         cube([l + bor*2 + reserve*2 + side_extension, cth + back_extension, xz*2 + ATOM]);
+
+
+        // phone case hinge pins cavity
+        pins = 3;
+        translate([-bor - reserve -pins, cy+xy, -bor-xz + 2 +.2 + CASE_ADJ_Y])
+        cube([l + bor*2 + reserve*2 + side_extension +pins*2, cth + back_extension, xz*1 + ATOM]);
+
     }
 }
 
@@ -243,7 +263,7 @@ module cavity() {
     // left side phone window
     d2 = 15;
     hull() for (y=[BOOMBOX_H*.40, BOOMBOX_H*.325])
-        translate([0, d2*.5+4.5, y])
+        translate([0, d2*.5+4.5 -1.4, y])
         rotate([0, -90, 0])
         cylinder(d=d2, h=BOOMBOX_L, $fn=40);
 
@@ -318,7 +338,7 @@ module boombox_1(inv_hinge) {
 
     // wedges
     for (kx=[-1, 1])
-        translate([kx*(BOOMBOX_L/2.7), 0, 0])
+        translate([kx*(BOOMBOX_L/2.7), 0-2, 0])
         wedge();
 }
 
@@ -334,7 +354,9 @@ module foot() {
            total_height=HINGE2_L,
            nb_layers=HINGE_NB_LAYERS * ($preview ? 2 : 1),
            angle=180 +a +30,
-           with_plate=false);
+           with_plate=false,
+           tolerance=0.34
+    );
 
     // rotating foot
     l = 19.65;
@@ -378,8 +400,11 @@ module foot() {
     }
     
     // foot pad
+    x1 = PAD_POS_X;
+    x2 = HINGE2_L-PAD_POS_X;
+    xm = (x1 + x2)/2;
     rotate([a + 120, 0, 0]) {
-        for (x=[PAD_POS_X, HINGE2_L-PAD_POS_X])
+        for (x=[x1, xm, x2])
             translate([x, -l*.3, -h-HINGE_D/2+.2])
             pad();
     }
@@ -441,7 +466,7 @@ HANDLE_TH = 3;
 HANDLE_L  = (WALL + BOOMBOX_XX/2) * 2;
 HANDLE_SP = 20;
 
-HANDLE_D_ADJUST = .5;
+HANDLE_D_ADJUST = .5*0;
 
 module handle() {
     h = HANDLE_SP + HANDLE_D + HANDLE_TH;
@@ -490,20 +515,45 @@ module earbud_case(extra_d=0) {
     intersection() {
         hull() for (k=[-1, 1])
             translate([0, 0, k*sp/2])
-            sphere(d=EARBUD_CASE_D+extra_d, $fn=30);
+            sphere(d=EARBUD_CASE_D+extra_d, $fn=$preview ? 30 : $fn);
+
         translate([0, (-EARBUD_CASE_D+EARBUD_CASE_H)/2, 0])
         cube([EARBUD_CASE_D, EARBUD_CASE_H, EARBUD_CASE_L], center=true);
     }
 }
 
-module earbud_case_clearance() {
+module earbud_case_chamber_0() {
     hull() {
         earbud_case(.2);
         translate([0, 50, 0]) earbud_case();
     }
 }
 
+module earbud_case_chamber() {
+    earbud_case_chamber_0();
+
+    step = .9;
+    if(0) if (!$preview)
+    translate([-1, 0, 0])
+    difference() {
+        earbud_case_chamber_0();
+        for (y=[EARBUD_CASE_D*.37: -step: -EARBUD_CASE_D*.39])
+            translate([0, y, 0])
+            cube([200, step - .1, EARBUD_CASE_L*3], center=true);
+
+    }
+    
+    th = 1.75;
+//    if (!$preview)
+    for (y=[-EARBUD_CASE_D/4 + step*2: step: EARBUD_CASE_D*.4 +step*2])
+        translate([-EARBUD_CASE_D/4-th, y-th/2, 0])
+        cube([EARBUD_CASE_D/2, .1, EARBUD_CASE_L-EARBUD_CASE_D*.66], center=true);
+    
+
+}
+
 %translate([EARBUD_PX, EARBUD_PY, EARBUD_PZ]) earbud_case();
+//!earbud_case_chamber();
 
 ////////////////////////////////////////////////////////////////////////////////
 // Final boombox
@@ -520,7 +570,7 @@ module boombox(inv_hinge=false) {
         knob_cavity();
         
         translate([EARBUD_PX, EARBUD_PY, EARBUD_PZ])
-        earbud_case_clearance();
+        earbud_case_chamber();
     }
 
     // foot
