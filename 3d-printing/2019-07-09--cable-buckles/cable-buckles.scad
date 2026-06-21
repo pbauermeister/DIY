@@ -72,7 +72,8 @@ module hollow_buckle(height, wall_thickness, length, width) {
 }
 
 // Object: The prong
-module prong(wall_thickness, height, length, width, prong_size, shave_arm=true, draft=false) {
+module prong(wall_thickness, height, length, width, prong_size,
+             shave_arm=true, draft=false, extra_text="") {
     prong_width = prong_size;
     prong_width2 = prong_size * .8;
     hinge_radius = height/2;
@@ -114,12 +115,13 @@ module prong(wall_thickness, height, length, width, prong_size, shave_arm=true, 
 
         // text
         th = .5;
-        if (!draft)
+        t = str(length, extra_text);
+        //if (!draft)
             translate([1.62, -3, height*.9 -th + ATOM])
             scale([1, 1.2, 1])
             rotate([0, 0, 90])
             linear_extrude(th)
-            text(str(length), font="FreeSans:style=Bold", size=3.5);
+            text(t, font="FreeSans:style=Bold", size=3.5);
     }
 }
 
@@ -145,12 +147,12 @@ module buckle(height, wall_thickness, length, width, prong_size) {
 }
 
 // Object: One whole finished object (buckle and prong)
-module unit(height, wall_thickness, length, width, prong_size) {
+module unit(height, wall_thickness, length, width, prong_size, extra_text="") {
 
     translate([0, -width/2, height/2]) rotate([180, 0, 0]) translate([0, width/2, -height/2])
     buckle(height, wall_thickness, length, width, prong_size);
     
-    prong(wall_thickness, height, length, width, prong_size, shave_arm=false);
+    prong(wall_thickness, height, length, width, prong_size, shave_arm=false, extra_text=extra_text);
 }
 
 // Here it goes: make several copies of various sizes

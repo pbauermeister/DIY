@@ -61,6 +61,14 @@ module knobs() {
         translate([BUTTONS_POS[2], 0, 0])
         cylinder(d=m*2, h=th);
     }
+
+    // common plate
+    hull() for (i=[0:2]) {
+        x = BUTTONS_POS[i];
+        th = .6; //*0 + 2.2;
+        translate([x, 0, BUTTONS_PIN_TH -.5 -.4])
+        cylinder(d=m*2, h=th);
+    }
 }
 
 rotate([$preview ? 0 : 180, 0, 0])
