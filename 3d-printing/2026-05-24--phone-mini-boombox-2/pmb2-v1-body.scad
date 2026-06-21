@@ -3,15 +3,19 @@ use <../hinge4.scad>
 
 /*
 TODO:
-- Pads (serving as foot ratchet): move forward by 0.25 mm.
-- Hinge tolerance: increase by .05 mm.
-- Handle hole diameter: increase by .5 mm.
-- Handle arm: add a screw hole
-- Batt width (=boombox height): devrease by 0.7 mm.
-- Top/bottom mini groove to limit rosonnance of btn holes etc.
-- Phone case thickness: increase by 0.2 mm.
 
-- Make back sliding door, to lock earbuds case.
+Fixes:
+[ ] Pads (serving as foot ratchet): move forward by 0.25 mm.
+[ ] Hinge tolerance: increase by .05 mm.
+[ ] Handle hole diameter: increase by .5 mm.
+[ ] ~~Handle arm: add a screw hole~~
+[ ] Batt width (=boombox height): devrease by 0.7 mm.
+[ ] Top/bottom mini groove to limit resonnance of btn holes etc.
+[ ] Phone case thickness: increase by 0.2 mm -OR- chave entrance -OR- do nothing
+
+Features:
+[ ] Make back sliding door, to lock earbuds case.
+[ ] Camera sliding blind.
 */
 
 BATT_L              = 147;
@@ -507,7 +511,7 @@ EARBUD_CASE_L = 75.7;
 EARBUD_CASE_H = 30;
 
 EARBUD_PX = -.7 -L/2 + EARBUD_CASE_D/2;
-EARBUD_PY = -EARBUD_CASE_D/2 + 3.8 -.2;
+EARBUD_PY = -EARBUD_CASE_D/2 + 3.8 -.2 -1;
 EARBUD_PZ = EARBUD_CASE_L/2 +5;
 
 module earbud_case(extra_d=0) {
@@ -644,5 +648,5 @@ difference() {
     
     //translate([-50, -15+3.32, -50]) cube(500);
     //translate([-250, -30, -50]) cube(500);
-    //translate([0, 0, 40]) cylinder(d=10000, h=1000);
+    translate([0, 0, 40]) cylinder(d=10000, h=1000);
 }
