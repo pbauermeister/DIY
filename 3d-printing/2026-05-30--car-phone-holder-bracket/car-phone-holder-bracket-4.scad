@@ -1,7 +1,7 @@
 use <../chamferer.scad>
 L  = 80 - 10;
-W  = 10             -9+1;
-H  = 50;
+W  = 10             ;//-9+1;
+H  = 50 -5;
 
 W2 = W; //W*.6 +2;
 
@@ -16,8 +16,8 @@ RH = 4.5    + .8;
 
 SD = 4.5;
 
-CH = 9-1;
-CH2 = 9;
+CH = 9  -2;
+CH2 = 9 -1;
 
 $fn  = $preview ? 20 : 80;
 ATOM = 0.01;
@@ -29,11 +29,6 @@ module rail() {
 
     w2 = w / sqrt(2);
     z2 = RH*.7;
-    if(0)
-    translate([0, 0, z2])
-    scale([1, 1, .7])
-    rotate([0, 45, 0])
-    cube([w2, 100, w2], center=true);
 
     h3 = 7-z2;
     translate([0, 0, h3/2*2 + z2*0])
@@ -44,17 +39,22 @@ module rails() {
     for(x=[-L2/2, L2/2])
         translate([x, 0, 0])
         rail();
+
+    for(x=[-L2/2-1, L2/2+1])
+        translate([x, 0, 0])
+        rail();
 }
 
-module plate(xh=3, with_rails) {
+module plate(xh=20+5, with_rails) {
+    z = -H+10;
     difference() {
-        translate([0, 0, -H+10]) {
+        translate([0, 0, z]) {
 
             chamferer(CH, "cylinder-y", fn=4) {
             translate([-L/2, -W, 0])
             cube([L, W, H]);
 
-            l = L/3 -2;
+            l = L/3 -2+.5;
             for(x=[-L/2, L/2-l])
                 translate([x, -W, -xh])
                 cube([l, W, xh]);
@@ -76,12 +76,24 @@ module plate(xh=3, with_rails) {
         translate([0, 2, -RH/2-D2 +4.25])
         rotate([90, 0, 0])
         cylinder(d=ATOM, h=W*2);
+/*
+        translate([-L, -W/3.5, 0])
+        if (!with_rails) {
+            // shave head
+            translate([0, 0, z+H-7.15])
+            cube([L*2, W, H]);
+
+            // shave tail
+            translate([0, 0, z-H-9.025])
+            cube([L*2, W, H]);
+        }
+*/
     }
 }
 
 module base() {
     difference() {
-        plate(xh=15, with_rails=false);
+        plate(with_rails=false);
         
         // hollowing
         translate([0, 1, 0])
@@ -101,10 +113,10 @@ difference() {
 
         difference() {
             w = CH2+W*2-.3;
-            for (x=[-L/2, L/2-w])
-                translate([x, 0, -CH2-RH/2-step*2.75+1])
-                cube([w, 7, step*3.75]);
-
+            l = 12; //w/3-.5;
+            for (x=[-L/2, L/2-l])
+                translate([x, -W, -CH2-RH/2-step*2.75+1])
+                cube([l, 7+W, step*3.75]);
 
            for (i=[0:3]) {
                 th = 6;
@@ -132,7 +144,20 @@ difference() {
         cylinder(d=D2, h=W*2);
 
     rails();
+
+    z = -H+10;
+    translate([-L, -W/3.5, 0]) {
+        // shave head
+        translate([0, 0, z+H-7.15])
+        cube([L*2, W, H]);
+
+        // shave tail
+        translate([0, 0, z-H-9.025])
+        cube([L*2, W, H]);
+    }
+
+
 }
 
-rotate([$preview?0:90, 0, 0])
+rotate([$preview?0:90, 0, $preview?0:180])
 piece();
