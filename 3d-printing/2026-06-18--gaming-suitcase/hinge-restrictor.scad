@@ -1,0 +1,1 @@
+// Hinge restrictor: https://www.temu.com/ch/2-stuck-versteckte-90-grad-scharniere-industrieausrustung-schranktur-kohlenstoffstahl-gleitbegrenzungsscharnier-feste-scharniere-mobelbeschlage-g-601101696220291.html
