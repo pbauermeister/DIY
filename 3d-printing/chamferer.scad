@@ -70,6 +70,9 @@ module chamfer_tool(r, fn, tool,
         else if (tool=="plate-y") {
             cube([r*2, ATOM, r*2], center=true);
         }
+        else if (tool=="plate-z") {
+            cube([r*2, r*2, ATOM], center=true);
+        }
         else {
             assert(false, str("Unknown tool: ", tool));
         }
