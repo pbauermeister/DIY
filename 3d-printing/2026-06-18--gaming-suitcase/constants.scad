@@ -20,3 +20,18 @@ echo(CASE_INNER_W);
 echo(CASE_OUTER_L);
 echo(CASE_OUTER_W);
 
+LID_BEZEL_L0_L        = 319;
+LID_BEZEL_L0_W        = 223;
+LID_BEZEL_L0_TH       =   3;
+LID_BEZEL_L0_TH0      =   .4;
+LID_BEZEL_L0_PLAY     =   1;
+LID_BEZEL_L0_HINGE_R  =  16;
+LID_BEZEL_L0_PILLAR_H =   6.5;
+LID_BEZEL_L0_PILLAR_D =  13;
+
+LID_BEZEL_L0_SIDE_CLR =  20;
+
+SCREW_D               =   2.5;
+
+
+ATOM = 0.001;
