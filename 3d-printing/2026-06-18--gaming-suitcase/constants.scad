@@ -1,5 +1,5 @@
 SCREEN_ATT_L = 227;
-SCREEN_ATT_W = 158;
+SCREEN_ATT_W = 158              +1;
 
 SCREEN_LCD_L = 223;
 SCREEN_LCD_W = 125;
@@ -20,13 +20,13 @@ echo(CASE_INNER_W);
 echo(CASE_OUTER_L);
 echo(CASE_OUTER_W);
 
-LID_BEZEL_L0_L        = 319;
-LID_BEZEL_L0_W        = 223;
+LID_BEZEL_L0_L        = 319     +5;
+LID_BEZEL_L0_W        = 223     +5;
 LID_BEZEL_L0_TH       =   3;
 LID_BEZEL_L0_TH0      =   .4;
 LID_BEZEL_L0_PLAY     =   1;
 LID_BEZEL_L0_HINGE_R  =  16;
-LID_BEZEL_L0_PILLAR_H =   6.5;
+LID_BEZEL_L0_PILLAR_H =   6.5  +4;
 LID_BEZEL_L0_PILLAR_D =  13;
 
 LID_BEZEL_L0_SIDE_CLR =  20;

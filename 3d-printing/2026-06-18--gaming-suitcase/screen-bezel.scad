@@ -5,10 +5,12 @@ w = LID_BEZEL_L0_W - LID_BEZEL_L0_PLAY*2;
 th = LID_BEZEL_L0_TH;
 r = LID_BEZEL_L0_HINGE_R;
 
+CABLE_PASSAGE = 65;
+
 $fn = $preview ? 30 : 200;
 
 module pillar() {
-    h = LID_BEZEL_L0_TH0+LID_BEZEL_L0_PILLAR_H;
+    h = LID_BEZEL_L0_TH0 + LID_BEZEL_L0_PILLAR_H;
     cylinder(d1=LID_BEZEL_L0_PILLAR_D-h/2,
              d2=LID_BEZEL_L0_PILLAR_D,
              h=h*.75);
@@ -22,7 +24,7 @@ module screw_hole() {
     translate([0, 0, LID_BEZEL_L0_TH0]) {
         cylinder(d=SCREW_D, h=LID_BEZEL_L0_PILLAR_H*2);
 
-        for (a=[0:360/8:360])
+        for (a=[0:360/12:360])
             rotate([0, 0, a])
             cube([SCREW_D*1.5, .1, LID_BEZEL_L0_PILLAR_H*2]);
     }
@@ -52,7 +54,7 @@ module screen_bezel_l0() {
                 }
 
                 // center clearance
-                lc = SCREEN_ATT_L + LID_BEZEL_L0_SIDE_CLR*3;
+                lc = SCREEN_ATT_L + LID_BEZEL_L0_SIDE_CLR*2;
                 cube([lc, SCREEN_ATT_W-LID_BEZEL_L0_PILLAR_D, th*10], center=true);
                 
                 // side clearances
@@ -91,6 +93,10 @@ module screen_bezel_l0() {
                 }
             }
         }
+        
+        // cable passage
+        translate([0, 0, LID_BEZEL_L0_TH])
+        cube([LID_BEZEL_L0_L/2, CABLE_PASSAGE, LID_BEZEL_L0_PILLAR_H]);
 
         // screw holes
         for (ky=[-.5, .5]) {
