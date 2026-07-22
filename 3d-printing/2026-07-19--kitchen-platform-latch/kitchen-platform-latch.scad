@@ -19,6 +19,25 @@ module screw_cavity() {
     cylinder(d=8, h=20, $fn=20);
 }
 
+module latch_cylinder(xd, xh=0) {
+    translate([0, 0, -xh/4]) {
+        cylinder(d=D+xd, h=TH+xh);
+
+
+        hull() {
+            intersection() {
+                cylinder(d=D+xd, h=TH+xh);
+     
+                translate([-D, 0, -D/2])
+                cube([D*2, D, D*2]);
+            }
+
+            for (k=[1, -1])
+                translate([D*.47*k, -D*.12, 0])    
+                cylinder(d=D/6+xd, h=TH+xh);
+        }
+    }
+}
 
 module back_part() {
     chamferer($preview ? 0 : 1)
@@ -34,7 +53,7 @@ module back_part() {
                 cube([w, WALL, TH]);
 
                 translate([0, Y, 0]) difference() {
-                    cylinder(d=D+5, h=TH);
+                    latch_cylinder(5+1);
                     translate([-D, 0, -D/2]) cube(D*2);
                 }
             }
@@ -47,7 +66,7 @@ module back_part() {
 
         // latch chamber
         translate([0, Y, -TH/2])
-        cylinder(d=D+PLAY*2, h=TH*2);
+        latch_cylinder(PLAY*2, TH);
 
         // screw holes
         for (k=[1, -1])
@@ -107,7 +126,7 @@ module front_part() {
 
             // latch chamber
             translate([0, Y, -TH/2])
-            cylinder(d=D+PLAY*2, h=TH*2);
+            latch_cylinder(PLAY*2, TH);
 
             // screw holes
             for (k=[1, -1])
@@ -117,7 +136,7 @@ module front_part() {
         }
 
         // arms chamber
-        chamferer($preview ? 0 : PLAY, shrink=false)
+        chamferer($preview ? 0 : PLAY+.1, shrink=false)
         arms();
     }
 }
@@ -126,26 +145,17 @@ module mid_part() {
     translate([0, Y, 0])
     difference() {
         chamferer($preview ? 0 : 1)
-        cylinder(d=D, h=TH);
+        latch_cylinder(0, 0);
 
         // gap
         cube([GAP2, D*2, D*2], center=true);
 
         // spring cavity
-        translate([0, D*.25, TH/2])
-        rotate([0, 90, 0])
-        cylinder(d=5, h=13, $fn=60, center=true);
-        
-        // screw cavity
-        translate([0, 0, TH/2])
-        rotate([0, 90, 0])
-        cylinder(d=4, h=D, center=true, $fn=60);
-
-        for (k=[1, -1])
-            scale([k, 1, 1])
-            translate([GAP2/2+3, 0, TH/2])
+        for (j=[0, -.6])
+        for (i=[-1.25, 0, 1.25])
+            translate([0, D*.28 +j*12, TH/2 + TH*i/4])
             rotate([0, 90, 0])
-            cylinder(d=7, h=D, $fn=60);
+            cylinder(d=5.25, h=13, $fn=60, center=true);
     }
 
     arms();
