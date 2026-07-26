@@ -45,6 +45,7 @@ module screen_bezel_l0() {
                     cube([l, w,  ATOM]);
                 }
 
+/*
                 // hinge clearance
                 translate([-LID_BEZEL_L0_L/2, -LID_BEZEL_L0_W/2, 0])
                 translate([0, 0, r])
@@ -52,7 +53,8 @@ module screen_bezel_l0() {
                     cylinder(r=r, h=LID_BEZEL_L0_L);
 %                    cylinder(r=r, h=LID_BEZEL_L0_L);
                 }
-
+*/
+                
                 // center clearance
                 lc = SCREEN_ATT_L + LID_BEZEL_L0_SIDE_CLR*2;
                 cube([lc, SCREEN_ATT_W-LID_BEZEL_L0_PILLAR_D, th*10], center=true);
@@ -95,8 +97,12 @@ module screen_bezel_l0() {
         }
         
         // cable passage
-        translate([0, 0, LID_BEZEL_L0_TH])
-        cube([LID_BEZEL_L0_L/2, CABLE_PASSAGE, LID_BEZEL_L0_PILLAR_H]);
+//        translate([0, 0, LID_BEZEL_L0_TH])
+//        cube([LID_BEZEL_L0_L/2, CABLE_PASSAGE, LID_BEZEL_L0_PILLAR_H]);
+
+        translate([0, -5, LID_BEZEL_L0_TH])
+        cube([LID_BEZEL_L0_L/2 -10, CABLE_PASSAGE, LID_BEZEL_L0_PILLAR_H]);
+
 
         // screw holes
         for (ky=[-.5, .5]) {
