@@ -7,7 +7,7 @@ TTH = .8;
 D  = get_holes_d_sp()[0];
 SP = get_holes_d_sp()[1];
 
-module stud(xd=0.3, xd2=-2.8, dz=-.15) {
+module stud(xd=0.2, xd2=-2.8, dz=-.15) {
     //%hole();
     translate([0, 0, dz])
     difference() {
@@ -98,5 +98,30 @@ module test_3() {
     }
 }
 
+module test_4() {
+    th = 5;
 
-test_3();
+    // studs
+    for (i=[0:2]) {
+        xd = (i)*.1;
+        echo(str("xd=", xd));
+        translate([0, i*(D+SP), 0]) {
+            // stud(xd=0.3, xd2=-2.8, dz=-.15)
+            stud(xd=xd);
+            
+            difference() {
+                translate([-8, -7, -th])
+                cube([30, 14, th]);
+
+                for (i=[-1, 1])
+                    for (j=[-1, 1])
+                        translate([5+i*.15, -2+j*.15, -.5])
+                        linear_extrude(1)
+                        text(str(xd), size=5);
+            }
+        }
+    }
+}
+
+
+test_4();
