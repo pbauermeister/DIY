@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   sodipodi:docname="handle-spine.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="true"
+     inkscape:zoom="0.95497112"
+     inkscape:cx="471.74201"
+     inkscape:cy="430.90308"
+     inkscape:window-width="2560"
+     inkscape:window-height="1387"
+     inkscape:window-x="1920"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid182" />
+  </sodipodi:namedview>
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g2777"
+       transform="translate(219.86771,10)">
+      <rect
+         style="fill:#ffdd55;stroke:none;stroke-width:0.0649999;stroke-linecap:square;stroke-dasharray:0.78, 0.78;stroke-dashoffset:0;stop-color:#000000"
+         id="rect1962"
+         width="66"
+         height="10"
+         x="-132.13229"
+         y="-150.00002"
+         transform="scale(-1)" />
+      <rect
+         style="fill:#80f080;stroke:none;stroke-width:1;stroke-linecap:square;stop-color:#000000"
+         id="rect236"
+         width="102"
+         height="140"
+         x="-102.13229"
+         y="-140"
+         transform="scale(-1)" />
+      <rect
+         style="fill:#d4aa00;stroke:none;stroke-width:0.999997;stroke-linecap:square;stop-color:#000000"
+         id="rect236-3"
+         width="102"
+         height="60.000008"
+         x="-102.13229"
+         y="-60.000008"
+         transform="scale(-1)" />
+      <rect
+         style="fill:#ffaaaa;stroke:none;stroke-width:0.999996;stroke-linecap:square;stop-color:#000000"
+         id="rect236-3-6"
+         width="30"
+         height="140"
+         x="-132.13229"
+         y="-140.00002"
+         transform="scale(-1)" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.265;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:3.18, 3.18;stroke-dashoffset:0;stroke-opacity:1"
+         d="M 112.13229,25.000008 0.132292,24.999998"
+         id="path1059"
+         sodipodi:nodetypes="cc" />
+    </g>
+    <path
+       style="fill:none;stroke:#ff0000;stroke-width:0.265;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
+       d="m 220,0 v 109.94583 c 0,20 19.86719,40 39.86719,40 h 62 c 20,0 30,-10 30,-30 L 352,60.000008 c 0,-10 -30.40696,-10.75516 -30,-20 V 0"
+       id="path1908"
+       sodipodi:nodetypes="cccccccc" />
+    <path
+       style="color:#000000;fill:#ff0000;-inkscape-stroke:none"
+       d="M 0 0 L 0 109.945 L 0.228825 113.706 L 0.895907 117.436 L 1.97215 121.107 L 3.42847 124.688 L 5.23578 128.151 L 7.36497 131.467 L 9.78696 134.606 L 12.4727 137.539 L 15.3933 140.237 L 18.5202 142.671 L 21.8246 144.812 L 25.2776 146.629 L 28.8505 148.094 L 32.5144 149.177 L 36.2405 149.848 L 40 150.078 L 102 150.078 L 105.642 149.961 L 109.051 149.608 L 112.226 149.019 L 115.168 148.195 L 117.876 147.135 L 120.35 145.84 L 122.589 144.308 L 124.594 142.539 L 126.362 140.535 L 127.894 138.296 L 129.19 135.822 L 130.25 133.114 L 131.074 130.172 L 131.662 126.996 L 132.015 123.587 L 132.133 119.945 L 132.266 60 L 132.175 59.0642 L 131.914 58.181 L 131.494 57.3484 L 130.928 56.5645 L 129.41 55.1288 L 127.453 53.8418 L 125.147 52.672 L 122.581 51.5916 L 117.023 49.5918 L 111.493 47.6296 L 108.963 46.5989 L 106.711 45.502 L 104.829 44.315 L 103.406 43.0176 L 102.526 41.5916 L 102.314 40.8212 L 102.266 40.0059 L 102.266 40.002 L 102.266 0 L 102 0 L 102 40 L 102.053 40.8677 L 102.281 41.6875 L 102.669 42.461 L 103.205 43.1895 L 104.671 44.5277 L 106.584 45.7344 L 108.856 46.8419 L 111.399 47.8778 L 116.938 49.8418 L 122.485 51.839 L 125.038 52.9137 L 127.322 54.0723 L 129.248 55.3389 L 130.725 56.7344 L 131.668 58.2777 L 131.915 59.1141 L 132 60 L 131.867 119.945 L 131.75 123.569 L 131.4 126.957 L 130.817 130.109 L 130 133.027 L 128.95 135.709 L 127.668 138.158 L 126.153 140.371 L 124.406 142.352 L 122.426 144.099 L 120.212 145.614 L 117.764 146.896 L 115.082 147.945 L 112.164 148.762 L 109.012 149.345 L 105.624 149.696 L 102 149.812 L 40 149.812 L 36.2722 149.584 L 32.5751 148.917 L 28.9377 147.842 L 25.3889 146.387 L 21.9577 144.581 L 18.6732 142.454 L 15.5644 140.034 L 12.6602 137.352 L 9.98977 134.435 L 7.58224 131.314 L 5.46629 128.018 L 3.67065 124.577 L 2.22404 121.02 L 1.15518 117.376 L 0.492801 113.675 L 0.265625 109.945 L 0.265625 0 L 0 0"
+       id="path1908-5" />
+    <text
+       xml:space="preserve"
+       style="font-size:3.52777px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;stroke-width:0.264583"
+       x="220.9328"
+       y="182.69875"
+       id="text3613"><tspan
+         sodipodi:role="line"
+         style="stroke-width:0.264583"
+         x="220.9328"
+         y="182.69875"
+         id="tspan3737">1. Copy-paste shape at top-left page corner</tspan><tspan
+         sodipodi:role="line"
+         style="stroke-width:0.264583"
+         x="220.9328"
+         y="187.10846"
+         id="tspan3735">2. Path &gt; Stroke to Path</tspan><tspan
+         sodipodi:role="line"
+         style="stroke-width:0.264583"
+         x="220.9328"
+         y="191.51817"
+         id="tspan3665">3. Extensions &gt; Modify Path &gt; Flatten Bezier... &gt; 0.1, one time</tspan><tspan
+         sodipodi:role="line"
+         style="stroke-width:0.264583"
+         x="220.9328"
+         y="195.92789"
+         id="tspan3743">4. Delete original shapes (off-page)</tspan><tspan
+         sodipodi:role="line"
+         style="stroke-width:0.264583"
+         x="220.9328"
+         y="200.3376"
+         id="tspan3751">5. File &gt; Save a Copy... &gt; Desktop Cutting Plotter (AutoCAD DXF R14)(*.dxf)</tspan><tspan
+         sodipodi:role="line"
+         style="stroke-width:0.264583"
+         x="220.9328"
+         y="204.74731"
+         id="tspan3739">6. Undo until original forms are back </tspan><tspan
+         sodipodi:role="line"
+         style="stroke-width:0.264583"
+         x="220.9328"
+         y="209.15703"
+         id="tspan3733" /></text>
+  </g>
+</svg>
