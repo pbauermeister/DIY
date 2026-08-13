@@ -24,9 +24,9 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      showgrid="true"
-     inkscape:zoom="0.62632657"
-     inkscape:cx="119.74584"
-     inkscape:cy="-291.38154"
+     inkscape:zoom="0.88575953"
+     inkscape:cx="449.89637"
+     inkscape:cy="-238.77813"
      inkscape:window-width="2560"
      inkscape:window-height="1387"
      inkscape:window-x="1920"
@@ -201,12 +201,26 @@
        inkscape:transform-center-x="-42.494447"
        inkscape:transform-center-y="-22.92398" />
     <path
-       style="fill:none;stroke:#6b0000;stroke-width:10;stroke-linecap:round;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:0.626369"
+       style="fill:none;stroke:#6b0000;stroke-width:10;stroke-linecap:round;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:0.626369;font-variation-settings:normal;opacity:1;vector-effect:none;fill-opacity:1;stroke-miterlimit:4;stroke-dashoffset:0;-inkscape-stroke:none;stop-color:#000000;stop-opacity:1"
        d="M 89.999999,7.0000305 H 220"
        id="path1405"
        sodipodi:nodetypes="cc"
        inkscape:transform-center-x="65.000001"
        inkscape:transform-center-y="10.5" />
+    <path
+       style="font-variation-settings:normal;fill:none;fill-opacity:1;stroke:#e9cc00;stroke-width:0.999997;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.626369;stop-color:#000000"
+       d="M 4e-7,7.0000007 H 90"
+       id="path1405-3"
+       sodipodi:nodetypes="cc"
+       inkscape:transform-center-x="45"
+       inkscape:transform-center-y="7.2692308" />
+    <path
+       style="font-variation-settings:normal;vector-effect:none;fill:none;fill-opacity:1;stroke:#6bde00;stroke-width:10;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.75430369;-inkscape-stroke:none;stop-color:#000000"
+       d="M -57,-81 10,6.2683291"
+       id="path1405-7"
+       sodipodi:nodetypes="cc"
+       inkscape:transform-center-x="-33.5"
+       inkscape:transform-center-y="43.634165" />
     <path
        style="fill:none;stroke:#6b0000;stroke-width:10;stroke-linecap:round;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:0.626369"
        d="M 66.21565,7.0000305 -45.470828,-59.529135"

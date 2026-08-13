@@ -33,5 +33,17 @@ LID_BEZEL_L0_SIDE_CLR =  20;
 
 SCREW_D               =   2.5;
 
+CABLE_PASSAGE         = 65;
 
 ATOM = 0.001;
+
+CASE_LID_L            = 329;
+CASE_LID_W            = 234;
+
+/* TODO:
+- lid hinge: move 3 mm to the outside
+- rail: studs dimaeter 0.15 mm larger
+- rail: more studs
+- rail: longer to the back
+
+*/
