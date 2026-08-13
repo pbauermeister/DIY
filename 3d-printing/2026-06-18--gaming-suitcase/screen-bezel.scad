@@ -5,8 +5,6 @@ w = LID_BEZEL_L0_W - LID_BEZEL_L0_PLAY*2;
 th = LID_BEZEL_L0_TH;
 r = LID_BEZEL_L0_HINGE_R;
 
-CABLE_PASSAGE = 65;
-
 $fn = $preview ? 30 : 200;
 
 module pillar() {
@@ -97,9 +95,6 @@ module screen_bezel_l0() {
         }
         
         // cable passage
-//        translate([0, 0, LID_BEZEL_L0_TH])
-//        cube([LID_BEZEL_L0_L/2, CABLE_PASSAGE, LID_BEZEL_L0_PILLAR_H]);
-
         translate([0, -5, LID_BEZEL_L0_TH])
         cube([LID_BEZEL_L0_L/2 -10, CABLE_PASSAGE, LID_BEZEL_L0_PILLAR_H]);
 

@@ -7,6 +7,8 @@ TTH = .8;
 D  = get_holes_d_sp()[0];
 SP = get_holes_d_sp()[1];
 
+fn = $preview ? 25 : 100;
+
 module stud(xd=0.2, xd2=-2.8, dz=-.15) {
     //%hole();
     translate([0, 0, dz])
@@ -19,8 +21,8 @@ module stud(xd=0.2, xd2=-2.8, dz=-.15) {
                 d = D*1.015 + xd;
                 translate([0, 0, 1+TH1-TTH-.5])
                 resize([d, d, TH2*.99])
-                sphere(1, $fn=100);
-                cylinder(d=D*.85, h=TH2/2, $fn=100);
+                sphere(1, $fn=fn);
+                cylinder(d=D*.85, h=TH2/2, $fn=fn);
             }
         }
         
@@ -30,7 +32,7 @@ module stud(xd=0.2, xd2=-2.8, dz=-.15) {
         
         // axial hollowing
         d2 = D-3 + xd2;
-        cylinder(d=d2, h=TH1*4, $fn=100, center=true);
+        cylinder(d=d2, h=TH1*4, $fn=fn, center=true);
     }
 }
 
