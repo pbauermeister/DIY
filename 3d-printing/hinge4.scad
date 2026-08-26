@@ -14,6 +14,7 @@ module hinge4(
     extra_angle=0,
     extra_angle_tolerance=.2,
     only_alt=-1,
+    with_hull=false,
 ) {
     assert(thickness, "You must specify thickness")
     if (nb_layers==0 && total_height && layer_height) {
@@ -23,7 +24,7 @@ module hinge4(
                  _nb_layers, _layer_height, total_height,
                  fn, tolerance, with_plate,
                  extra_angle, extra_angle_tolerance,
-                 only_alt);
+                 only_alt, with_hull);
     }
     else if (nb_layers && total_height==0 && layer_height) {
         _total_height = nb_layers * layer_height;
@@ -31,7 +32,7 @@ module hinge4(
                  nb_layers, layer_height, _total_height,
                  fn, tolerance, with_plate,
                  extra_angle, extra_angle_tolerance,
-                 only_alt);
+                 only_alt, with_hull);
     }
     else if (nb_layers && total_height && layer_height==0) {
         _layer_height = total_height / nb_layers;
@@ -39,9 +40,21 @@ module hinge4(
                  nb_layers, _layer_height, total_height,
                  fn, tolerance, with_plate,
                  extra_angle, extra_angle_tolerance,
-                 only_alt);
+                 only_alt, with_hull);
     }
     else assert(false, "You must specify exactly 2 of (nb_layers, total_height, layer_height)");
+}
+
+module maybe_hull(with_hull, total_height) {
+    if (with_hull)
+        hull() {
+            children();
+            translate([0, 0, total_height])
+            scale([1, 1, -1])
+            children();
+        }
+    else
+        children();
 }
 
 module hinge4_0(
@@ -57,17 +70,20 @@ module hinge4_0(
     extra_angle,
     extra_angle_tolerance,
     only_alt,
+    with_hull,
 ) {
     echo("**** only-alt", only_alt)
     echo("**** only-alt!=1", only_alt!=1)
     echo("**** only-alt!=0", only_alt!=0)
     if (only_alt!=1)
-    hinge4_1(0, thickness, angle, arm_length, nb_layers, layer_height, total_height,
-             fn, tolerance, with_plate, extra_angle, extra_angle_tolerance);
+        maybe_hull(with_hull, total_height)
+        hinge4_1(0, thickness, angle, arm_length, nb_layers, layer_height, total_height,
+                 fn, tolerance, with_plate, extra_angle, extra_angle_tolerance);
 
     if (only_alt!=0)
-    hinge4_1(1, thickness, angle, arm_length, nb_layers, layer_height, total_height,
-             fn, tolerance, with_plate, extra_angle, extra_angle_tolerance);
+        maybe_hull(with_hull, total_height)
+        hinge4_1(1, thickness, angle, arm_length, nb_layers, layer_height, total_height,
+                 fn, tolerance, with_plate, extra_angle, extra_angle_tolerance);
 }
 
 module hinge4_1(
@@ -163,6 +179,9 @@ module hinge4_1(
 
 // examples
 k = 35/50;
+
+translate([0, 115*k, 0])
+hinge4(thickness=10*k, arm_length=18*k, total_height=50*k, nb_layers=2, angle=180+45, extra_angle=0, with_hull=true);
 
 translate([0, 90*k, 0])
 hinge4(thickness=10*k, arm_length=18*k, total_height=50*k, nb_layers=5, angle=180, with_plate=false);
