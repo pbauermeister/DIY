@@ -45,7 +45,7 @@ module screw_ring() {
     cylinder(d=SCREW_DIAMETER+WALL*2);
 }
 
-module unit(outer) {
+module unit(outer, two_holes=true) {
     if (outer) {
         shape(WALL, HEIGHT + WALL);
     }
@@ -62,39 +62,43 @@ module unit(outer) {
 
         // side hole
         translate([0, 0, WALL+HEIGHT-HOLE_DIAMETER/2 - HOLE_SHIFT])
-        rotate([90, 0, 0])
-        cylinder(d=HOLE_DIAMETER, h=DIAMETER*3, center=true);
+        rotate([-90, 0, 0])
+        cylinder(d=HOLE_DIAMETER, h=DIAMETER*3, center=two_holes);
     }
 }
 
-module brace() {
+module brace(n=N) {
     w = DIAMETER * .66;
-    for (i=[0:N-2]) {
+    if(n>=2)
+    for (i=[0:n-2]) {
         translate([i*DISTANCE, -w/2, 0])
         cube([DISTANCE, w, HEIGHT+WALL]);    
     }
 }
 
-module outer() {
-    for (i=[0:N-1]) {
+module outer(n=N) {
+    for (i=[0:n-1]) {
         translate([DISTANCE*i, 0, 0])
         rotate([0, 0, ANGLE])
         unit(true);
     }
-    brace();
+    brace(n);
 }
 
-module inner() {
-    for (i=[0:N-1]) {
+module inner(n=N) {
+    for (i=[0:n-1]) {
         translate([DISTANCE*i, 0, 0])
         rotate([0, 0, ANGLE])
         unit(false);
     }    
 }
 
-difference() {
-    outer();
-    inner();
-    
-    //cube(100);
+module holder(n=N) {
+    difference() {
+        outer(n);
+        inner(n);
+        //cube(100);
+    }
 }
+
+holder(2);
