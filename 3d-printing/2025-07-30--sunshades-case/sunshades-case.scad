@@ -17,7 +17,7 @@ CORNER_RADIUS    = 12;
 CLIP_HOLLOWING_W = 30-8;
 CLIP_HOLLOWING_H = 15;
 
-$fn = $preview? 40 : 300;
+$fn = $preview? 30 : 300;
 
 module main() {
     intersection() {
